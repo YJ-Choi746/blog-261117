@@ -1,7 +1,7 @@
 import { auth, db, isConfigured, onAuthStateChanged, doc, getDoc, friendlyError, formatDate } from "./firebase.js";
 import { renderBody } from "./render.js";
 import { sanitizeToFragment } from "./sanitize.js";
-import { resolveImages, getImageData } from "./images.js";
+import { resolveImages } from "./images.js";
 import { adminButtons } from "./post-actions.js";
 
 const $ = (id) => document.getElementById(id);
@@ -31,9 +31,6 @@ async function show(user) {
       }));
     }
 
-    if (p.coverImageId && p.format === "html") {
-      getImageData(p.coverImageId).then((d) => { if (d) { $("post-cover").src = d; $("post-cover-wrap").hidden = false; } });
-    }
     const body = $("post-body");
     if (p.format === "html") {
       body.className = "rich";

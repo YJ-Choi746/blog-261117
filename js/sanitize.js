@@ -148,6 +148,12 @@ function cleanNode(node, depth) {
     if (!el.getAttribute("style")) el.removeAttribute("style");
   }
   copyChildren(node, el, depth);
+  // 사진이 없는 figure(빈 칸)는 껍데기를 벗겨요
+  if (tag === "figure" && !el.querySelector("img")) {
+    const frag = document.createDocumentFragment();
+    if ((el.textContent || "").trim()) { const p = document.createElement("p"); while (el.firstChild) p.appendChild(el.firstChild); frag.appendChild(p); }
+    return frag;
+  }
   // 내용도 스타일도 없는 span은 버려요
   if (tag === "span" && !el.getAttribute("style")) {
     const frag = document.createDocumentFragment();

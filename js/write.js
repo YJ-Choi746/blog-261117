@@ -34,6 +34,9 @@ function visibility() { return document.querySelector('input[name="visibility"]:
 function setCover(id, src) {
   coverImageId = id;
   $("cover").hidden = !id;
+  // 본문에서 대표 이미지인 사진에 표시 (저장되지 않는 표시예요)
+  editorEl.querySelectorAll("img.is-cover").forEach((i) => i.classList.remove("is-cover"));
+  if (id) editorEl.querySelectorAll(`img[data-img="${CSS.escape(id)}"]`).forEach((i) => i.classList.add("is-cover"));
   if (id) {
     if (src) $("cover-img").src = src;
     else getImageData(id).then((d) => { if (d) $("cover-img").src = d; });

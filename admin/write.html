@@ -102,13 +102,6 @@
       <p id="form-error" class="notice notice-error" role="alert" hidden style="margin: 0 0 16px"></p>
       <p id="upload-status" class="notice notice-info" role="status" hidden style="margin: 0 0 16px"></p>
 
-      <div id="cover" class="cover" hidden>
-        <img id="cover-img" alt="대표 이미지">
-        <div class="cover-actions">
-          <button type="button" id="cover-remove" class="btn btn-outline">대표 이미지 빼기</button>
-        </div>
-      </div>
-
       <div class="cat-select">
         <label class="sr-only" for="category">카테고리</label>
         <select class="tb-select" id="category" style="max-width: 180px">
@@ -147,7 +140,11 @@
       </div>
       <div class="card">
         <h2>대표 이미지</h2>
-        <p class="hint">본문 사진을 눌러 "대표 이미지로"를 고르세요. 고르지 않으면 첫 번째 사진이 대표 이미지가 돼요.</p>
+        <div id="cover" class="cover-side" hidden>
+          <img id="cover-img" class="cover-thumb" alt="대표 이미지">
+          <button type="button" id="cover-remove" class="btn btn-outline">대표 이미지 빼기</button>
+        </div>
+        <p class="hint">글 목록의 썸네일로 쓰여요. 글 화면에는 따로 나오지 않아요. 본문 사진을 눌러 "대표 이미지로"를 고르고, 고르지 않으면 첫 번째 사진이 대표 이미지가 돼요.</p>
         <a id="view-link" href="#" hidden>발행된 글 보기 →</a>
       </div>
     </aside>
