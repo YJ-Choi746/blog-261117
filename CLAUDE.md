@@ -18,6 +18,7 @@ post.html           글 상세 (?id=글ID)
 admin/login.html    관리자 로그인
 admin/posts.html    글 관리 (공개 범위 · 보기 · 수정 · 삭제)
 admin/write.html    글쓰기 에디터 (서식 · 사진 · 미리보기 · 자동 백업, ?id=로 수정)
+images/og-home.png  홈 · 글 목록 공유 미리보기 이미지 (1200×630)
 css/site.css        공통 스타일 (디자인 시스템 토큰 = CSS 변수)
 css/editor.css      에디터 · 서식 있는 본문(.rich) · 글 관리 스타일
 css/fx.css          모든 페이지 공통: 세미볼드(600) · 버튼 물 차오름 효과
@@ -41,7 +42,7 @@ docs/user-stories.md    사용자 스토리와 완료 기준
 docs/firebase-setup.md  Firebase 연결 순서 (처음 한 번)
 docs/analytics.md       방문자 통계(GA4) 보는 법
 docs/analytics-events.md  이벤트 택소노미 (이벤트 이름 · 매개변수 · 보내는 순간)
-docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃, 로그인, 에디터)
+docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃, 로그인, 에디터, 공유-미리보기)
 ```
 
 ## 기술 규칙
