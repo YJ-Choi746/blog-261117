@@ -100,6 +100,31 @@ function navItem(p, dir, wrapped) {
   return a;
 }
 
+// 공유 링크: 카카오톡 · SNS에 붙이면 글마다 제목 · 요약 · 대표 이미지 카드가 떠요.
+// 이 주소(p/글ID.html)는 GitHub Actions가 Firebase에 올릴 때 글마다 만들어요 (.github/scripts/share-pages.mjs).
+// 새로 발행한 글은 다음 배포(늦어도 1시간 안) 뒤에 공유 페이지가 생겨요.
+const SHARE_BASE = "https://blog---261117.web.app/p/";
+function setupShare(p) {
+  const btn = $("share-btn"), msg = $("share-msg");
+  const url = SHARE_BASE + encodeURIComponent(id) + ".html";
+  // GA: share_post (docs/analytics-events.md)
+  btn.setAttribute("data-ga-event", "share_post");
+  btn.setAttribute("data-ga-post_id", id);
+  btn.setAttribute("data-ga-post_title", p.title || "");
+  btn.setAttribute("data-ga-post_category", p.category || "");
+  btn.setAttribute("data-ga-method", "copy_link");
+  btn.hidden = false;
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      msg.textContent = "공유 링크를 복사했어요. 카카오톡 · SNS에 붙여 넣으세요.";
+    } catch {
+      msg.textContent = url; // 복사가 막힌 브라우저에서는 주소를 보여줘서 직접 복사하게 해요
+    }
+    msg.hidden = false;
+  });
+}
+
 function fail(msg) { $("post-status").textContent = msg; trackView(null); }
 
 async function show(user) {
@@ -117,6 +142,7 @@ async function show(user) {
     $("post-cat").textContent = p.category || "";
     $("post-title").textContent = p.title;
     if (p.summary) { $("post-summary").textContent = p.summary; $("post-summary").hidden = false; }
+    if (p.status === "published") setupShare(p);
     $("post-date").textContent = formatDate(p.publishedAt || p.updatedAt);
     $("post-meta").hidden = false;
     const note = { draft: "임시저장된 글이에요. 관리자에게만 보여요.", private: "비공개 글이에요. 관리자에게만 보여요." }[p.status];

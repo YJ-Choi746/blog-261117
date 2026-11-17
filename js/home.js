@@ -57,7 +57,7 @@ function rowEl(p, i) {
   }
   const cat = document.createElement("span");
   cat.className = "home-cat";
-  cat.setAttribute("style", "font-size: 13px; color: #1F4FB8"); // blue-ink
+  cat.setAttribute("style", "font-size: 13px; color: #2F6BEA"); // blue
   cat.textContent = p.category || "";
   a.append(date, mid, cat);
   if (p.coverImageId) {

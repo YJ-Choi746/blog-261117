@@ -31,6 +31,8 @@ js/home.js          첫 화면 최근 기록
 js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화면 제외)
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
 firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
+.github/workflows/firebase-hosting.yml  Firebase 배포 (main 푸시 · 매시 17분 · 직접 실행)
+.github/scripts/share-pages.mjs  배포 때 글마다 공유 미리보기 페이지 p/글ID.html 생성 (저장소엔 커밋 안 함)
 .nojekyll           GitHub Pages가 파일을 가공하지 않게 하는 빈 파일
 CLAUDE.md           이 문서
 docs/design-system.md   색 · 글꼴 · 간격 · 컴포넌트 규칙

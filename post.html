@@ -34,7 +34,7 @@
       <div style="display: flex; flex-direction: column; gap: 20px">
         <a href="posts.html" style="font-size: 14px; color: var(--gray-600); text-decoration: none">← 기록으로</a>
         <p id="post-status" role="status" style="margin: 0; color: var(--gray-600)">글을 불러오는 중…</p>
-        <span id="post-cat" style="font-size: 13px; color: var(--blue-ink); font-weight: 600"></span>
+        <span id="post-cat" style="font-size: 13px; color: var(--blue); font-weight: 600"></span>
         <h1 id="post-title"></h1>
         <p id="post-summary" class="post-summary" hidden></p>
         <div class="meta" id="post-meta" hidden><span>Jae</span><span aria-hidden="true">·</span><span id="post-date"></span><span id="admin-slot" style="margin-left: auto"></span></div>
@@ -42,6 +42,10 @@
       <p id="draft-note" class="notice notice-info" style="margin-top: 24px" hidden></p>
       <div id="post-body" class="prose"></div>
       <div id="post-tags" class="tags"></div>
+      <div class="post-share">
+        <button type="button" id="share-btn" class="btn btn-outline" hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>공유 링크 복사</button>
+        <span id="share-msg" class="share-msg" role="status" hidden></span>
+      </div>
       <nav id="post-nav" class="post-nav" aria-label="이전 글, 다음 글" hidden></nav>
     </article>
   </main>
