@@ -64,7 +64,7 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 - 입력칸을 추가하면 꼭 `name` 속성을 붙여요. `name`이 없으면 메일에 안 담겨요.
 
 ## 배포 규칙
-- `main`에 커밋한 뒤 `main`과 `gh-pages` 두 브랜치에 모두 푸시해요.
+- `main`에 커밋한 뒤 `main`과 `gh-pages` 두 브랜치에 모두 푸시해요. `main`에 올리면 GitHub Actions가 Firebase Hosting(`blog---261117.web.app`)에도 자동 배포해요 (`.github/workflows/firebase-hosting.yml`, 비밀 키는 GitHub Secret `FIREBASE_SERVICE_ACCOUNT`).
   ```bash
   git push origin main && git push origin main:gh-pages
   ```

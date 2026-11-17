@@ -42,3 +42,18 @@
 ## 규칙을 바꿨을 때 (다시 게시)
 `firestore.rules`가 바뀌면 콘솔의 규칙도 같은 내용으로 다시 게시해야 해요.
 - 2026-11-17: 비공개 글(`private`)과 사진(`images`) 규칙이 추가됐어요. 다시 게시하지 않으면 **비공개 저장과 사진 올리기가 "권한이 없어요"로 막혀요.**
+
+## Firebase Hosting에도 올리기 (자동 배포, 처음 한 번 설정)
+사이트는 GitHub Pages(`yj-choi746.github.io/blog-261117`)와 Firebase Hosting(`blog---261117.web.app`) 두 곳에 올라가요.
+`main`에 올리면 GitHub Actions(`.github/workflows/firebase-hosting.yml`)가 Firebase Hosting에도 자동으로 올려요. 그러려면 **서비스 계정 키**를 GitHub에 한 번 넣어야 해요.
+
+1. Firebase 콘솔 → 톱니바퀴 → **프로젝트 설정** → **서비스 계정** 탭 → **새 비공개 키 생성** → JSON 파일이 내려받아져요.
+   (이 파일은 비밀번호와 같아요. 저장소에 올리거나 채팅에 붙여넣지 마세요.)
+2. GitHub 저장소 → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+   - Name: `FIREBASE_SERVICE_ACCOUNT`
+   - Secret: 내려받은 JSON 파일 내용을 통째로 붙여넣기 → **Add secret**
+3. 저장소 → **Actions** 탭 → **Deploy to Firebase Hosting** → **Run workflow** (또는 다음에 `main`에 올릴 때 자동 실행)
+4. 초록색 체크가 뜨면 https://blog---261117.web.app 에서 사이트가 열려요.
+
+- Firebase Hosting에서도 로그인이 되려면 Authentication → 설정 → 승인된 도메인에 `blog---261117.web.app`이 있어야 해요 (보통 처음부터 들어 있어요).
+- `docs/`, `*.md`, `firestore.rules`, `firebase.json`은 Hosting에 올리지 않아요 (`firebase.json`의 ignore).

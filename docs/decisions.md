@@ -51,3 +51,4 @@
 - **로고**: `your.name` → **Yeonjae** (사이트 전체 로고 · 푸터 · 페이지 제목 · 글쓴이 표시, 디자인 시스템).
 - **로고 변경**: Yeonjae → **Jae** (사이트 전체 · 디자인 시스템).
 - **사이트 배포 위치**: 사이트 파일은 GitHub Pages(`yj-choi746.github.io/blog-261117`)에 올리고, Firebase는 로그인 · 글 · 사진 · 보안 규칙만 맡아요. Firebase Hosting(`blog---261117.web.app`)에는 올리지 않음.
+- **Firebase Hosting 추가**: 사용자 요청으로 사이트를 Firebase Hosting(`blog---261117.web.app`)에도 올리기로 함 → 앞 줄의 "Hosting에는 올리지 않음"을 바꿈. GitHub Pages는 그대로 두고, `main`에 올리면 GitHub Actions가 Firebase Hosting에도 자동 배포. 비밀 키는 GitHub Secret(`FIREBASE_SERVICE_ACCOUNT`)에만 두고 저장소에 올리지 않음.
