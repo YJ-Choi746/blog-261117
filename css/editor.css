@@ -127,7 +127,9 @@ dialog::backdrop { background: rgba(17, 17, 17, 0.45); }
 .post-item { border-bottom: 1px solid var(--line); }
 .post-item .post-row { border-bottom: 0; }
 .post-item .admin-actions { padding: 0 0 16px; }
-.vis-select { min-height: 40px; height: 40px; width: auto; max-width: none; flex: none; }
+/* 공개 범위: 글이 여러 개여도 같은 자리 · 같은 폭. 글자를 오른쪽에 붙여 화살표 바로 옆에 둬요 (화살표와 겹치지 않음) */
+.vis-select { min-height: 40px; height: 40px; width: 116px; max-width: none; flex: none; padding: 0 28px 0 10px; background-position: right 12px center; text-align: right; text-align-last: right; }
+.vis-select option { text-align: left; }
 #manage-error, #manage-ok { margin: 0 0 12px; }
 
 /* 대표 이미지: 오른쪽 칸 미리보기 + 본문에서 표시 */
