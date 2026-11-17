@@ -65,3 +65,4 @@
 - **의뢰 폼 이벤트**: 분야 · 예산 구간만 보내고 이름 · 이메일 · 내용은 보내지 않음.
 - **GA 설정 완료 (사용자)**: 맞춤 측정기준 9개(post_title · post_category · post_id · list_name · cta_name · cta_location · filter_category · read_depth · request_types), generate_lead 핵심 이벤트, "의뢰 흐름" 유입경로 탐색. GA 화면은 Claude가 볼 수 없어 사용자 확인 기준.
 - **글 상세 GA 경로**: page_view의 주소를 `/post/글ID`로 바꿔 기록 (페이지 경로 보고서에서도 글마다 따로 보이게). 실제 사이트 주소는 그대로 `post.html?id=`.
+- **GA 실제 수집 확인 (사용자)**: 실시간 보고서에 글 제목으로 page_view가 들어옴 → 사이트 → GA 연결 정상.
