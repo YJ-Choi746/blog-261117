@@ -1,6 +1,6 @@
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
-  collection, doc, addDoc, updateDoc, getDoc, serverTimestamp, friendlyError
+  collection, doc, addDoc, updateDoc, getDoc, serverTimestamp, friendlyError, markAdminBrowser
 } from "./firebase.js";
 import { sanitizeToFragment, sanitizeElementToHtml, htmlToText, imageIds } from "./sanitize.js";
 import { uploadImage, resolveImages, getImageData } from "./images.js";
@@ -210,6 +210,7 @@ if (!isConfigured) {
     if (!user) { location.replace("login.html?next=write.html"); return; }
     if (currentUser) return;
     currentUser = user;
+    markAdminBrowser();
     $("checking").hidden = true;
     $("toolbar").hidden = false;
     $("workspace").hidden = false;

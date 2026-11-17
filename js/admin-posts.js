@@ -1,6 +1,6 @@
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
-  collection, getDocs, doc, updateDoc, serverTimestamp, friendlyError, formatDate
+  collection, getDocs, doc, updateDoc, serverTimestamp, friendlyError, formatDate, markAdminBrowser
 } from "./firebase.js";
 import { getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
@@ -115,6 +115,7 @@ if (!isConfigured) {
 } else {
   onAuthStateChanged(auth, async (user) => {
     if (!user) { location.replace("login.html?next=posts.html"); return; }
+    markAdminBrowser();
     $("who").textContent = user.email || "";
     $("checking").hidden = true; $("manage").hidden = false;
     try {

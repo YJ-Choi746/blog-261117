@@ -5,7 +5,17 @@
 // 지역 · 기기 · OS · 브라우저 · 유입 경로는 GA가 자동으로 모아요.
 (function () {
   var ID = "G-04G5123MB7";
+  var KEY = "jae-ga-optout";
   if (/\/admin\//.test(location.pathname)) return;
+
+  // 내 방문 빼기: 관리자로 로그인한 적 있는 브라우저는 GA를 아예 켜지 않아요 (js/firebase.js의 markAdminBrowser).
+  // 다시 집계되게 하려면 주소 끝에 ?ga=on 을 붙여 한 번 열어요. 다시 빼려면 ?ga=off.
+  try {
+    var q = new URLSearchParams(location.search).get("ga");
+    if (q === "on") localStorage.removeItem(KEY);
+    if (q === "off") localStorage.setItem(KEY, "1");
+    if (localStorage.getItem(KEY) === "1") { window["ga-disable-" + ID] = true; return; }
+  } catch (e) { /* 저장소를 못 쓰면 그냥 집계해요 */ }
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };

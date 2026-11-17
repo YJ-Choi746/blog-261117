@@ -22,6 +22,13 @@ export {
   collection, doc, addDoc, updateDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp
 };
 
+// 관리자로 로그인한 브라우저는 방문자 통계(GA)에서 빼요 (js/analytics.js가 이 표시를 보고 GA를 켜지 않아요).
+// IP 등록과 달리 집 · 카페 · 휴대폰 어디서든, 한 번 로그인한 브라우저면 빠져요.
+export const GA_OPTOUT_KEY = "jae-ga-optout";
+export function markAdminBrowser() {
+  try { localStorage.setItem(GA_OPTOUT_KEY, "1"); } catch { /* 저장 안 되는 브라우저는 건너뜀 */ }
+}
+
 // Firebase 오류 코드를 사용자가 이해할 수 있는 문장으로 바꿔요.
 export function friendlyError(err) {
   const code = (err && err.code) || "";

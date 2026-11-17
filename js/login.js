@@ -1,4 +1,4 @@
-import { auth, isConfigured, onAuthStateChanged, signInWithEmailAndPassword, friendlyError } from "./firebase.js";
+import { auth, isConfigured, onAuthStateChanged, signInWithEmailAndPassword, friendlyError, markAdminBrowser } from "./firebase.js";
 
 const form = document.getElementById("login-form");
 const email = document.getElementById("email");
@@ -30,7 +30,7 @@ if (!isConfigured) {
 } else {
   // 이미 로그인돼 있으면 바로 글쓰기로
   onAuthStateChanged(auth, (user) => {
-    if (user) location.replace(next);
+    if (user) { markAdminBrowser(); location.replace(next); }
   });
 
   form.addEventListener("submit", async (e) => {
@@ -44,6 +44,7 @@ if (!isConfigured) {
     btn.textContent = "로그인 중…";
     try {
       await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
+      markAdminBrowser();
       location.replace(next);
     } catch (err) {
       showError(friendlyError(err));

@@ -56,3 +56,5 @@
 - **방문자 통계 (US-05)**: Google Analytics 4 연결. 측정 ID는 Firebase 프로젝트에 연결된 `G-04G5123MB7` (새로 만들지 않음). 외부 리소스에 `googletagmanager.com` 추가.
 - **집계 범위**: 방문자 페이지(홈 · 글 목록 · 글 상세 · 의뢰 완료)만. 관리자 화면은 집계하지 않음.
 - **가장 많이 읽은 글**: 글 상세는 자동 기록을 끄고 글 제목을 불러온 뒤 page_view(제목 = 글 제목)를 보냄 → "페이지 및 화면" 보고서에서 글 제목으로 바로 보임. 추가로 `view_post`(post_id · post_title · post_category), 의뢰 완료는 `generate_lead`.
+- **내 방문 빼기**: IP 등록 대신, 관리자로 로그인한 브라우저에 표시를 남겨 GA를 아예 켜지 않음 (장소가 바뀌어도 빠짐). `?ga=on` / `?ga=off`로 직접 켜고 끌 수 있음.
+- **GA 맞춤 측정기준**: GA 계정 안의 설정이라 Claude가 대신 할 수 없음 → 사용자가 GA 화면에서 등록 (`docs/analytics.md`).
