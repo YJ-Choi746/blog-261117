@@ -15,7 +15,7 @@ async function show(user) {
     if (!snap.exists()) { fail("글을 찾을 수 없어요."); return; }
     const p = snap.data();
     $("post-status").hidden = true;
-    document.title = `${p.title} — Yeonjae`;
+    document.title = `${p.title} — Jae`;
     $("post-cat").textContent = p.category || "";
     $("post-title").textContent = p.title;
     $("post-date").textContent = formatDate(p.publishedAt || p.updatedAt);
