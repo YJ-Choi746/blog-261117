@@ -1,7 +1,7 @@
-import { auth, db, isConfigured, onAuthStateChanged, doc, getDoc, friendlyError, formatDate } from "./firebase.js";
+import { auth, db, isConfigured, onAuthStateChanged, doc, getDoc, collection, getDocs, query, where, friendlyError, formatDate } from "./firebase.js";
 import { renderBody } from "./render.js";
 import { sanitizeToFragment } from "./sanitize.js";
-import { resolveImages } from "./images.js";
+import { resolveImages, getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
 
 const $ = (id) => document.getElementById(id);
@@ -44,6 +44,64 @@ function trackReading(p) {
   setTimeout(check, 800); // 짧은 글은 열자마자 다 보일 수 있어요
 }
 
+// 글 아래 "이전 글 · 다음 글" — 발행된 글을 발행일 순으로 놓고 바로 앞 · 뒤 글을 보여줘요
+// 이전 글 = 이 글보다 먼저 발행된 글, 다음 글 = 이 글 다음에 발행된 글
+async function renderPostNav() {
+  const nav = $("post-nav");
+  try {
+    const snap = await getDocs(query(collection(db, "posts"), where("status", "==", "published")));
+    const t = (x) => (x && typeof x.toMillis === "function" ? x.toMillis() : 0);
+    const list = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => t(a.publishedAt) - t(b.publishedAt));
+    const i = list.findIndex((x) => x.id === id);
+    if (i < 0) return; // 임시저장 · 비공개 글에는 보여주지 않아요
+    const prev = list[i - 1], next = list[i + 1];
+    if (!prev && !next) return;
+    nav.replaceChildren(navItem(prev, "prev"), navItem(next, "next"));
+    nav.hidden = false;
+  } catch { /* 이전 · 다음 글을 못 불러와도 글은 그대로 보여요 */ }
+}
+
+function navItem(p, dir) {
+  if (!p) {
+    const empty = document.createElement("span");
+    empty.className = `post-nav-item is-empty ${dir}`;
+    empty.textContent = dir === "prev" ? "첫 번째 글이에요" : "가장 최근 글이에요";
+    return empty;
+  }
+  const a = document.createElement("a");
+  a.className = `post-nav-item ${dir}`;
+  a.href = `post.html?id=${encodeURIComponent(p.id)}`;
+  // GA: 이전 · 다음 글 클릭도 select_post로 (docs/analytics-events.md)
+  a.setAttribute("data-ga-event", "select_post");
+  a.setAttribute("data-ga-post_id", p.id);
+  a.setAttribute("data-ga-post_title", p.title || "");
+  a.setAttribute("data-ga-post_category", p.category || "");
+  a.setAttribute("data-ga-list_name", dir === "prev" ? "post_nav_prev" : "post_nav_next");
+  a.setAttribute("data-ga-list_position", "1");
+
+  const text = document.createElement("span");
+  text.className = "post-nav-text";
+  const label = document.createElement("span");
+  label.className = "post-nav-label";
+  label.textContent = dir === "prev" ? "← 이전 글" : "다음 글 →";
+  const title = document.createElement("span");
+  title.className = "post-nav-title";
+  title.textContent = p.title || "(제목 없음)";
+  const meta = document.createElement("span");
+  meta.className = "post-nav-meta";
+  meta.textContent = [p.category, formatDate(p.publishedAt)].filter(Boolean).join(" · ");
+  text.append(label, title, meta);
+  a.appendChild(text);
+
+  if (p.coverImageId) {
+    const img = document.createElement("img");
+    img.className = "post-nav-thumb"; img.alt = ""; img.loading = "lazy";
+    getImageData(p.coverImageId).then((d) => { if (d) img.src = d; else img.remove(); });
+    if (dir === "prev") a.prepend(img); else a.appendChild(img);
+  }
+  return a;
+}
+
 function fail(msg) { $("post-status").textContent = msg; trackView(null); }
 
 async function show(user) {
@@ -53,6 +111,10 @@ async function show(user) {
     const p = snap.data();
     $("post-status").hidden = true;
     document.title = `${p.title} — Jae`;
+    // 글마다 제목 · 설명(요약)을 페이지 정보에도 넣어요 (검색 결과 · 브라우저 탭)
+    const desc = (p.summary || (p.body || "").replace(/\s+/g, " ").slice(0, 120) || "").trim();
+    if (desc) { $("meta-desc").setAttribute("content", desc); $("og-desc").setAttribute("content", desc); }
+    $("og-title").setAttribute("content", document.title);
     trackView(p);
     $("post-cat").textContent = p.category || "";
     $("post-title").textContent = p.title;
@@ -79,6 +141,7 @@ async function show(user) {
       renderBody(p.body, body);
     }
     trackReading(p);
+    renderPostNav();
     const tags = $("post-tags");
     tags.replaceChildren();
     for (const t of p.tags || []) {

@@ -3,7 +3,7 @@ h1, h2, h3, h4, strong, b, th, legend { font-weight: 600; }
 
 /* 버튼 효과: 물 차오름
    마우스를 올리거나(데스크톱) 누르면(휴대폰) 아래에서 물이 차오르고 글자색이 반전돼요.
-   - 물결 두 겹: 같은 속도로 일정하게(끝까지 느려지지 않게) 0.5초 동안 올라오고, 앞 물결(::before)이 뒤 물결(::after, 반투명)보다 0.15초 늦게 출발해요.
+   - 물결 두 겹: 처음 버전과 같은 속도(0.55초, 빠르게 올라와 부드럽게 멈춤)로 올라오고, 앞 물결(::before)이 뒤 물결(::after, 반투명)보다 0.15초 늦게 출발해요.
    - 버튼 폭에 물결 커브 2개(비대칭). 물결이 상자 안에서 양옆으로 왔다 갔다 출렁이며 올라가요.
    - 물결 모양은 SVG 마스크라서, 색은 버튼마다 --fx-fill 로 바꿀 수 있어요.
    - 쓰는 곳: .btn(사이트 공통 버튼), .chip(카테고리 버튼), .fx(첫 화면처럼 인라인 스타일 버튼)
@@ -16,7 +16,7 @@ h1, h2, h3, h4, strong, b, th, legend { font-weight: 600; }
   --fx-ink: #FFFFFF;                /* white */
   /* 비대칭 물결 한 칸: 왼쪽은 완만하게 솟고 오른쪽은 깊게 내려가요. 버튼 폭의 50%로 늘려서 커브 2개 */
   --fx-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='16' viewBox='0 0 100 16' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C12 1 30 0 44 6 C58 12 78 15 100 9 V16 H0 Z' fill='%23000'/%3E%3C/svg%3E");
-  transition: color 0.15s linear 0.25s, border-color 0.2s linear;
+  transition: color 0.35s ease 0.1s, border-color 0.35s ease;
 }
 .btn::before, .chip::before, .fx::before,
 .btn::after, .chip::after, .fx::after {
@@ -34,14 +34,14 @@ h1, h2, h3, h4, strong, b, th, legend { font-weight: 600; }
   transform: translateY(100%);      /* 처음엔 버튼 아래에 잠겨 있어요 */
   pointer-events: none;
 }
-/* 앞 물결: 0.15초 늦게 출발 (속도는 같고, 일정한 속도로 끝까지) */
+/* 앞 물결: 0.15초 늦게 출발 (처음 버전 속도) */
 .btn::before, .chip::before, .fx::before {
-  transition: transform 0.5s linear 0.15s;
+  transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.35, 1) 0.15s;
 }
 /* 뒤 물결: 먼저 출발, 반투명 */
 .btn::after, .chip::after, .fx::after {
   opacity: 0.4;
-  transition: transform 0.5s linear;
+  transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.35, 1);
   -webkit-mask-position: 60% 0, 0 15px;
           mask-position: 60% 0, 0 15px;
 }

@@ -29,7 +29,7 @@
 |---|---|---|---|---|
 | `page_view` | 페이지를 열 때. 글 상세는 **글 제목을 불러온 뒤**, 주소를 `/post/글ID`로 바꿔서 (GA는 `?id=`를 떼고 경로만 보여줘서 모든 글이 `/post.html` 한 줄로 합쳐지기 때문) | `page_title`, `page_location` | 전체 (관리자 제외) | |
 | `view_post` | 글 상세가 열렸을 때 | `post_id`, `post_title`, `post_category` | 글 상세 | |
-| `select_post` | 목록에서 글을 눌렀을 때 | `post_id`, `post_title`, `post_category`, `list_name`, `list_position` | 홈 최근 기록, 글 목록 | |
+| `select_post` | 목록에서 글을 눌렀을 때 · 글 아래 이전/다음 글을 눌렀을 때 | `post_id`, `post_title`, `post_category`, `list_name`, `list_position` | 홈 최근 기록, 글 목록, 글 상세 | |
 | `filter_posts` | 카테고리 버튼을 눌렀을 때 | `filter_category`, `list_name` | 홈 최근 기록, 글 목록 | |
 | `read_post` | 본문을 50% · 90%까지 읽었을 때 (각 1번) | `post_id`, `post_title`, `post_category`, `read_depth` | 글 상세 | |
 | `click_cta` | 의뢰 · 기록 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈, 글 목록, 글 상세 | |
@@ -41,7 +41,7 @@
 
 | 매개변수 | 값 |
 |---|---|
-| `list_name` | `home_recent` (홈 최근 기록) · `blog_list` (글 목록) |
+| `list_name` | `home_recent` (홈 최근 기록) · `blog_list` (글 목록) · `post_nav_prev` · `post_nav_next` (글 상세 아래 이전 글 · 다음 글) |
 | `list_position` | 1, 2, 3 … (위에서 몇 번째) |
 | `filter_category` | `전체` · `바이브코딩` · `디자인` · `콘텐츠` |
 | `read_depth` | `50` · `90` |
