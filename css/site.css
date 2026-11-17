@@ -1,4 +1,4 @@
-/* your.name — 공통 스타일
+/* Yeonjae — 공통 스타일
    색·글꼴·간격 이름은 디자인 시스템 토큰과 같아요 (docs/design-system.md) */
 :root {
   --blue: #2F6BEA;
@@ -51,7 +51,7 @@ input, select, textarea, button { font: inherit; }
 .badge { font-size: 12px; font-weight: 700; background: var(--blue-tint); color: var(--blue-tint-ink); padding: 3px 10px; border-radius: var(--radius-pill); }
 
 /* 버튼 */
-.btn { min-height: var(--touch-min); display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 22px; border-radius: var(--radius-pill); border: 1px solid transparent; font-weight: 500; text-decoration: none; cursor: pointer; }
+.btn { white-space: nowrap; min-height: var(--touch-min); display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 22px; border-radius: var(--radius-pill); border: 1px solid transparent; font-weight: 500; text-decoration: none; cursor: pointer; }
 .btn-primary { background: var(--blue); color: var(--white); font-weight: 700; }
 .btn-primary:hover { color: var(--white); filter: brightness(0.94); }
 .btn-dark { background: var(--black); color: var(--white); }

@@ -21,11 +21,10 @@ function say(msg, isError) {
   el.textContent = msg; el.hidden = false;
 }
 
-// 공개 범위 바꾸기 · 재발행 (글을 열지 않고 목록에서 바로)
-async function changeStatus(p, status, { republish = false } = {}) {
+// 공개 범위 바꾸기 (글을 열지 않고 목록에서 바로). 처음 공개할 때만 발행일을 정해요.
+async function changeStatus(p, status) {
   const patch = { status, updatedAt: serverTimestamp() };
-  const firstPublish = status !== "draft" && !p.publishedAt;
-  if (republish || firstPublish) patch.publishedAt = serverTimestamp();
+  if (status !== "draft" && !p.publishedAt) patch.publishedAt = serverTimestamp();
   await updateDoc(doc(db, "posts", p.id), patch);
   p.status = status;
   p.updatedAt = nowTs();
@@ -57,7 +56,6 @@ function row(p) {
   mid.append(title, meta);
 
   const actions = document.createElement("div");
-  actions.style.display = "flex"; actions.style.flexWrap = "wrap"; actions.style.gap = "6px"; actions.style.justifyContent = "flex-end";
   const view = document.createElement("a");
   view.className = "btn btn-outline"; view.textContent = "보기";
   view.href = `../post.html?id=${encodeURIComponent(p.id)}`;
@@ -86,21 +84,7 @@ function row(p) {
     } catch (err) { vis.value = p.status; vis.disabled = false; say(friendlyError(err), true); }
   });
 
-  // 재발행: 지금 날짜로 다시 발행해서 글 목록 맨 위로 올려요
-  const re = document.createElement("button");
-  re.type = "button"; re.className = "btn btn-outline"; re.textContent = p.status === "draft" ? "발행" : "재발행";
-  re.style.minHeight = "40px"; re.style.padding = "0 14px"; re.style.fontSize = "14px";
-  re.addEventListener("click", async () => {
-    re.disabled = true; re.textContent = "발행하는 중…";
-    const wasDraft = p.status === "draft";
-    try {
-      await changeStatus(p, "published", { republish: true });
-      say(wasDraft ? `"${p.title}"을(를) 발행했어요.` : `"${p.title}"을(를) 오늘 날짜로 다시 발행했어요. 글 목록 맨 위에 보여요.`);
-      render();
-    } catch (err) { say(friendlyError(err), true); render(); }
-  });
-
-  actions.append(visLabel, vis, view, re, btns);
+  actions.append(visLabel, vis, view, btns);
 
   r.append(thumb, mid, actions);
   return r;

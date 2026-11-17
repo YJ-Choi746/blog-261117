@@ -16,7 +16,7 @@ thanks.html         의뢰 폼 전송 후 보여주는 완료 페이지
 posts.html          글 목록 (발행된 글, 카테고리 필터, 관리자면 수정·삭제)
 post.html           글 상세 (?id=글ID)
 admin/login.html    관리자 로그인
-admin/posts.html    글 관리 (수정 · 삭제 · 재발행 · 공개 범위)
+admin/posts.html    글 관리 (공개 범위 · 보기 · 수정 · 삭제)
 admin/write.html    글쓰기 에디터 (서식 · 사진 · 미리보기 · 자동 백업, ?id=로 수정)
 css/site.css        공통 스타일 (디자인 시스템 토큰 = CSS 변수)
 css/editor.css      에디터 · 서식 있는 본문(.rich) · 글 관리 스타일

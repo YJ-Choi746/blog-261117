@@ -98,14 +98,17 @@ dialog::backdrop { background: rgba(17, 17, 17, 0.45); }
 .state-published { background: var(--blue-tint); color: var(--blue-tint-ink); }
 .state-draft { background: var(--surface); color: var(--gray-700); }
 .state-private { background: var(--black); color: var(--white); }
-.manage-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.manage-actions { display: flex; flex-wrap: nowrap; gap: 6px; justify-content: flex-end; align-items: center; }
+.manage-actions .btn, .admin-actions .btn { white-space: nowrap; flex-shrink: 0; }
+.manage-actions .admin-actions { flex-wrap: nowrap; }
 .manage-actions .btn { min-height: 40px; padding: 0 14px; font-size: 14px; }
 .btn-danger { background: var(--danger); color: var(--white); }
 .btn-danger:hover { color: var(--white); }
 @media (max-width: 640px) {
   .manage-row { grid-template-columns: 72px minmax(0, 1fr); }
   .thumb { width: 72px; height: 52px; }
-  .manage-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .manage-actions { grid-column: 1 / -1; justify-content: flex-start; flex-wrap: wrap; }
+  .manage-actions .admin-actions { flex-wrap: wrap; }
 }
 
 /* 글 목록 썸네일 */

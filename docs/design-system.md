@@ -1,6 +1,6 @@
 # 디자인 시스템
 
-your.name 블로그의 공통 디자인 규칙이에요. 새 화면이나 섹션을 만들 때 여기 있는 값만 써요.
+Yeonjae 블로그의 공통 디자인 규칙이에요. 새 화면이나 섹션을 만들 때 여기 있는 값만 써요.
 기준 화면: 시안 06 결합안, 블로그 화면 5종 (https://claude.ai/artifact/4WLPHZ2fxuUN4uYXBvdAvE)
 디자인 시스템 아티팩트: https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN — 이 문서와 같은 내용이에요. 하나를 바꾸면 다른 하나도 고쳐요.
 
@@ -87,7 +87,7 @@ your.name 블로그의 공통 디자인 규칙이에요. 새 화면이나 섹션
 
 ## 5. 컴포넌트
 
-**헤더**: 왼쪽 로고(Noto Serif KR 700, 22px) · 오른쪽 메뉴(15px, 간격 28px) + 검정 알약 버튼 "프로젝트 의뢰". 아래 `1px #E5E5E5`.
+**헤더**: 왼쪽 로고 "Yeonjae"(Noto Serif KR 700, 22px) · 오른쪽 메뉴(15px, 간격 28px) + 검정 알약 버튼 "프로젝트 의뢰". 아래 `1px #E5E5E5`.
 
 **버튼**
 | 종류 | 모양 |
