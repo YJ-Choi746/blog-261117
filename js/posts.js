@@ -1,4 +1,9 @@
 import { db, isConfigured, collection, getDocs, query, where, friendlyError, formatDate } from "./firebase.js";
+import { getImageData } from "./images.js";
+import { auth, onAuthStateChanged } from "./firebase.js";
+import { adminButtons } from "./post-actions.js";
+
+let isAdminView = false;
 
 const list = document.getElementById("post-list");
 const statusEl = document.getElementById("list-status");
@@ -28,7 +33,25 @@ function render() {
     if (p.summary) { const d = document.createElement("span"); d.className = "desc"; d.textContent = p.summary; mid.appendChild(d); }
     const cat = document.createElement("span"); cat.className = "cat"; cat.textContent = p.category || "";
     a.append(date, mid, cat);
-    list.appendChild(a);
+    if (p.coverImageId) {
+      a.classList.add("has-thumb");
+      const img = document.createElement("img"); img.className = "row-thumb"; img.alt = ""; img.loading = "lazy";
+      getImageData(p.coverImageId).then((d) => { if (d) img.src = d; });
+      a.appendChild(img);
+    }
+    if (isAdminView) {
+      const item = document.createElement("div");
+      item.className = "post-item";
+      const btns = adminButtons({
+        id: p.id, data: p, editHref: `admin/write.html?id=${encodeURIComponent(p.id)}`,
+        onDeleted: () => { posts = posts.filter((x) => x.id !== p.id); render(); },
+        onError: (msg) => { statusEl.hidden = false; statusEl.textContent = msg; }
+      });
+      item.append(a, btns);
+      list.appendChild(item);
+    } else {
+      list.appendChild(a);
+    }
   }
 }
 
@@ -51,4 +74,10 @@ async function load() {
     statusEl.textContent = friendlyError(err);
   }
 }
-load();
+// 로그인한 관리자에게만 수정·삭제 버튼을 보여줘요 (실제로 막는 건 보안 규칙)
+if (isConfigured) {
+  let first = true;
+  onAuthStateChanged(auth, (user) => { isAdminView = !!user; if (first) { first = false; load(); } else render(); });
+} else {
+  load();
+}

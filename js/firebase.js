@@ -5,7 +5,7 @@ import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore, collection, doc, addDoc, updateDoc, getDoc, getDocs,
+  getFirestore, collection, doc, addDoc, updateDoc, getDoc, getDocs, deleteDoc,
   query, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
@@ -19,7 +19,7 @@ export const db = app ? getFirestore(app) : null;
 
 export {
   onAuthStateChanged, signInWithEmailAndPassword, signOut,
-  collection, doc, addDoc, updateDoc, getDoc, getDocs, query, where, serverTimestamp
+  collection, doc, addDoc, updateDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp
 };
 
 // Firebase 오류 코드를 사용자가 이해할 수 있는 문장으로 바꿔요.

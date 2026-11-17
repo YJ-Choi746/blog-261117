@@ -15,14 +15,25 @@ service cloud.firestore {
       let p = request.resource.data;
       return p.title is string && p.title.size() > 0 && p.title.size() <= 200
         && p.body is string && p.body.size() <= 100000
-        && p.status in ["draft", "published"]
+        && (!("contentHtml" in p) || (p.contentHtml is string && p.contentHtml.size() <= 400000))
+        && p.status in ["draft", "published", "private"]
         && p.authorUid == request.auth.uid;
     }
 
+    // 글: 발행된 글은 누구나, 임시저장·비공개 글은 관리자만 읽어요
     match /posts/{postId} {
-      // 발행된 글은 누구나, 임시저장 글은 관리자만 읽어요
       allow read: if resource.data.status == "published" || isAdmin();
       allow create, update: if isAdmin() && validPost();
+      allow delete: if isAdmin();
+    }
+
+    // 사진: 글에 들어간 사진 (줄인 JPEG을 글자로 저장). 누구나 보고, 관리자만 올리고 지워요
+    match /images/{imageId} {
+      allow read: if true;
+      allow create: if isAdmin()
+        && request.resource.data.data is string
+        && request.resource.data.data.size() <= 950000
+        && request.resource.data.ownerUid == request.auth.uid;
       allow delete: if isAdmin();
     }
   }

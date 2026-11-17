@@ -8,9 +8,9 @@ const errorBox = document.getElementById("login-error");
 const toggle = document.getElementById("toggle-pw");
 
 // 로그인 후 이동할 곳: 정해진 관리자 페이지만 허용 (다른 사이트로 보내는 링크 악용 방지)
-const ALLOWED_NEXT = ["write.html"];
+const ALLOWED_NEXT = ["write.html", "posts.html"];
 const nextParam = new URLSearchParams(location.search).get("next");
-const next = ALLOWED_NEXT.includes(nextParam) ? nextParam : "write.html";
+const next = ALLOWED_NEXT.includes(nextParam) ? nextParam : "posts.html";
 
 toggle.addEventListener("click", () => {
   const show = password.type === "password";
