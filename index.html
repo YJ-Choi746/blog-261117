@@ -17,7 +17,7 @@ input,select,textarea{font:inherit}
 <style>html{scroll-behavior:smooth}</style>
 </head>
 <body>
-<div style="min-height: 100vh; background: #FFFFFF; color: #111111; font-family: 'Noto Sans KR', sans-serif; font-size: 16px; line-height: 1.6">
+<div style="min-height: 100vh; display: flex; flex-direction: column; background: #FFFFFF; color: #111111; font-family: 'Noto Sans KR', sans-serif; font-size: 16px; line-height: 1.6">
 
   <header style="border-bottom: 1px solid #E5E5E5">
     <div style="max-width: 1200px; margin: 0 auto; padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between">
@@ -31,7 +31,7 @@ input,select,textarea{font:inherit}
     </div>
   </header>
 
-  <section style="max-width: 1200px; margin: 0 auto; padding: 120px 24px 96px">
+  <section style="width: 100%; box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 120px 24px 96px">
     <p style="margin: 0 0 24px; font-size: 13px; letter-spacing: 0.16em; color: #5F5F5F">BRANDING · UI/UX · CONTENT DESIGN</p>
     <h1 style="margin: 0; font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: clamp(44px, 7vw, 96px); line-height: 1.15; letter-spacing: -0.02em">생각을 화면으로,<br>화면을 <span style="color: #2F6BEA">경험</span>으로.</h1>
     <div style="margin-top: 48px; display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-end; justify-content: space-between">
@@ -86,7 +86,7 @@ input,select,textarea{font:inherit}
     </div>
   </section>
 
-  <section id="blog" style="max-width: 1200px; margin: 0 auto; padding: 96px 24px">
+  <section id="blog" style="width: 100%; box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 96px 24px">
     <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; justify-content: space-between; margin-bottom: 24px">
       <h2 style="margin: 0; font-family: 'Noto Serif KR', serif; font-size: 40px">기록</h2>
       <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 14px">
@@ -153,9 +153,11 @@ input,select,textarea{font:inherit}
     </div>
   </section>
 
-  <footer style="max-width: 1200px; margin: 0 auto; padding: 32px 24px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; font-size: 14px; color: #5F5F5F">
-    <span>© your.name</span>
-    <div style="display: flex; gap: 20px"><a href="#">Instagram</a><a href="#">Behance</a><a href="#">이메일</a></div>
+  <footer style="flex: 1 0 auto; min-height: 72px; display: flex; align-items: center; background: #FFFFFF">
+    <div style="width: 100%; box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; font-size: 14px; color: #5F5F5F">
+      <span>© your.name</span>
+      <div style="display: flex; gap: 20px"><a href="#">Instagram</a><a href="#">Behance</a><a href="#">이메일</a></div>
+    </div>
   </footer>
 </div>
 </body>
