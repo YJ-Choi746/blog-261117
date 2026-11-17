@@ -53,3 +53,6 @@
 - **사이트 배포 위치**: 사이트 파일은 GitHub Pages(`yj-choi746.github.io/blog-261117`)에 올리고, Firebase는 로그인 · 글 · 사진 · 보안 규칙만 맡아요. Firebase Hosting(`blog---261117.web.app`)에는 올리지 않음.
 - **Firebase Hosting 추가**: 사용자 요청으로 사이트를 Firebase Hosting(`blog---261117.web.app`)에도 올리기로 함 → 앞 줄의 "Hosting에는 올리지 않음"을 바꿈. GitHub Pages는 그대로 두고, `main`에 올리면 GitHub Actions가 Firebase Hosting에도 자동 배포. 비밀 키는 GitHub Secret(`FIREBASE_SERVICE_ACCOUNT`)에만 두고 저장소에 올리지 않음.
 - **대표 이미지 표시 방식**: 대표 이미지는 글 목록 썸네일에만 쓰고, 글 상세 · 글쓰기 본문 위에 따로 보여주지 않음 (본문 사진과 중복되어서).
+- **방문자 통계 (US-05)**: Google Analytics 4 연결. 측정 ID는 Firebase 프로젝트에 연결된 `G-04G5123MB7` (새로 만들지 않음). 외부 리소스에 `googletagmanager.com` 추가.
+- **집계 범위**: 방문자 페이지(홈 · 글 목록 · 글 상세 · 의뢰 완료)만. 관리자 화면은 집계하지 않음.
+- **가장 많이 읽은 글**: 글 상세는 자동 기록을 끄고 글 제목을 불러온 뒤 page_view(제목 = 글 제목)를 보냄 → "페이지 및 화면" 보고서에서 글 제목으로 바로 보임. 추가로 `view_post`(post_id · post_title · post_category), 의뢰 완료는 `generate_lead`.

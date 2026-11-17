@@ -7,7 +7,16 @@ import { adminButtons } from "./post-actions.js";
 const $ = (id) => document.getElementById(id);
 const id = new URLSearchParams(location.search).get("id");
 
-function fail(msg) { $("post-status").textContent = msg; }
+let tracked = false;
+// GA: 글 제목이 정해진 뒤 한 번만 기록해요 (글 상세는 자동 page_view를 끄고 여기서 보내요)
+function trackView(p) {
+  if (tracked || typeof window.trackEvent !== "function") return;
+  tracked = true;
+  window.trackEvent("page_view", { page_title: document.title, page_location: location.href });
+  if (p) window.trackEvent("view_post", { post_id: id, post_title: p.title, post_category: p.category || "" });
+}
+
+function fail(msg) { $("post-status").textContent = msg; trackView(null); }
 
 async function show(user) {
   try {
@@ -16,6 +25,7 @@ async function show(user) {
     const p = snap.data();
     $("post-status").hidden = true;
     document.title = `${p.title} — Jae`;
+    trackView(p);
     $("post-cat").textContent = p.category || "";
     $("post-title").textContent = p.title;
     $("post-date").textContent = formatDate(p.publishedAt || p.updatedAt);

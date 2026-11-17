@@ -27,6 +27,7 @@ js/editor.js        에디터 서식 도구 · 사진 넣기 · 붙여넣기
 js/images.js        사진 줄이기 · Firestore images 저장 · 불러오기
 js/post-actions.js  관리자 수정·삭제 버튼, 글+사진 삭제
 js/home.js          첫 화면 최근 기록
+js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화면 제외)
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
 firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
 .nojekyll           GitHub Pages가 파일을 가공하지 않게 하는 빈 파일
@@ -35,12 +36,13 @@ docs/design-system.md   색 · 글꼴 · 간격 · 컴포넌트 규칙
 docs/decisions.md       정한 것들 (날짜순)
 docs/user-stories.md    사용자 스토리와 완료 기준
 docs/firebase-setup.md  Firebase 연결 순서 (처음 한 번)
+docs/analytics.md       방문자 통계(GA4) 보는 법
 docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃, 로그인, 에디터)
 ```
 
 ## 기술 규칙
 - 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요.
-- 외부 리소스는 Google Fonts와 **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`)만 써요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
+- 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
 - 사용자가 쓴 글의 제목·태그는 **`textContent`로만** 넣어요. 서식 있는 본문은 **반드시 `js/sanitize.js`를 거친 요소만** 넣어요. HTML 문자열을 `innerHTML`/`insertAdjacentHTML`에 넣지 않아요 (XSS).
 - 본문에 새 태그·스타일·글꼴을 허용하려면 `js/sanitize.js`의 허용 목록에만 추가해요.
 - 사진은 `js/images.js`로만 올리고 불러와요 (Firestore `images`, 900KB 이하로 줄여서).

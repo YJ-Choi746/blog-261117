@@ -13,6 +13,7 @@ h1{margin:0;font-family:'Noto Serif KR',serif;font-size:clamp(40px,6vw,72px);lin
 p{margin:0;font-size:18px;max-width:520px}
 a{align-self:flex-start;text-decoration:none;background:#FFFFFF;color:#111111;padding:14px 24px;border-radius:999px;font-weight:700}
 </style>
+<script src="js/analytics.js"></script>
 </head>
 <body>
 <main>
@@ -20,5 +21,6 @@ a{align-self:flex-start;text-decoration:none;background:#FFFFFF;color:#111111;pa
   <p>남겨주신 내용을 확인한 뒤 영업일 기준 3일 안에 이메일로 답장드릴게요.</p>
   <a href="./">홈으로 돌아가기</a>
 </main>
+<script>window.trackEvent && window.trackEvent("generate_lead", { form: "project_request" });</script>
 </body>
 </html>
