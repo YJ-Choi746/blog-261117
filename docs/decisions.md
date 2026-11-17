@@ -33,3 +33,4 @@
 - **새 화면 주소**: `admin/login.html`, `admin/write.html`, `posts.html`, `post.html`. 첫 화면의 "기록" 메뉴·"기록 읽기"·푸터 "관리자"를 새 화면에 연결.
 - **공통 스타일 파일**: 새 화면은 `css/site.css`(디자인 시스템 토큰을 CSS 변수로)를 써요. 기존 `index.html`의 인라인 스타일은 그대로 둠.
 - **오류 색 추가**: `danger` `#B42318` · `danger-tint` `#FDECEA` — 로그인·저장 오류 문구 전용. 디자인 시스템 문서와 아티팩트에 함께 추가.
+- **Firebase 프로젝트**: `blog---261117`. 웹 설정값을 `js/firebase-config.js`에 넣음. SDK는 콘솔 안내(13.4.0) 대신 테스트한 10.12.2 유지, Analytics는 쓰지 않음.

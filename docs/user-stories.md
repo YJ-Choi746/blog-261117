@@ -2,7 +2,7 @@
 
 ## US-01 · 관리자는 로그인 후에, 글쓰기 기능으로 글을 직접 쓸 수 있다
 
-**상태**: 코드 완료 · 가짜 Firebase로 브라우저 테스트 통과 (2026-11-17) · 실제 Firebase 연결은 대기 (`docs/firebase-setup.md`)
+**상태**: 코드 완료 · 가짜 Firebase로 브라우저 테스트 통과 (2026-11-17) · 설정값 입력 완료 (프로젝트 `blog---261117`) · Authentication 시작, Firestore 생성, 관리자 UID 입력 대기 (`docs/firebase-setup.md` 3~5번)
 
 ### 완료 기준
 | # | 기준 | 테스트 |
