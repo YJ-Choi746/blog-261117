@@ -7,6 +7,7 @@
 
 - 사이트 주소: https://yj-choi746.github.io/blog-261117/
 - 디자인 시안 캔버스: https://claude.ai/artifact/4WLPHZ2fxuUN4uYXBvdAvE (시안 06 결합안 + 블로그 화면 5종)
+- 디자인 시스템 아티팩트: https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN (색 · 글꼴 · 간격 · 컴포넌트 7종)
 
 ## 파일 구조
 ```
@@ -16,7 +17,7 @@ thanks.html         의뢰 폼 전송 후 보여주는 완료 페이지
 CLAUDE.md           이 문서
 docs/design-system.md   색 · 글꼴 · 간격 · 컴포넌트 규칙
 docs/decisions.md       정한 것들 (날짜순)
-docs/failures/*.md      막혔던 일과 푼 방법 (주제별)
+docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃)
 ```
 
 ## 기술 규칙
@@ -26,7 +27,9 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별)
 
 ## 디자인 규칙
 - 색 · 글꼴 · 버튼 모양은 **반드시 `docs/design-system.md`를 따라요.** 새 색이나 새 글꼴을 만들지 마세요.
-- 디자인 시스템을 바꾸는 변경이면 `docs/design-system.md`도 같이 고쳐요.
+- 디자인 시스템은 **두 곳에 같은 내용**으로 있어요: `docs/design-system.md`(코드용)와 디자인 시스템 아티팩트(시안·덱용). 하나를 바꾸면 다른 하나도 같이 고쳐요.
+- 색 값을 코드에 쓸 때는 디자인 시스템의 토큰 이름(`blue`, `gray-600`, `line` …)을 주석이나 CSS 변수 이름으로 남겨요.
+- 푸터는 고정 `height`를 주지 않아요. 페이지 루트를 세로 flex로 두고 푸터에 `flex: 1 0 auto; min-height: 72px; align-items: center`.
 - 눌리는 요소(버튼, 링크 버튼, 체크박스 라벨)는 높이 44px 이상.
 - 글자와 배경의 명암 대비는 4.5:1 이상. 블루 배경 위 글씨는 흰색만 써요.
 - 아이콘은 이모지 대신 선 SVG를 써요.

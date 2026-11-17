@@ -20,3 +20,6 @@
 - **첫 화면 헤딩 위 문구**: "WEB · APP · CONTENT DESIGN" → "BRANDING · UI/UX · CONTENT DESIGN"으로 변경 (서비스 이름과 맞춤).
 - **문서 체계**: `CLAUDE.md`(개발 지침), `docs/decisions.md`(결정), `docs/failures/`(실패 로그), `docs/design-system.md`(디자인 시스템) 4가지로 정함.
 - **푸터**: 고정 높이 대신 페이지 아래 남는 흰 공간을 채우고(최소 72px), © 문구와 링크를 세로 가운데 정렬. 첫 화면 · 글 목록 · 글 상세 · 배포 사이트에 적용.
+- **화면 2 · 3 높이**: 글 목록 2200 → 2016px, 글 상세 2900 → 2501px. 내용 길이에 맞춰서 푸터 여백이 첫 화면과 같게(약 80px).
+- **디자인 시스템 아티팩트**: 공통 요소를 claude.ai 디자인 시스템 아티팩트 "your.name 디자인 시스템"으로 저장 (https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN). 색 15 · 글자 스타일 15 · 간격 11 · 모서리 6 · 크기 5개 토큰과 컴포넌트 7종(Button, FilterChip, ServiceColumn, WorkCard, PostRow, RequestForm, Footer). 테마는 라이트 하나.
+- **디자인 시스템 관리 방식**: `docs/design-system.md`와 아티팩트를 같은 내용으로 유지. 하나를 바꾸면 둘 다 고침.

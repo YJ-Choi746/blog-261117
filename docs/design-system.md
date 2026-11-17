@@ -2,6 +2,7 @@
 
 your.name 블로그의 공통 디자인 규칙이에요. 새 화면이나 섹션을 만들 때 여기 있는 값만 써요.
 기준 화면: 시안 06 결합안, 블로그 화면 5종 (https://claude.ai/artifact/4WLPHZ2fxuUN4uYXBvdAvE)
+디자인 시스템 아티팩트: https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN — 이 문서와 같은 내용이에요. 하나를 바꾸면 다른 하나도 고쳐요.
 
 **분위기**: 깔끔한 에디토리얼. 흰 바탕에 큰 명조 제목, 얇은 선, 블루 포인트 한 가지.
 
@@ -115,3 +116,27 @@ your.name 블로그의 공통 디자인 규칙이에요. 새 화면이나 섹션
 - [ ] 버튼은 `<button>`, 이동은 `<a href>`, 입력칸에는 `<label>`
 - [ ] 아이콘만 있는 버튼엔 `aria-label`
 - [ ] 휴대폰 폭에서 가로 스크롤 없음
+
+---
+
+## 7. 토큰 이름 (아티팩트와 같은 이름)
+
+| 토큰 | 값 | | 토큰 | 값 |
+|---|---|---|---|---|
+| `blue` | `#2F6BEA` | | `line` | `#E5E5E5` |
+| `black` | `#111111` | | `line-strong` | `#D0D0D0` |
+| `white` | `#FFFFFF` | | `surface` | `#F2F2F0` |
+| `gray-700` | `#3A3A3A` | | `surface-admin` | `#F7F7F5` |
+| `gray-600` | `#5F5F5F` | | `blue-line` | `#82A6F2` |
+| `gray-500` | `#6B6B6B` | | `blue-border` | `#A9C3F7` |
+| `blue-tint` | `#E8EFFD` | | `blue-placeholder` | `#DCE7FD` |
+| `blue-tint-ink` | `#1F4FB8` | | | |
+
+- 간격: `space-4` `8` `12` `16` `20` `24` `32` `48` `64` `96` `120`
+- 모서리: `radius-none` 0 · `radius-input` 8 · `radius-field` 10 · `radius-code` 12 · `radius-card` 16 · `radius-pill` 999
+- 크기: `touch-min` 44 · `input-height` 48 · `container` 1200 · `container-article` 760 · `footer-min` 72
+- 글꼴 묶음: `serif`(Noto Serif KR) · `sans`(Noto Sans KR) · `mono`(JetBrains Mono)
+
+## 8. 컴포넌트 목록 (아티팩트에 미리보기 있음)
+
+Button · FilterChip · ServiceColumn · WorkCard · PostRow · RequestForm · Footer
