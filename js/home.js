@@ -1,6 +1,7 @@
 // 첫 화면 "최근 기록" — 발행된 글을 불러와 최신순으로 보여주고, 카테고리로 걸러요.
 // 첫 화면은 인라인 스타일로 만든 페이지라서, 줄도 같은 모양(인라인 스타일)으로 만들어요.
 import { db, isConfigured, collection, getDocs, query, where, formatDate } from "./firebase.js";
+import { getImageData } from "./images.js";
 
 const SHOW = 5; // 첫 화면에 보여줄 글 수
 const list = document.getElementById("home-posts");
@@ -31,21 +32,41 @@ function trackFilter(cat, listName) {
   if (typeof window.trackEvent === "function") window.trackEvent("filter_posts", { filter_category: cat || "전체", list_name: listName });
 }
 
+// 한 줄: 날짜 · 제목 + 요약 · 카테고리 · 썸네일(대표 이미지가 있으면)
+// 칸 배치는 index.html <style>의 .home-row 가 정해요 (휴대폰에서는 썸네일이 오른쪽에 붙어요)
 function rowEl(p, i) {
   const a = document.createElement("a");
   a.href = `post.html?id=${encodeURIComponent(p.id)}`;
+  a.className = "home-row";
   tagSelectPost(a, p, "home_recent", i + 1);
-  a.setAttribute("style", "text-decoration: none; display: grid; grid-template-columns: minmax(120px, 160px) minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 28px 0; border-bottom: 1px solid #E5E5E5");
   const date = document.createElement("span");
+  date.className = "home-date";
   date.setAttribute("style", "font-size: 14px; color: #5F5F5F");
   date.textContent = formatDate(p.publishedAt);
+  const mid = document.createElement("span");
+  mid.className = "home-mid";
   const title = document.createElement("span");
-  title.setAttribute("style", "font-size: 22px; font-weight: 500; overflow-wrap: anywhere");
+  title.setAttribute("style", "display: block; font-size: 22px; font-weight: 500; overflow-wrap: anywhere");
   title.textContent = p.title;
+  mid.appendChild(title);
+  if (p.summary) {
+    const desc = document.createElement("span");
+    desc.setAttribute("style", "display: block; margin-top: 4px; font-size: 15px; color: #5F5F5F; overflow-wrap: anywhere");
+    desc.textContent = p.summary;
+    mid.appendChild(desc);
+  }
   const cat = document.createElement("span");
-  cat.setAttribute("style", "font-size: 13px; color: #2F6BEA");
+  cat.className = "home-cat";
+  cat.setAttribute("style", "font-size: 13px; color: #1F4FB8"); // blue-ink
   cat.textContent = p.category || "";
-  a.append(date, title, cat);
+  a.append(date, mid, cat);
+  if (p.coverImageId) {
+    a.classList.add("has-thumb");
+    const img = document.createElement("img");
+    img.className = "home-thumb"; img.alt = ""; img.loading = "lazy";
+    getImageData(p.coverImageId).then((d) => { if (d) img.src = d; else img.remove(); }).catch(() => img.remove());
+    a.appendChild(img);
+  }
   return a;
 }
 

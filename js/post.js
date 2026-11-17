@@ -46,6 +46,7 @@ function trackReading(p) {
 
 // 글 아래 "이전 글 · 다음 글" — 발행된 글을 발행일 순으로 놓고 바로 앞 · 뒤 글을 보여줘요
 // 이전 글 = 이 글보다 먼저 발행된 글, 다음 글 = 이 글 다음에 발행된 글
+// 모든 글에서 두 칸 다 누를 수 있게, 끝에 닿으면 한 바퀴 돌아요 (가장 최근 글의 다음 = 처음 글)
 async function renderPostNav() {
   const nav = $("post-nav");
   try {
@@ -53,21 +54,16 @@ async function renderPostNav() {
     const t = (x) => (x && typeof x.toMillis === "function" ? x.toMillis() : 0);
     const list = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => t(a.publishedAt) - t(b.publishedAt));
     const i = list.findIndex((x) => x.id === id);
-    if (i < 0) return; // 임시저장 · 비공개 글에는 보여주지 않아요
-    const prev = list[i - 1], next = list[i + 1];
-    if (!prev && !next) return;
-    nav.replaceChildren(navItem(prev, "prev"), navItem(next, "next"));
+    const n = list.length;
+    if (i < 0 || n < 2) return; // 임시저장 · 비공개 글, 또는 발행 글이 하나뿐이면 보여주지 않아요
+    const prev = list[(i - 1 + n) % n], next = list[(i + 1) % n];
+    nav.replaceChildren(navItem(prev, "prev", i === 0), navItem(next, "next", i === n - 1));
     nav.hidden = false;
   } catch { /* 이전 · 다음 글을 못 불러와도 글은 그대로 보여요 */ }
 }
 
-function navItem(p, dir) {
-  if (!p) {
-    const empty = document.createElement("span");
-    empty.className = `post-nav-item is-empty ${dir}`;
-    empty.textContent = dir === "prev" ? "첫 번째 글이에요" : "가장 최근 글이에요";
-    return empty;
-  }
+// wrapped: 끝에서 한 바퀴 돈 칸 (첫 글의 이전 = 가장 최근 글, 가장 최근 글의 다음 = 첫 글)
+function navItem(p, dir, wrapped) {
   const a = document.createElement("a");
   a.className = `post-nav-item ${dir}`;
   a.href = `post.html?id=${encodeURIComponent(p.id)}`;
@@ -83,7 +79,9 @@ function navItem(p, dir) {
   text.className = "post-nav-text";
   const label = document.createElement("span");
   label.className = "post-nav-label";
-  label.textContent = dir === "prev" ? "← 이전 글" : "다음 글 →";
+  label.textContent = dir === "prev"
+    ? (wrapped ? "← 가장 최근 글로" : "← 이전 글")
+    : (wrapped ? "처음 글로 →" : "다음 글 →");
   const title = document.createElement("span");
   title.className = "post-nav-title";
   title.textContent = p.title || "(제목 없음)";
@@ -118,6 +116,7 @@ async function show(user) {
     trackView(p);
     $("post-cat").textContent = p.category || "";
     $("post-title").textContent = p.title;
+    if (p.summary) { $("post-summary").textContent = p.summary; $("post-summary").hidden = false; }
     $("post-date").textContent = formatDate(p.publishedAt || p.updatedAt);
     $("post-meta").hidden = false;
     const note = { draft: "임시저장된 글이에요. 관리자에게만 보여요.", private: "비공개 글이에요. 관리자에게만 보여요." }[p.status];

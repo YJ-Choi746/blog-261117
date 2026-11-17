@@ -1,11 +1,12 @@
 /* 공통: 굵은 글씨는 모두 세미볼드(600) — 브라우저 기본 bold(700)를 덮어써요 */
 h1, h2, h3, h4, strong, b, th, legend { font-weight: 600; }
 
-/* 버튼 효과: 물 차오름
+/* 버튼 효과: 물 차오름 (처음 버전 + 도는 물결)
    마우스를 올리거나(데스크톱) 누르면(휴대폰) 아래에서 물이 차오르고 글자색이 반전돼요.
-   - 물결 두 겹: 처음 버전과 같은 속도(0.55초, 빠르게 올라와 부드럽게 멈춤)로 올라오고, 앞 물결(::before)이 뒤 물결(::after, 반투명)보다 0.15초 늦게 출발해요.
-   - 버튼 폭에 물결 커브 2개(비대칭). 물결이 상자 안에서 양옆으로 왔다 갔다 출렁이며 올라가요.
-   - 물결 모양은 SVG 마스크라서, 색은 버튼마다 --fx-fill 로 바꿀 수 있어요.
+   - 처음 버전처럼 물 한 겹이 0.55초 동안 빠르게 올라와 부드럽게 멈춰요.
+   - 물은 버튼보다 훨씬 큰 둥근 사각형이라, 천천히 돌면서 수면이 물결처럼 출렁여요 (도는 물결 방식).
+   - 마지막엔 둥근 사각형이 버튼 위까지 올라와서 버튼 전체가 빈틈없이 차요.
+   - 손을 떼면 돌던 각도 그대로 멈춘 채 내려가요 (튀지 않게).
    - 쓰는 곳: .btn(사이트 공통 버튼), .chip(카테고리 버튼), .fx(첫 화면처럼 인라인 스타일 버튼)
    - 색은 디자인 시스템 토큰 색만: --fx-fill(차오르는 물) · --fx-ink(바뀌는 글자색) */
 .btn, .chip, .fx {
@@ -14,67 +15,36 @@ h1, h2, h3, h4, strong, b, th, legend { font-weight: 600; }
   isolation: isolate;               /* 물을 배경 위 · 글자 아래에 두려고 */
   --fx-fill: #111111;               /* black */
   --fx-ink: #FFFFFF;                /* white */
-  /* 비대칭 물결 한 칸: 왼쪽은 완만하게 솟고 오른쪽은 깊게 내려가요. 버튼 폭의 50%로 늘려서 커브 2개 */
-  --fx-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='16' viewBox='0 0 100 16' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C12 1 30 0 44 6 C58 12 78 15 100 9 V16 H0 Z' fill='%23000'/%3E%3C/svg%3E");
   transition: color 0.35s ease 0.1s, border-color 0.35s ease;
 }
-.btn::before, .chip::before, .fx::before,
-.btn::after, .chip::after, .fx::after {
+.btn::before, .chip::before, .fx::before {
   content: "";
   position: absolute;
   z-index: -1;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 170%;                     /* 다 차면 물결 머리는 버튼 위로 숨어요 */
+  left: 50%;
+  top: 100%;                        /* 처음엔 버튼 아래에 잠겨 있어요 */
+  width: 260%;                      /* 버튼 폭보다 훨씬 큰 사각형 → 수면은 완만한 물결 */
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 42%;               /* 둥근 사각형: 돌면 모서리가 지나가며 물결이 생겨요 */
   background: var(--fx-fill);
-  /* 위쪽 15px은 물결 모양(폭의 50% = 커브 2개), 그 아래는 꽉 찬 물 */
-  -webkit-mask: var(--fx-wave) repeat-x 0% 0 / 50% 16px, linear-gradient(#000, #000) no-repeat 0 15px / 100% 100%;
-          mask: var(--fx-wave) repeat-x 0% 0 / 50% 16px, linear-gradient(#000, #000) no-repeat 0 15px / 100% 100%;
-  transform: translateY(100%);      /* 처음엔 버튼 아래에 잠겨 있어요 */
   pointer-events: none;
+  transition: top 0.55s cubic-bezier(0.3, 0.7, 0.35, 1);
+  animation: fx-spin 5s linear infinite paused;
 }
-/* 앞 물결: 0.15초 늦게 출발 (처음 버전 속도) */
-.btn::before, .chip::before, .fx::before {
-  transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.35, 1) 0.15s;
-}
-/* 뒤 물결: 먼저 출발, 반투명 */
-.btn::after, .chip::after, .fx::after {
-  opacity: 0.4;
-  transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.35, 1);
-  -webkit-mask-position: 60% 0, 0 15px;
-          mask-position: 60% 0, 0 15px;
-}
-
-/* 차오르기 + 양옆으로 출렁이기 */
 .btn:hover::before, .btn:focus-visible::before, .btn:active::before,
 .chip:hover::before, .chip:focus-visible::before, .chip:active::before,
 .fx:hover::before, .fx:focus-visible::before, .fx:active::before {
-  transform: translateY(0);
-  animation: fx-slosh 1.1s ease-in-out infinite alternate;
-}
-.btn:hover::after, .btn:focus-visible::after, .btn:active::after,
-.chip:hover::after, .chip:focus-visible::after, .chip:active::after,
-.fx:hover::after, .fx:focus-visible::after, .fx:active::after {
-  transform: translateY(-8%);
-  animation: fx-slosh-back 1.4s ease-in-out infinite alternate;
-}
-/* 손을 떼면 물이 빠질 때는 두 물결이 같이 내려가요 */
-.btn:not(:hover):not(:focus-visible)::before, .chip:not(:hover):not(:focus-visible)::before, .fx:not(:hover):not(:focus-visible)::before {
-  transition-delay: 0s;
+  top: -70%;                        /* 물결 머리까지 버튼 위로 → 전부 차요 */
+  animation-play-state: running;
 }
 .btn:hover, .btn:focus-visible, .btn:active,
 .chip:hover, .chip:focus-visible, .chip:active,
 .fx:hover, .fx:focus-visible, .fx:active { color: var(--fx-ink) !important; }
 
-/* 물결이 상자 안에서 왼쪽 ↔ 오른쪽으로 왔다 갔다 (커브 반 칸만큼) */
-@keyframes fx-slosh {
-  from { -webkit-mask-position: 0% 0, 0 15px; mask-position: 0% 0, 0 15px; }
-  to   { -webkit-mask-position: 100% 0, 0 15px; mask-position: 100% 0, 0 15px; }
-}
-@keyframes fx-slosh-back {
-  from { -webkit-mask-position: 90% 0, 0 15px; mask-position: 90% 0, 0 15px; }
-  to   { -webkit-mask-position: 10% 0, 0 15px; mask-position: 10% 0, 0 15px; }
+@keyframes fx-spin {
+  from { rotate: 0deg; }
+  to   { rotate: 360deg; }
 }
 
 /* 버튼 종류별 색 (차오르는 물 → 글자색) */
@@ -87,11 +57,11 @@ h1, h2, h3, h4, strong, b, th, legend { font-weight: 600; }
 .chip[aria-pressed="true"], .fx-chip[aria-pressed="true"] { --fx-fill: #FFFFFF; --fx-ink: #111111; border-color: #111111 !important; }
 
 /* 효과를 쓰지 않는 버튼 */
-.btn-text::before, .btn-text::after, .btn:disabled::before, .btn:disabled::after, .fx:disabled::before, .fx:disabled::after { display: none; }
+.btn-text::before, .btn:disabled::before, .fx:disabled::before { display: none; }
 .btn-text:hover, .btn:disabled:hover { color: inherit !important; }
 
 /* 움직임 줄이기 설정을 켠 사람에게는 출렁임 없이 바로 바뀌어요 */
 @media (prefers-reduced-motion: reduce) {
   .btn, .chip, .fx { transition: none; }
-  .btn::before, .chip::before, .fx::before, .btn::after, .chip::after, .fx::after { transition: none; animation: none !important; }
+  .btn::before, .chip::before, .fx::before { transition: none; animation: none !important; }
 }
