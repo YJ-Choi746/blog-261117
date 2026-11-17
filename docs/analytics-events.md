@@ -66,14 +66,16 @@
 | 글 제목 | `post_title` | 등록함 (2026-11-17) |
 | 글 카테고리 | `post_category` | 등록함 |
 | 글 ID | `post_id` | 등록함 |
-| 목록 위치 | `list_name` | 새로 등록 필요 |
-| CTA 이름 | `cta_name` | 새로 등록 필요 |
-| CTA 위치 | `cta_location` | 새로 등록 필요 |
-| 필터 카테고리 | `filter_category` | 새로 등록 필요 |
-| 읽은 정도 | `read_depth` | 새로 등록 필요 |
-| 의뢰 분야 | `request_types` | 새로 등록 필요 |
+| 목록 위치 | `list_name` | 등록함 (2026-11-17) |
+| CTA 이름 | `cta_name` | 등록함 (2026-11-17) |
+| CTA 위치 | `cta_location` | 등록함 (2026-11-17) |
+| 필터 카테고리 | `filter_category` | 등록함 (2026-11-17) |
+| 읽은 정도 | `read_depth` | 등록함 (2026-11-17) |
+| 의뢰 분야 | `request_types` | 등록함 (2026-11-17) |
 
-**핵심 이벤트 (전환)**: 관리 → 데이터 표시 → **이벤트** → `generate_lead` 옆 **핵심 이벤트로 표시** 켜기. (`generate_lead`는 첫 의뢰가 들어온 뒤 목록에 나타나요.)
+**핵심 이벤트 (전환)**: 관리 → 데이터 표시 → **이벤트** → `generate_lead` 옆 **핵심 이벤트로 표시** 켜기. (`generate_lead`는 첫 의뢰가 들어온 뒤 목록에 나타나요.) — 사용자가 설정함 (2026-11-17)
+
+**탐색**: 탐색 → 유입경로 탐색 "의뢰 흐름" (page_view → click_cta → form_start → form_submit → generate_lead) — 사용자가 만듦 (2026-11-17)
 
 ## 5. 코드 위치
 

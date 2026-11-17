@@ -63,3 +63,4 @@
 - **클릭 이벤트 방식**: HTML에 `data-ga-event` · `data-ga-<매개변수>`를 적으면 `js/analytics.js`가 클릭 때 보냄 (코드 없이 버튼에 이벤트 추가 가능).
 - **읽기 깊이**: 본문 기준 50% · 90% (GA 기본 scroll은 페이지 전체 90%만이라 글 본문 기준으로 따로 둠).
 - **의뢰 폼 이벤트**: 분야 · 예산 구간만 보내고 이름 · 이메일 · 내용은 보내지 않음.
+- **GA 설정 완료 (사용자)**: 맞춤 측정기준 9개(post_title · post_category · post_id · list_name · cta_name · cta_location · filter_category · read_depth · request_types), generate_lead 핵심 이벤트, "의뢰 흐름" 유입경로 탐색. GA 화면은 Claude가 볼 수 없어 사용자 확인 기준.
