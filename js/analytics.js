@@ -33,3 +33,17 @@
 window.trackEvent = function (name, params) {
   try { if (typeof window.gtag === "function") window.gtag("event", name, params || {}); } catch (e) { /* 통계 실패는 무시 */ }
 };
+
+// HTML에 적어 둔 이벤트를 클릭 때 자동으로 보내요.
+// 예: <a data-ga-event="click_cta" data-ga-cta_name="hero_request" data-ga-cta_location="hero">
+//     → trackEvent("click_cta", { cta_name: "hero_request", cta_location: "hero" })
+document.addEventListener("click", function (e) {
+  var el = e.target && e.target.closest ? e.target.closest("[data-ga-event]") : null;
+  if (!el) return;
+  var params = {};
+  for (var i = 0; i < el.attributes.length; i++) {
+    var a = el.attributes[i];
+    if (a.name.indexOf("data-ga-") === 0 && a.name !== "data-ga-event") params[a.name.slice(8)] = a.value;
+  }
+  window.trackEvent(el.getAttribute("data-ga-event"), params);
+}, true);

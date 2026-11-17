@@ -18,9 +18,23 @@ function message(text) {
   statusEl.textContent = text;
 }
 
-function rowEl(p) {
+// GA: 목록의 글 줄에 select_post 정보를 달아 둬요 (클릭은 js/analytics.js가 보내요)
+function tagSelectPost(a, p, listName, position) {
+  a.setAttribute("data-ga-event", "select_post");
+  a.setAttribute("data-ga-post_id", p.id);
+  a.setAttribute("data-ga-post_title", p.title || "");
+  a.setAttribute("data-ga-post_category", p.category || "");
+  a.setAttribute("data-ga-list_name", listName);
+  a.setAttribute("data-ga-list_position", String(position));
+}
+function trackFilter(cat, listName) {
+  if (typeof window.trackEvent === "function") window.trackEvent("filter_posts", { filter_category: cat || "전체", list_name: listName });
+}
+
+function rowEl(p, i) {
   const a = document.createElement("a");
   a.href = `post.html?id=${encodeURIComponent(p.id)}`;
+  tagSelectPost(a, p, "home_recent", i + 1);
   a.setAttribute("style", "text-decoration: none; display: grid; grid-template-columns: minmax(120px, 160px) minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 28px 0; border-bottom: 1px solid #E5E5E5");
   const date = document.createElement("span");
   date.setAttribute("style", "font-size: 14px; color: #5F5F5F");
@@ -48,6 +62,7 @@ function render() {
 
 chips.forEach((c) => c.addEventListener("click", () => {
   current = c.dataset.cat;
+  trackFilter(current, "home_recent");
   chips.forEach((x) => {
     const on = x === c;
     x.setAttribute("aria-pressed", String(on));
@@ -68,3 +83,25 @@ async function load() {
   }
 }
 load();
+
+// GA: 의뢰 폼 — 처음 입력할 때 form_start, 보낼 때 form_submit (이름 · 이메일 · 내용은 보내지 않아요)
+const form = document.getElementById("request-form");
+if (form) {
+  let started = false;
+  form.addEventListener("focusin", () => {
+    if (started) return;
+    started = true;
+    if (typeof window.trackEvent === "function") window.trackEvent("form_start", { form_name: "project_request" });
+  });
+  form.addEventListener("submit", () => {
+    const types = [...form.querySelectorAll('input[name="의뢰분야"]:checked')].map((x) => x.value).join(",");
+    const budget = form.querySelector('select[name="예산"]');
+    if (typeof window.trackEvent === "function") {
+      window.trackEvent("form_submit", {
+        form_name: "project_request",
+        request_types: types || "미선택",
+        budget_range: (budget && budget.value) || "미선택"
+      });
+    }
+  });
+}

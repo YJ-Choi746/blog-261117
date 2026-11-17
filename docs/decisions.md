@@ -58,3 +58,8 @@
 - **가장 많이 읽은 글**: 글 상세는 자동 기록을 끄고 글 제목을 불러온 뒤 page_view(제목 = 글 제목)를 보냄 → "페이지 및 화면" 보고서에서 글 제목으로 바로 보임. 추가로 `view_post`(post_id · post_title · post_category), 의뢰 완료는 `generate_lead`.
 - **내 방문 빼기**: IP 등록 대신, 관리자로 로그인한 브라우저에 표시를 남겨 GA를 아예 켜지 않음 (장소가 바뀌어도 빠짐). `?ga=on` / `?ga=off`로 직접 켜고 끌 수 있음.
 - **GA 맞춤 측정기준**: GA 계정 안의 설정이라 Claude가 대신 할 수 없음 → 사용자가 GA 화면에서 등록 (`docs/analytics.md`).
+- **맞춤 측정기준 3개 등록 (사용자)**: post_title · post_category · post_id. GA 계정은 Claude가 볼 수 없어서, 사이트가 같은 이름으로 보내는지만 테스트로 확인.
+- **이벤트 택소노미 (US-06)**: `docs/analytics-events.md`. 이름은 `동사_대상` snake_case, GA 추천 이름 우선(`page_view`, `generate_lead`). ASIS 3개(page_view · view_post · generate_lead) → TOBE 9개 (+ select_post · filter_posts · read_post · click_cta · form_start · form_submit).
+- **클릭 이벤트 방식**: HTML에 `data-ga-event` · `data-ga-<매개변수>`를 적으면 `js/analytics.js`가 클릭 때 보냄 (코드 없이 버튼에 이벤트 추가 가능).
+- **읽기 깊이**: 본문 기준 50% · 90% (GA 기본 scroll은 페이지 전체 90%만이라 글 본문 기준으로 따로 둠).
+- **의뢰 폼 이벤트**: 분야 · 예산 구간만 보내고 이름 · 이메일 · 내용은 보내지 않음.

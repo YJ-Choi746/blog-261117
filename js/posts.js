@@ -5,6 +5,20 @@ import { adminButtons } from "./post-actions.js";
 
 let isAdminView = false;
 
+// GA: 목록의 글 줄에 select_post 정보를 달아 둬요 (클릭은 js/analytics.js가 보내요)
+function tagSelectPost(a, p, listName, position) {
+  a.setAttribute("data-ga-event", "select_post");
+  a.setAttribute("data-ga-post_id", p.id);
+  a.setAttribute("data-ga-post_title", p.title || "");
+  a.setAttribute("data-ga-post_category", p.category || "");
+  a.setAttribute("data-ga-list_name", listName);
+  a.setAttribute("data-ga-list_position", String(position));
+}
+function trackFilter(cat, listName) {
+  if (typeof window.trackEvent === "function") window.trackEvent("filter_posts", { filter_category: cat || "전체", list_name: listName });
+}
+
+
 const list = document.getElementById("post-list");
 const statusEl = document.getElementById("list-status");
 const chips = [...document.querySelectorAll("#chips .chip")];
@@ -22,10 +36,11 @@ function render() {
   }
   statusEl.hidden = true;
   list.hidden = false;
-  for (const p of shown) {
+  shown.forEach((p, i) => {
     const a = document.createElement("a");
     a.className = "post-row";
     a.href = `post.html?id=${encodeURIComponent(p.id)}`;
+    tagSelectPost(a, p, "blog_list", i + 1);
     const date = document.createElement("span"); date.className = "date"; date.textContent = formatDate(p.publishedAt);
     const mid = document.createElement("span");
     const t = document.createElement("span"); t.className = "title"; t.textContent = p.title;
@@ -52,11 +67,12 @@ function render() {
     } else {
       list.appendChild(a);
     }
-  }
+  });
 }
 
 chips.forEach((c) => c.addEventListener("click", () => {
   current = c.dataset.cat;
+  trackFilter(current, "blog_list");
   chips.forEach((x) => x.setAttribute("aria-pressed", String(x === c)));
   render();
 }));

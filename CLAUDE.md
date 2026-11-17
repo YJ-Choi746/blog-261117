@@ -37,12 +37,14 @@ docs/decisions.md       정한 것들 (날짜순)
 docs/user-stories.md    사용자 스토리와 완료 기준
 docs/firebase-setup.md  Firebase 연결 순서 (처음 한 번)
 docs/analytics.md       방문자 통계(GA4) 보는 법
+docs/analytics-events.md  이벤트 택소노미 (이벤트 이름 · 매개변수 · 보내는 순간)
 docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃, 로그인, 에디터)
 ```
 
 ## 기술 규칙
 - 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요.
-- 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
+- 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요.
+- GA 이벤트를 새로 만들거나 바꾸면 **먼저 `docs/analytics-events.md`에 적고** 이름 규칙(`동사_대상`, snake_case)을 지켜요. 이름 · 이메일 · 의뢰 내용 같은 개인 정보는 GA로 보내지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
 - 사용자가 쓴 글의 제목·태그는 **`textContent`로만** 넣어요. 서식 있는 본문은 **반드시 `js/sanitize.js`를 거친 요소만** 넣어요. HTML 문자열을 `innerHTML`/`insertAdjacentHTML`에 넣지 않아요 (XSS).
 - 본문에 새 태그·스타일·글꼴을 허용하려면 `js/sanitize.js`의 허용 목록에만 추가해요.
 - 사진은 `js/images.js`로만 올리고 불러와요 (Firestore `images`, 900KB 이하로 줄여서).

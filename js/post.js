@@ -16,6 +16,29 @@ function trackView(p) {
   if (p) window.trackEvent("view_post", { post_id: id, post_title: p.title, post_category: p.category || "" });
 }
 
+// GA: 본문을 50% · 90%까지 읽으면 read_post (각각 한 번)
+function trackReading(p) {
+  if (typeof window.trackEvent !== "function") return;
+  const body = $("post-body");
+  const sent = new Set();
+  const check = () => {
+    const r = body.getBoundingClientRect();
+    if (r.height <= 0) return;
+    const seen = Math.min(1, Math.max(0, (window.innerHeight - r.top) / r.height));
+    for (const depth of [50, 90]) {
+      if (seen * 100 >= depth && !sent.has(depth)) {
+        sent.add(depth);
+        window.trackEvent("read_post", { post_id: id, post_title: p.title, post_category: p.category || "", read_depth: String(depth) });
+      }
+    }
+    if (sent.size === 2) window.removeEventListener("scroll", onScroll);
+  };
+  let ticking = false;
+  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; check(); }); } };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  setTimeout(check, 800); // 짧은 글은 열자마자 다 보일 수 있어요
+}
+
 function fail(msg) { $("post-status").textContent = msg; trackView(null); }
 
 async function show(user) {
@@ -50,6 +73,7 @@ async function show(user) {
     } else {
       renderBody(p.body, body);
     }
+    trackReading(p);
     const tags = $("post-tags");
     tags.replaceChildren();
     for (const t of p.tags || []) {

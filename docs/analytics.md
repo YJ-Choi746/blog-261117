@@ -3,6 +3,8 @@
 블로그에는 GA4가 연결돼 있어요. 측정 ID는 `G-04G5123MB7`이에요. Firebase 프로젝트 `blog---261117`에 연결된 GA4 속성이에요.
 GA 화면: https://analytics.google.com → 속성 이름 `blog---261117` (Firebase 콘솔 → 왼쪽 메뉴 **Analytics**로 들어가도 같은 곳이에요)
 
+이벤트 설계 전체(이름 · 매개변수 · 보내는 순간)는 `docs/analytics-events.md`에 있어요.
+
 ## 무엇을 모으나
 
 | 페이지 | 모으는 것 |
