@@ -5,7 +5,7 @@
 ## 프로젝트 한 줄 소개
 웹·앱 디자이너의 블로그 겸 프리랜서 의뢰 페이지. 바이브코딩 수업을 들으며 만들고 있어요.
 
-- 사이트 주소: https://yj-choi746.github.io/blog-261117/
+- 사이트 주소: https://yj-choi746.github.io/blog-261117/ (GitHub Pages) · https://blog---261117.web.app (Firebase Hosting)
 - 디자인 시안 캔버스: https://claude.ai/artifact/4WLPHZ2fxuUN4uYXBvdAvE (시안 06 결합안 + 블로그 화면 5종)
 - 디자인 시스템 아티팩트: https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN (색 · 글꼴 · 간격 · 컴포넌트 7종)
 
