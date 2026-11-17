@@ -1,14 +1,14 @@
 rules_version = '2';
 
 // Firestore 보안 규칙 — Firebase 콘솔 → Firestore Database → 규칙 탭에 그대로 붙여넣고 "게시"를 눌러요.
-// ADMIN_UID 를 내 관리자 계정의 UID로 바꿔야 해요 (콘솔 → Authentication → 사용자 목록의 "사용자 UID").
+// 관리자 UID는 이미 들어가 있어요 (Authentication → 사용자 목록의 "사용자 UID"). 계정을 바꾸면 이 값도 바꿔요.
 // 이유: 웹 설정값(apiKey)은 공개라서, 누구나 Firebase에 새 계정을 만들 수는 있어요.
 //       그래서 "로그인했는가"가 아니라 "이 UID인가"로 관리자를 가려요.
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isAdmin() {
-      return request.auth != null && request.auth.uid == "ADMIN_UID";
+      return request.auth != null && request.auth.uid == "MSBbFHuHxmUeHxF1UJ687xZsXeF3";
     }
 
     function validPost() {

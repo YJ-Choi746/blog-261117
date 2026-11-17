@@ -94,7 +94,7 @@ flowchart TD
 
 ## 구현 현황
 
-**상태**: 화면·코드 완료 · 가짜 Firebase로 브라우저 테스트 통과 · Firebase 설정값 입력 완료 (프로젝트 `blog---261117`) · **Firebase 콘솔 작업 대기** (Authentication 시작, Firestore 생성, 관리자 UID → `docs/firebase-setup.md` 3~5번)
+**상태**: 화면·코드 완료 · 가짜 Firebase로 브라우저 테스트 통과 · Firebase 설정값 입력 완료 (프로젝트 `blog---261117`) · 로그인 켜짐 · 데이터베이스 생성됨 · 관리자 UID 입력됨 · **보안 규칙 게시 대기** (콘솔 → Firestore → 규칙)
 
 | 플로우 단계 | 파일 |
 |---|---|
