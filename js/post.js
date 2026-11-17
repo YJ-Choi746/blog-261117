@@ -12,7 +12,12 @@ let tracked = false;
 function trackView(p) {
   if (tracked || typeof window.trackEvent !== "function") return;
   tracked = true;
-  window.trackEvent("page_view", { page_title: document.title, page_location: location.href });
+  // GA는 주소의 ?id= 를 떼고 경로만 보여줘요 → 글마다 따로 보이도록 /post/글ID 경로로 기록해요
+  // (GitHub Pages는 /blog-261117/post/글ID, Firebase는 /post/글ID)
+  const pageLocation = p
+    ? location.origin + location.pathname.replace(/post\.html$/, "post/" + encodeURIComponent(id))
+    : location.href;
+  window.trackEvent("page_view", { page_title: document.title, page_location: pageLocation });
   if (p) window.trackEvent("view_post", { post_id: id, post_title: p.title, post_category: p.category || "" });
 }
 

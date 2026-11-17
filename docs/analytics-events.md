@@ -27,7 +27,7 @@
 
 | 이벤트 | 보내는 순간 | 매개변수 | 페이지 | 핵심 이벤트 |
 |---|---|---|---|---|
-| `page_view` | 페이지를 열 때. 글 상세는 **글 제목을 불러온 뒤** | `page_title`, `page_location` | 전체 (관리자 제외) | |
+| `page_view` | 페이지를 열 때. 글 상세는 **글 제목을 불러온 뒤**, 주소를 `/post/글ID`로 바꿔서 (GA는 `?id=`를 떼고 경로만 보여줘서 모든 글이 `/post.html` 한 줄로 합쳐지기 때문) | `page_title`, `page_location` | 전체 (관리자 제외) | |
 | `view_post` | 글 상세가 열렸을 때 | `post_id`, `post_title`, `post_category` | 글 상세 | |
 | `select_post` | 목록에서 글을 눌렀을 때 | `post_id`, `post_title`, `post_category`, `list_name`, `list_position` | 홈 최근 기록, 글 목록 | |
 | `filter_posts` | 카테고리 버튼을 눌렀을 때 | `filter_category`, `list_name` | 홈 최근 기록, 글 목록 | |
