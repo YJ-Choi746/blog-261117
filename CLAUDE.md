@@ -20,6 +20,7 @@ admin/posts.html    글 관리 (공개 범위 · 보기 · 수정 · 삭제)
 admin/write.html    글쓰기 에디터 (서식 · 사진 · 미리보기 · 자동 백업, ?id=로 수정)
 css/site.css        공통 스타일 (디자인 시스템 토큰 = CSS 변수)
 css/editor.css      에디터 · 서식 있는 본문(.rich) · 글 관리 스타일
+css/fx.css          모든 페이지 공통: 세미볼드(600) · 버튼 물 차오름 효과
 js/firebase.js      Firebase 연결 · SDK 버전은 여기 한 곳에서만
 js/firebase-config.js  Firebase 웹 설정값 (공개값)
 js/sanitize.js      본문 HTML 허용 목록 정리기 + 허용 글꼴·크기·색 목록
@@ -59,6 +60,8 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 - 색 값을 코드에 쓸 때는 디자인 시스템의 토큰 이름(`blue`, `gray-600`, `line` …)을 주석이나 CSS 변수 이름으로 남겨요.
 - 푸터는 고정 `height`를 주지 않아요. 페이지 루트를 세로 flex로 두고 푸터에 `flex: 1 0 auto; min-height: 72px; align-items: center`.
 - 눌리는 요소(버튼, 링크 버튼, 체크박스 라벨)는 높이 44px 이상.
+- 굵은 글씨는 **세미볼드(600)만** 써요. 700(bold)은 쓰지 않아요. Google Fonts 링크도 600을 불러와요.
+- 새 버튼은 `.btn` 계열(사이트 페이지)이나 `.fx` + `fx-dark/fx-blue/fx-outline/fx-white/fx-chip`(첫 화면처럼 인라인 스타일 페이지)을 붙여 물 차오름 효과를 받아요. 새 페이지는 `css/fx.css`를 연결해요.
 - 글자와 배경의 명암 대비는 4.5:1 이상. 블루 배경 위 글씨는 흰색만 써요.
 - 아이콘은 이모지 대신 선 SVG를 써요.
 

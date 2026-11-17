@@ -13,7 +13,7 @@ export const FONTS = [
   { id: "gowun", label: "고운돋움", css: "'Gowun Dodum', sans-serif", match: ["gowun dodum"] },
   { id: "pen", label: "나눔손글씨 펜", css: "'Nanum Pen Script', cursive", match: ["nanum pen script"] }
 ];
-export const FONT_LINK = "https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400;700&display=swap";
+export const FONT_LINK = "https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;600&display=swap";
 export const SIZES = [13, 15, 17, 19, 24, 30, 38];
 export const COLORS = ["#111111", "#5F5F5F", "#2F6BEA", "#1F4FB8", "#B42318", "#C2410C", "#2B8A3E", "#6741D9", "#FFFFFF"];
 export const HIGHLIGHTS = ["#FFF3BF", "#D3F9D8", "#E8EFFD", "#FFE3E3", "#F3F0FF"];
@@ -64,7 +64,7 @@ function cleanStyle(src) {
   const size = decl.fontSize && cleanSize(decl.fontSize);
   if (size) out.push(["font-size", size]);
   if (["left", "center", "right", "justify"].includes(decl.textAlign)) out.push(["text-align", decl.textAlign]);
-  if (["bold", "700", "800", "900"].includes(decl.fontWeight)) out.push(["font-weight", "700"]);
+  if (["bold", "700", "800", "900"].includes(decl.fontWeight)) out.push(["font-weight", "600"]);
   if (decl.fontStyle === "italic") out.push(["font-style", "italic"]);
   const deco = String(decl.textDecorationLine || decl.textDecoration || "");
   const decos = ["underline", "line-through"].filter((d) => deco.includes(d));

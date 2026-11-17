@@ -6,9 +6,10 @@
 <meta name="robots" content="noindex">
 <title>글쓰기 — Jae 관리자</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&amp;family=Nanum+Gothic:wght@400;700&amp;family=Nanum+Myeongjo:wght@400;700&amp;family=Nanum+Pen+Script&amp;family=Noto+Sans+KR:wght@400;500;700&amp;family=Noto+Serif+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&amp;family=Nanum+Gothic:wght@400;700&amp;family=Nanum+Myeongjo:wght@400;700&amp;family=Nanum+Pen+Script&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/site.css">
 <link rel="stylesheet" href="../css/editor.css">
+<link rel="stylesheet" href="../css/fx.css">
 </head>
 <body class="write-body">
 <div class="page">
@@ -53,7 +54,7 @@
           <label class="sr-only" for="tb-font">글꼴</label>
           <select id="tb-font" class="tb-select"></select>
           <label class="sr-only" for="tb-size">글자 크기</label>
-          <select id="tb-size" class="tb-select" style="width: 76px"></select>
+          <select id="tb-size" class="tb-select" style="width: 84px"></select>
         </div>
         <div class="tb-group">
           <button type="button" class="tb" data-cmd="bold" aria-label="굵게" aria-pressed="false"><strong>B</strong></button>
@@ -61,7 +62,7 @@
           <button type="button" class="tb" data-cmd="underline" aria-label="밑줄" aria-pressed="false"><u>U</u></button>
           <button type="button" class="tb" data-cmd="strikeThrough" aria-label="취소선" aria-pressed="false"><s>S</s></button>
           <div class="pop">
-            <button type="button" class="tb" id="tb-color" aria-label="글자 색" aria-expanded="false" aria-controls="pop-color"><span style="display: inline-flex; flex-direction: column; align-items: center"><span style="font-weight: 700">가</span><span class="color-swatch-bar" id="color-bar" style="background: #111111"></span></span></button>
+            <button type="button" class="tb" id="tb-color" aria-label="글자 색" aria-expanded="false" aria-controls="pop-color"><span style="display: inline-flex; flex-direction: column; align-items: center"><span style="font-weight: 600">가</span><span class="color-swatch-bar" id="color-bar" style="background: #111111"></span></span></button>
             <div class="pop-panel" id="pop-color" hidden></div>
           </div>
           <div class="pop">

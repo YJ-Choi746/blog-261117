@@ -6,13 +6,14 @@
 <meta name="robots" content="noindex">
 <title>관리자 로그인 — Jae</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Noto+Serif+KR:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/fx.css">
 <style>
 .login { min-height: 100vh; display: flex; flex-wrap: wrap; }
 .login-side { flex: 1 1 420px; min-height: 320px; background: var(--blue); color: var(--white); padding: 48px; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
 .login-side a { color: var(--white); }
-.login-side p { margin: 0; font-family: var(--font-serif); font-weight: 700; font-size: clamp(36px, 4.4vw, 60px); line-height: 1.2; }
+.login-side p { margin: 0; font-family: var(--font-serif); font-weight: 600; font-size: clamp(36px, 4.4vw, 60px); line-height: 1.2; }
 .login-main { flex: 1 1 480px; display: flex; align-items: center; justify-content: center; padding: 48px 24px; }
 .login-form { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 20px; }
 .login-form h1 { margin: 0; font-family: var(--font-serif); font-size: 34px; }
@@ -20,7 +21,7 @@
 .pw .input { border: 0; }
 .pw .input:focus-visible { outline: none; }
 .pw:focus-within { outline: 2px solid var(--blue); outline-offset: 2px; }
-.toggle { min-height: var(--touch-min); padding: 0 12px; border: 0; background: transparent; color: var(--blue-tint-ink); font-size: 14px; cursor: pointer; }
+.toggle { flex: none; white-space: nowrap; min-height: 36px; min-width: 52px; margin: 4px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--white); color: var(--blue-tint-ink); font-size: 14px; font-weight: 500; line-height: 1; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; --fx-fill: #1F4FB8; --fx-ink: #FFFFFF; }
 </style>
 </head>
 <body>
@@ -44,7 +45,7 @@
       <label class="field" for="password">비밀번호
         <span class="pw">
           <input class="input" id="password" name="password" type="password" autocomplete="current-password" required placeholder="비밀번호">
-          <button type="button" id="toggle-pw" class="toggle" aria-controls="password" aria-pressed="false">보기</button>
+          <button type="button" id="toggle-pw" class="toggle fx" aria-controls="password" aria-pressed="false">보기</button>
         </span>
       </label>
       <p id="login-error" class="notice notice-error" role="alert" hidden></p>

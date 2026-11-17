@@ -1,0 +1,60 @@
+/* 공통: 굵은 글씨는 모두 세미볼드(600) — 브라우저 기본 bold(700)를 덮어써요 */
+h1, h2, h3, h4, strong, b, th, legend { font-weight: 600; }
+
+/* 버튼 효과: 마우스를 올리거나(데스크톱) 누르면(휴대폰) 아래에서 물이 차오르듯 색이 채워지고, 글자색이 반전돼요.
+   - 쓰는 곳: .btn(사이트 공통 버튼), .chip(카테고리 버튼), .fx(첫 화면처럼 인라인 스타일 버튼)
+   - 색은 버튼 종류마다 --fx-fill(차오르는 색) · --fx-ink(바뀌는 글자색)로 정해요 (디자인 시스템 토큰 색만 사용) */
+.btn, .chip, .fx {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;               /* 차오르는 물을 배경 위 · 글자 아래에 두려고 */
+  --fx-fill: #111111;               /* black */
+  --fx-ink: #FFFFFF;                /* white */
+  transition: color 0.35s ease, border-color 0.35s ease;
+}
+.btn::before, .chip::before, .fx::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -15%;
+  width: 130%;
+  bottom: 0;
+  height: 0;
+  background: var(--fx-fill);
+  border-radius: 46% 54% 0 0 / 34% 30% 0 0;     /* 물결처럼 둥근 수면 */
+  transition: height 0.55s cubic-bezier(0.3, 0.7, 0.35, 1), border-radius 0.55s ease;
+}
+.btn:hover::before, .btn:focus-visible::before, .btn:active::before,
+.chip:hover::before, .chip:focus-visible::before, .chip:active::before,
+.fx:hover::before, .fx:focus-visible::before, .fx:active::before {
+  height: 140%;
+  border-radius: 0;                  /* 다 차면 수면이 평평해져요 */
+  animation: fx-wave 0.55s ease;
+}
+.btn:hover, .btn:focus-visible, .btn:active,
+.chip:hover, .chip:focus-visible, .chip:active,
+.fx:hover, .fx:focus-visible, .fx:active { color: var(--fx-ink) !important; }
+
+@keyframes fx-wave {
+  0%   { border-radius: 46% 54% 0 0 / 34% 30% 0 0; }
+  50%  { border-radius: 54% 46% 0 0 / 26% 36% 0 0; }
+  100% { border-radius: 0; }
+}
+
+/* 버튼 종류별 색 (차오르는 색 → 글자색) */
+.btn-outline, .fx-outline { --fx-fill: #111111; --fx-ink: #FFFFFF; }                                  /* 흰 버튼 → 검정 */
+.btn-dark, .fx-dark { --fx-fill: #FFFFFF; --fx-ink: #111111; border: 1px solid #111111 !important; }  /* 검정 → 흰색 */
+.btn-primary, .fx-blue { --fx-fill: #FFFFFF; --fx-ink: #2F6BEA; border: 1px solid #2F6BEA !important; } /* 블루 → 흰색 */
+.btn-danger { --fx-fill: #FFFFFF; --fx-ink: #B42318; border: 1px solid #B42318 !important; }
+.fx-white { --fx-fill: #111111; --fx-ink: #FFFFFF; }                                                    /* 블루 띠 위 흰 버튼 → 검정 */
+.chip, .fx-chip { --fx-fill: #111111; --fx-ink: #FFFFFF; }
+.chip[aria-pressed="true"], .fx-chip[aria-pressed="true"] { --fx-fill: #FFFFFF; --fx-ink: #111111; border-color: #111111 !important; }
+
+/* 효과를 쓰지 않는 버튼 */
+.btn-text::before, .btn:disabled::before, .fx:disabled::before { display: none; }
+.btn-text:hover, .btn:disabled:hover { color: inherit !important; }
+
+/* 움직임 줄이기 설정을 켠 사람에게는 애니메이션 없이 바로 바뀌어요 */
+@media (prefers-reduced-motion: reduce) {
+  .btn, .chip, .fx, .btn::before, .chip::before, .fx::before { transition: none; animation: none !important; }
+}

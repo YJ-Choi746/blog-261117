@@ -5,21 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>의뢰 접수 완료 — Jae</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Noto+Serif+KR:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@600&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#2F6BEA;color:#FFFFFF;font-family:'Noto Sans KR',sans-serif;line-height:1.6}
 main{min-height:100vh;box-sizing:border-box;max-width:1200px;margin:0 auto;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:24px}
 h1{margin:0;font-family:'Noto Serif KR',serif;font-size:clamp(40px,6vw,72px);line-height:1.2}
 p{margin:0;font-size:18px;max-width:520px}
-a{align-self:flex-start;text-decoration:none;background:#FFFFFF;color:#111111;padding:14px 24px;border-radius:999px;font-weight:700}
+a{align-self:flex-start;text-decoration:none;background:#FFFFFF;color:#111111;padding:14px 24px;border-radius:999px;font-weight: 600}
 </style>
+<link rel="stylesheet" href="css/fx.css">
 <script src="js/analytics.js"></script>
 </head>
 <body>
 <main>
   <h1>의뢰가 잘 도착했어요.</h1>
   <p>남겨주신 내용을 확인한 뒤 영업일 기준 3일 안에 이메일로 답장드릴게요.</p>
-  <a href="./">홈으로 돌아가기</a>
+  <a class="fx fx-white" href="./">홈으로 돌아가기</a>
 </main>
 <script>window.trackEvent && window.trackEvent("generate_lead", { form_name: "project_request" });</script>
 </body>
