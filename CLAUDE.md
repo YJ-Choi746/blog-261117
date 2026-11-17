@@ -13,16 +13,31 @@
 ```
 index.html          첫 화면 (소개 · 서비스 · 작업 · 기록 · 의뢰 폼)
 thanks.html         의뢰 폼 전송 후 보여주는 완료 페이지
+posts.html          글 목록 (발행된 글, 카테고리 필터)
+post.html           글 상세 (?id=글ID)
+admin/login.html    관리자 로그인
+admin/write.html    글쓰기 (임시저장 · 발행, ?id=로 이어쓰기)
+css/site.css        공통 스타일 (디자인 시스템 토큰 = CSS 변수)
+js/firebase.js      Firebase 연결 · SDK 버전은 여기 한 곳에서만
+js/firebase-config.js  Firebase 웹 설정값 (공개값)
+js/*.js             페이지별 스크립트 (login, write, posts, post, render)
+firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
 .nojekyll           GitHub Pages가 파일을 가공하지 않게 하는 빈 파일
 CLAUDE.md           이 문서
 docs/design-system.md   색 · 글꼴 · 간격 · 컴포넌트 규칙
 docs/decisions.md       정한 것들 (날짜순)
-docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃)
+docs/user-stories.md    사용자 스토리와 완료 기준
+docs/firebase-setup.md  Firebase 연결 순서 (처음 한 번)
+docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃, 로그인)
 ```
 
 ## 기술 규칙
-- 빌드 도구 없이 **HTML + CSS만** 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요.
-- 외부 리소스는 Google Fonts만 써요 (Noto Sans KR, Noto Serif KR).
+- 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요.
+- 외부 리소스는 Google Fonts와 **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`)만 써요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
+- 사용자가 쓴 글(제목·본문·태그)은 **`textContent`로만** 화면에 넣어요. `innerHTML` 금지 (XSS).
+- 관리자 권한은 `firestore.rules`의 `ADMIN_UID`로 지켜요. 화면에서 숨기는 것만으로는 보안이 아니에요. 규칙을 바꾸면 Firebase 콘솔에도 다시 게시해야 해요.
+- `js/firebase-config.js`의 값은 공개값이라 커밋해도 돼요. 그 밖의 비밀번호·서비스 계정 키는 절대 커밋하지 않아요.
+- 로그인 후 이동 주소(`?next=`)는 허용 목록에 있는 곳만 써요.
 - 모든 화면은 휴대폰 폭(360px)에서도 가로 스크롤 없이 보여야 해요. 고정 px 너비 대신 `max-width`, `auto-fit` 그리드, `clamp()`를 써요.
 
 ## 디자인 규칙
@@ -50,4 +65,5 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 ## 문서 규칙
 - 무언가를 **정하면** `docs/decisions.md`에 날짜와 함께 한 줄 추가해요.
 - 무언가에 **막혔다 풀면** `docs/failures/<주제>.md`에 증상 · 원인 · 해결을 적어요. 같은 주제 파일이 있으면 거기에 이어 써요.
+- 기능은 `docs/user-stories.md`에 스토리와 완료 기준을 먼저 적고, 기준마다 테스트 결과를 남겨요.
 - 사용자에게는 한국어로, 쉬운 말로 설명해요.

@@ -1,0 +1,54 @@
+import { db, isConfigured, collection, getDocs, query, where, friendlyError, formatDate } from "./firebase.js";
+
+const list = document.getElementById("post-list");
+const statusEl = document.getElementById("list-status");
+const chips = [...document.querySelectorAll("#chips .chip")];
+let posts = [];
+let current = "";
+
+function render() {
+  const shown = current ? posts.filter((p) => p.category === current) : posts;
+  list.replaceChildren();
+  if (!shown.length) {
+    list.hidden = true;
+    statusEl.hidden = false;
+    statusEl.textContent = posts.length ? "이 카테고리에는 아직 글이 없어요." : "아직 발행된 글이 없어요.";
+    return;
+  }
+  statusEl.hidden = true;
+  list.hidden = false;
+  for (const p of shown) {
+    const a = document.createElement("a");
+    a.className = "post-row";
+    a.href = `post.html?id=${encodeURIComponent(p.id)}`;
+    const date = document.createElement("span"); date.className = "date"; date.textContent = formatDate(p.publishedAt);
+    const mid = document.createElement("span");
+    const t = document.createElement("span"); t.className = "title"; t.textContent = p.title;
+    mid.appendChild(t);
+    if (p.summary) { const d = document.createElement("span"); d.className = "desc"; d.textContent = p.summary; mid.appendChild(d); }
+    const cat = document.createElement("span"); cat.className = "cat"; cat.textContent = p.category || "";
+    a.append(date, mid, cat);
+    list.appendChild(a);
+  }
+}
+
+chips.forEach((c) => c.addEventListener("click", () => {
+  current = c.dataset.cat;
+  chips.forEach((x) => x.setAttribute("aria-pressed", String(x === c)));
+  render();
+}));
+
+async function load() {
+  if (!isConfigured) { statusEl.textContent = "아직 발행된 글이 없어요."; return; }
+  try {
+    // 발행된 글만. 정렬은 브라우저에서 해요 (where + orderBy를 같이 쓰면 Firestore 색인을 따로 만들어야 해서)
+    const snap = await getDocs(query(collection(db, "posts"), where("status", "==", "published")));
+    posts = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const t = (p) => (p.publishedAt && typeof p.publishedAt.toMillis === "function" ? p.publishedAt.toMillis() : 0);
+    posts.sort((a, b) => t(b) - t(a));
+    render();
+  } catch (err) {
+    statusEl.textContent = friendlyError(err);
+  }
+}
+load();

@@ -25,7 +25,9 @@ your.name 블로그의 공통 디자인 규칙이에요. 새 화면이나 섹션
 | Blue Line | `#82A6F2` | 블루 배경 위 구분선 |
 | Blue Border | `#A9C3F7` | 블루 배경 위 입력칸 테두리 |
 | Blue Placeholder | `#DCE7FD` | 블루 배경 위 입력칸 예시 문구 |
-| Blue Tint | `#E8EFFD` / 글자 `#1F4FB8` | 작은 배지 (예: "관리자") |
+| Blue Tint | `#E8EFFD` / 글자 `#1F4FB8` | 작은 배지 (예: "관리자"), 안내 문구 상자 |
+| Danger | `#B42318` | 오류 문구 글자 (로그인 실패, 저장 실패). 오류에만 써요 |
+| Danger Tint | `#FDECEA` | 오류 문구 상자 배경 (그 위 Danger 5.8:1) |
 
 **규칙**
 - 블루는 한 화면에서 포인트로만 써요. 넓은 면은 견적서·CTA 띠에만.
@@ -130,7 +132,8 @@ your.name 블로그의 공통 디자인 규칙이에요. 새 화면이나 섹션
 | `gray-600` | `#5F5F5F` | | `blue-line` | `#82A6F2` |
 | `gray-500` | `#6B6B6B` | | `blue-border` | `#A9C3F7` |
 | `blue-tint` | `#E8EFFD` | | `blue-placeholder` | `#DCE7FD` |
-| `blue-tint-ink` | `#1F4FB8` | | | |
+| `blue-tint-ink` | `#1F4FB8` | | `danger` | `#B42318` |
+| | | | `danger-tint` | `#FDECEA` |
 
 - 간격: `space-4` `8` `12` `16` `20` `24` `32` `48` `64` `96` `120`
 - 모서리: `radius-none` 0 · `radius-input` 8 · `radius-field` 10 · `radius-code` 12 · `radius-card` 16 · `radius-pill` 999

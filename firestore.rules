@@ -1,0 +1,29 @@
+rules_version = '2';
+
+// Firestore 보안 규칙 — Firebase 콘솔 → Firestore Database → 규칙 탭에 그대로 붙여넣고 "게시"를 눌러요.
+// ADMIN_UID 를 내 관리자 계정의 UID로 바꿔야 해요 (콘솔 → Authentication → 사용자 목록의 "사용자 UID").
+// 이유: 웹 설정값(apiKey)은 공개라서, 누구나 Firebase에 새 계정을 만들 수는 있어요.
+//       그래서 "로그인했는가"가 아니라 "이 UID인가"로 관리자를 가려요.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == "ADMIN_UID";
+    }
+
+    function validPost() {
+      let p = request.resource.data;
+      return p.title is string && p.title.size() > 0 && p.title.size() <= 200
+        && p.body is string && p.body.size() <= 100000
+        && p.status in ["draft", "published"]
+        && p.authorUid == request.auth.uid;
+    }
+
+    match /posts/{postId} {
+      // 발행된 글은 누구나, 임시저장 글은 관리자만 읽어요
+      allow read: if resource.data.status == "published" || isAdmin();
+      allow create, update: if isAdmin() && validPost();
+      allow delete: if isAdmin();
+    }
+  }
+}

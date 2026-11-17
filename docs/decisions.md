@@ -23,3 +23,13 @@
 - **화면 2 · 3 높이**: 글 목록 2200 → 2016px, 글 상세 2900 → 2501px. 내용 길이에 맞춰서 푸터 여백이 첫 화면과 같게(약 80px).
 - **디자인 시스템 아티팩트**: 공통 요소를 claude.ai 디자인 시스템 아티팩트 "your.name 디자인 시스템"으로 저장 (https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN). 색 15 · 글자 스타일 15 · 간격 11 · 모서리 6 · 크기 5개 토큰과 컴포넌트 7종(Button, FilterChip, ServiceColumn, WorkCard, PostRow, RequestForm, Footer). 테마는 라이트 하나.
 - **디자인 시스템 관리 방식**: `docs/design-system.md`와 아티팩트를 같은 내용으로 유지. 하나를 바꾸면 둘 다 고침.
+- **US-01 "관리자는 로그인 후 글을 직접 쓸 수 있다" 시작.**
+- **로그인·글 저장 서비스**: Firebase로 정함 (Authentication 이메일/비밀번호 + Firestore). Supabase, GitHub만 쓰는 방법과 비교해 GitHub Pages에서 그대로 동작하고 무료라서.
+- **기술 규칙 변경**: "HTML + CSS만" → "HTML + CSS + 순수 JavaScript(ES 모듈) + Firebase SDK 10.12.2" 허용.
+- **관리자 판별**: 로그인 여부가 아니라 보안 규칙의 `ADMIN_UID`로. 누구나 Firebase 계정은 만들 수 있기 때문.
+- **글 데이터 구조**: `posts` 컬렉션 — title, body, category, tags[], summary, status(draft/published), authorUid, createdAt, updatedAt, publishedAt.
+- **글 본문 형식**: 간단한 마크다운(##, ###, -, >, ```)을 직접 그려요. HTML은 허용하지 않음.
+- **글 목록 정렬**: Firestore 복합 색인 대신 브라우저에서 날짜순 정렬.
+- **새 화면 주소**: `admin/login.html`, `admin/write.html`, `posts.html`, `post.html`. 첫 화면의 "기록" 메뉴·"기록 읽기"·푸터 "관리자"를 새 화면에 연결.
+- **공통 스타일 파일**: 새 화면은 `css/site.css`(디자인 시스템 토큰을 CSS 변수로)를 써요. 기존 `index.html`의 인라인 스타일은 그대로 둠.
+- **오류 색 추가**: `danger` `#B42318` · `danger-tint` `#FDECEA` — 로그인·저장 오류 문구 전용. 디자인 시스템 문서와 아티팩트에 함께 추가.

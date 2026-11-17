@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기록 — your.name</title>
+<meta name="description" content="바이브코딩, 디자인, 콘텐츠 제작 기록">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Noto+Serif+KR:wght@700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="index.html">your.name</a>
+      <nav class="nav" aria-label="주요 메뉴">
+        <a href="index.html#work">작업</a>
+        <a href="posts.html" aria-current="page">기록</a>
+        <a href="index.html#service">서비스</a>
+        <a class="btn btn-dark" href="index.html#request">프로젝트 의뢰</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" style="padding-top: 96px; padding-bottom: 96px">
+    <p style="margin: 0 0 16px; font-size: 13px; letter-spacing: 0.16em; color: var(--gray-600)">JOURNAL</p>
+    <h1 style="margin: 0 0 16px; font-family: var(--font-serif); font-size: clamp(44px, 6vw, 80px); line-height: 1.15">기록</h1>
+    <p style="margin: 0 0 48px; max-width: 520px; font-size: 18px; color: var(--gray-700)">바이브코딩을 배우며 만든 것, 디자인하며 고민한 것, 콘텐츠를 만드는 방법을 적습니다.</p>
+
+    <div class="chips" role="group" aria-label="카테고리" id="chips" style="margin-bottom: 24px">
+      <button type="button" class="chip" aria-pressed="true" data-cat="">전체</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat="바이브코딩">바이브코딩</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat="디자인">디자인</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat="콘텐츠">콘텐츠</button>
+    </div>
+
+    <p id="list-status" role="status" style="color: var(--gray-600)">글을 불러오는 중…</p>
+    <div id="post-list" class="post-list" hidden></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© your.name</span>
+      <div class="links"><a href="#">Instagram</a><a href="#">Behance</a><a href="admin/login.html">관리자</a></div>
+    </div>
+  </footer>
+</div>
+<script type="module" src="js/posts.js"></script>
+</body>
+</html>

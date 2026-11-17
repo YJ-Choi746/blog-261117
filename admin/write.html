@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>글쓰기 — your.name 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Noto+Serif+KR:wght@700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<style>
+body { background: var(--surface-admin); }
+.bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding-top: 24px; padding-bottom: 24px; }
+.bar .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.editor { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding-bottom: 64px; }
+.card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-card); }
+.main-card { flex: 999 1 560px; min-width: 0; padding: 32px 40px 40px; display: flex; flex-direction: column; gap: 16px; }
+.side { flex: 1 1 300px; display: flex; flex-direction: column; gap: 16px; }
+.side .card { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.side h2 { margin: 0; font-size: 16px; }
+.title-input { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 0 0 12px; min-height: 56px; font-family: var(--font-serif); font-size: 32px; font-weight: 700; }
+.body-input { min-height: 420px; font-size: 18px; line-height: 1.85; }
+.hint { margin: 0; font-size: 13px; color: var(--gray-600); }
+.radio { display: flex; gap: 10px; align-items: center; min-height: var(--touch-min); font-size: 15px; color: var(--black); font-weight: 400; }
+@media (max-width: 600px) { .main-card { padding: 24px 20px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="wrap">
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center">
+        <a class="logo" href="../index.html">your.name</a>
+        <span class="badge">관리자</span>
+        <nav class="nav" aria-label="관리자 메뉴">
+          <a href="../posts.html">글 목록</a>
+          <a href="write.html" aria-current="page">새 글</a>
+        </nav>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 14px; color: var(--gray-600)">
+        <span id="who"></span>
+        <button type="button" id="logout" class="btn btn-text">로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 로그인 확인 전에는 편집기를 숨겨요 -->
+  <p id="checking" class="wrap" style="padding-top: 48px; color: var(--gray-600)">로그인 상태를 확인하는 중…</p>
+  <p id="config-notice" class="wrap notice notice-info" style="margin-top: 24px" hidden>Firebase 설정이 아직 없어요. <code>js/firebase-config.js</code>에 설정값을 넣어 주세요 (docs/firebase-setup.md).</p>
+
+  <form id="editor" class="wrap" novalidate hidden>
+    <div class="bar">
+      <span id="status" role="status" aria-live="polite" style="font-size: 14px; color: var(--gray-600)">새 글 · 저장되지 않음</span>
+      <div class="actions">
+        <button type="button" id="save-draft" class="btn btn-outline">임시저장</button>
+        <button type="submit" id="publish" class="btn btn-primary">발행하기</button>
+      </div>
+    </div>
+    <p id="form-error" class="notice notice-error" role="alert" hidden style="margin: 0 0 16px"></p>
+
+    <div class="editor">
+      <section class="card main-card" aria-label="본문 편집">
+        <label class="sr-only" for="title">제목</label>
+        <input class="input title-input" id="title" name="title" type="text" maxlength="200" placeholder="제목을 입력하세요" required>
+        <label class="sr-only" for="body">본문</label>
+        <textarea class="textarea body-input" id="body" name="body" placeholder="오늘 배운 것, 만든 것, 막혔던 것을 적어보세요."></textarea>
+        <p class="hint">줄을 한 칸 띄우면 문단이 나뉘어요. <code>## </code>로 시작하면 소제목, <code>- </code>는 목록, <code>&gt; </code>는 인용, <code>```</code>로 감싸면 코드 블록이에요.</p>
+      </section>
+
+      <aside class="side" aria-label="발행 설정">
+        <div class="card">
+          <h2>발행 설정</h2>
+          <label class="field" for="category">카테고리
+            <select class="select" id="category" name="category">
+              <option>바이브코딩</option>
+              <option>디자인</option>
+              <option>콘텐츠</option>
+            </select>
+          </label>
+          <label class="field" for="tags">태그 <span style="font-weight: 400; color: var(--gray-600)">(쉼표로 구분)</span>
+            <input class="input" id="tags" name="tags" type="text" placeholder="바이브코딩, GitHub">
+          </label>
+        </div>
+        <div class="card">
+          <label class="field" for="summary">요약 <span style="font-weight: 400; color: var(--gray-600)">(글 목록에 보여요)</span>
+            <textarea class="textarea" id="summary" name="summary" rows="3" maxlength="300" placeholder="한두 문장으로"></textarea>
+          </label>
+        </div>
+        <div class="card">
+          <h2>내 글</h2>
+          <p class="hint">발행하면 글 상세 페이지로 이동해요. 임시저장한 글은 나만 볼 수 있어요.</p>
+          <a id="view-link" href="#" hidden>발행된 글 보기 →</a>
+        </div>
+      </aside>
+    </div>
+  </form>
+</div>
+<script type="module" src="../js/write.js"></script>
+</body>
+</html>
