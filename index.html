@@ -15,7 +15,14 @@ input,select,textarea{font:inherit}
 #request input[type=checkbox]{accent-color:#FFFFFF}
 </style>
 <style>html{scroll-behavior:smooth}
-@media (max-width: 600px){#home-posts a{grid-template-columns:1fr !important;gap:6px !important}}</style>
+@media (max-width: 600px){#home-posts a{grid-template-columns:1fr !important;gap:6px !important}}
+/* 서비스 3칸: 넓은 화면은 3칸, 좁은 화면(900px 이하)은 한 줄씩 쌓고 세 칸 모두 같은 여백 · 칸 사이는 가로선 */
+#service-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+@media (max-width: 900px){
+  #service-grid{grid-template-columns:1fr !important}
+  #service-grid > div{padding:32px 0 !important;border-left:0 !important}
+  #service-grid > div + div{border-top:1px solid #E5E5E5}
+}</style>
 <link rel="stylesheet" href="css/fx.css">
 <script src="js/analytics.js"></script>
 </head>
@@ -47,7 +54,7 @@ input,select,textarea{font:inherit}
   </section>
 
   <section id="service" style="border-top: 1px solid #E5E5E5">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))">
+    <div id="service-grid" style="max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))">
       <div style="padding: 48px 32px 48px 0; display: flex; flex-direction: column; gap: 12px">
         <span style="font-family: 'Noto Serif KR', serif; font-size: 15px; color: #2F6BEA">01</span>
         <h2 style="margin: 0; font-size: 26px; font-weight: 600">브랜딩</h2>
