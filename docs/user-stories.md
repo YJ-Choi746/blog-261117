@@ -246,3 +246,21 @@ flowchart TD
 - 예약 발행 (정해진 시간에 공개)
 - 에디터에서 지운 사진 정리
 - 사진이 많아지면 Firebase Storage(Blaze 요금제)로 옮기기
+
+---
+
+## US-11 · 관리자는 방문자가 본문 어디까지 내려갔고, 몇 초 만에 어디서 떠났는지 본다 (scroll_post · leave_post)
+
+> **관리자로서,** 글을 스크롤하며 얼마나 머물고 어느 지점에서 이탈하는지 알고 싶다. **그래야** 글의 어느 부분에서 독자를 잃는지 보고 고칠 수 있기 때문이다.
+
+설계: `docs/analytics-events.md` (`scroll_post`, `leave_post`)
+
+| # | 완료 기준 | 테스트 |
+|---|---|---|
+| 1 | 본문 30 · 50 · 90%에 닿는 순간 `scroll_post`가 각각 1번 간다 (시간 조건 없음, 그때까지 머문 초 `engaged_seconds` 포함) | 통과 (35% → 30, 55% → 50) |
+| 2 | 위로 올렸다 다시 내려도 중복으로 가지 않는다 | 통과 |
+| 3 | 글을 떠날 때 `leave_post`가 1번 간다: 가장 많이 내려간 깊이(10 단위) · 머문 초 · 완독 여부 | 통과 (55%에서 떠남 → `max_scroll_depth` 50, `read_completed` no) |
+| 4 | 끝까지 읽고 떠나면 `read_completed` = yes | 통과 (400자 글, 30초 → 100 · yes) |
+| 5 | 짧은 글을 2초 만에 떠나면 `scroll_post`는 가도 `read_post`는 가지 않는다 (PRD FR-02 유지) | 통과 |
+| 6 | 떠날 때 기록은 페이지가 닫히는 중에도 가도록 beacon으로 보낸다 | 코드 반영, 실제 전송은 배포 후 DebugView 확인 |
+| 7 | GA에 `scroll_depth` · `max_scroll_depth` · `read_completed`(측정기준), `engaged_seconds`(측정항목, 초) 등록 | 사용자 GA 등록 필요 |

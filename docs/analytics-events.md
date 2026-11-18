@@ -7,12 +7,13 @@
 | 비즈니스 목표 | 알고 싶은 질문 | 이벤트 |
 |---|---|---|
 | 블로그 글이 읽힌다 | 어떤 글이 많이 열리고, 끝까지 읽히나? | `view_post` → `read_post` |
+| 어디서 떠나나 | 본문 어디까지 내려갔고, 몇 초 만에 · 어느 지점에서 떠났나? | `scroll_post`, `leave_post` |
 | 글이 퍼진다 | 어떤 글의 공유 링크를 복사하나? | `share_post` |
 | 글을 찾아 들어온다 | 어디(홈/목록)에서, 몇 번째 글을 눌렀나? 어떤 카테고리를 고르나? | `select_post`, `filter_posts` |
 | 의뢰로 이어진다 | 의뢰 버튼을 어디서 눌렀나? 폼을 시작하고 끝까지 보냈나? | `click_cta` → `form_start` → `form_submit` → **`generate_lead`** |
 
 **전환 깔때기 (의뢰)**: `page_view(홈)` → `click_cta` → `form_start` → `form_submit` → `generate_lead`
-**콘텐츠 깔때기 (읽기)**: `select_post` → `view_post` → `read_post(50)` → `read_post(90)`
+**콘텐츠 깔때기 (읽기)**: `select_post` → `view_post` → `scroll_post(30 · 50 · 90)` → `read_post(50)` → `read_post(90)` → `leave_post`
 
 ## 2. 이름 규칙
 
@@ -34,6 +35,8 @@
 | `share_post` | 글 상세에서 "공유 링크 복사"를 눌렀을 때 | `post_id`, `post_title`, `post_category`, `method` | 글 상세 | |
 | `filter_posts` | 카테고리 버튼을 눌렀을 때 | `filter_category`, `list_name` | 홈 최근 기록, 글 목록 | |
 | `read_post` | 본문을 50% · 90%까지 읽었을 때 (각 1번). **완독 보정**: 스크롤 위치와 함께 *화면을 보고 있던 시간*도 채워야 보내요 (아래 "완독 보정") | `post_id`, `post_title`, `post_category`, `post_published_at`, `read_depth` | 글 상세 | |
+| `scroll_post` | 본문의 30% · 50% · 90%가 화면 아래 끝을 지났을 때 (각 1번, **시간 조건 없음**) | `post_id`, `post_title`, `post_category`, `post_published_at`, `scroll_depth`, `engaged_seconds` | 글 상세 | |
+| `leave_post` | 글 상세를 떠날 때 1번 (탭 닫기 · 다른 페이지로 이동 · 뒤로 가기, `pagehide`) | `post_id`, `post_title`, `post_category`, `post_published_at`, `max_scroll_depth`, `engaged_seconds`, `read_completed` | 글 상세 | |
 | `click_cta` | 의뢰 · 기록 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈, 글 목록, 글 상세 | |
 | `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_name` | 홈 | |
 | `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_name`, `request_types`, `budget_range` | 홈 | |
@@ -50,6 +53,10 @@
 | `method` | `copy_link` (공유 링크 복사) |
 | `filter_category` | `전체` · `바이브코딩` · `디자인` · `콘텐츠` |
 | `read_depth` | `50` · `90` |
+| `scroll_depth` | `30` · `50` · `90` |
+| `max_scroll_depth` | 떠날 때까지 가장 많이 내려간 본문 비율, 10 단위로 내림 (`0` · `10` … `100`) |
+| `engaged_seconds` | 그때까지 탭을 보고 있던 시간(초, 정수). 탭을 숨긴 시간은 빼요 |
+| `read_completed` | 떠날 때까지 `read_post(90)`(완독)을 보냈으면 `yes`, 아니면 `no` |
 | `post_published_at` | 글 발행일 `YYYY-MM-DD` (한국 시간). 발행 전 글(임시저장 · 비공개)은 `미발행` |
 | `cta_name` · `cta_location` | `header_request` · `header` / `hero_request` · `hero` / `hero_blog` · `hero` / `home_all_posts` · `recent_posts` / `nav_blog` · `header` |
 | `form_name` | `project_request` |
@@ -74,6 +81,13 @@
 - 사진이 늦게 떠서 본문 높이가 바뀌면 다시 재요.
 - 탭을 숨기거나 다른 앱으로 가 있던 시간은 세지 않아요.
 
+### `scroll_post` · `leave_post` 와 `read_post` 의 차이
+
+- `read_post` = **읽었다** (위치 + 최소 시간). PRD 완독률 계산용.
+- `scroll_post` = **거기까지 내려갔다** (위치만). 단계별로 몇 명이 남는지 보는 깔때기용. 짧은 글은 열자마자 다 보여서 바로 30 · 50 · 90이 가요 → `engaged_seconds`로 구분.
+- `leave_post` = **여기서 떠났다**. 떠난 깊이 · 머문 시간 · 완독 여부. 이전 · 다음 글로 넘어가도 떠남으로 기록돼요 (`select_post`와 같이 보면 구분돼요).
+- 한계: 브라우저가 강제로 꺼지거나 휴대폰에서 앱을 바로 지우면 `leave_post`가 빠질 수 있어요. 다른 탭으로 잠깐 가는 건 떠남이 아니에요.
+
 ### GA가 자동으로 모으는 것 (향상된 측정)
 `session_start`, `first_visit`, `user_engagement`, `scroll`(90%), `click`(다른 사이트로 나가는 링크) + 지역 · 기기 · OS · 브라우저 · 유입 경로.
 
@@ -97,6 +111,15 @@
 | 읽은 정도 | `read_depth` | 등록함 (2026-11-17) |
 | 의뢰 분야 | `request_types` | 등록함 (2026-11-17) |
 | 글 발행일 | `post_published_at` | **등록 필요** (2026-11-18 추가) |
+| 스크롤 깊이 | `scroll_depth` | **등록 필요** (2026-11-18 추가) |
+| 떠난 깊이 | `max_scroll_depth` | **등록 필요** (2026-11-18 추가) |
+| 완독 여부 | `read_completed` | **등록 필요** (2026-11-18 추가) |
+
+**맞춤 측정항목 (범위: 이벤트)**
+
+| 이름 | 매개변수 | 단위 | 상태 |
+|---|---|---|---|
+| 머문 시간 | `engaged_seconds` | 초 | **등록 필요** (2026-11-18 추가) |
 
 **핵심 이벤트 (전환)**: 관리 → 데이터 표시 → **이벤트** → `generate_lead` 옆 **핵심 이벤트로 표시** 켜기. (`generate_lead`는 첫 의뢰가 들어온 뒤 목록에 나타나요.) — 사용자가 설정함 (2026-11-17)
 
@@ -109,5 +132,5 @@
 | GA 불러오기 · `trackEvent()` · `data-ga-event` 클릭 자동 기록 | `js/analytics.js` |
 | `click_cta` | HTML 링크의 `data-ga-event="click_cta" data-ga-cta_name="…" data-ga-cta_location="…"` |
 | `select_post`, `filter_posts`, `form_start`, `form_submit` | `js/home.js`, `js/posts.js` |
-| `view_post`, `read_post`, 글 상세 `page_view` | `js/post.js` |
+| `view_post`, `read_post`, `scroll_post`, `leave_post`, 글 상세 `page_view` | `js/post.js` |
 | `generate_lead` | `thanks.html` |

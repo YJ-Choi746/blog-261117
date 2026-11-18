@@ -35,15 +35,18 @@ function publishedDate(p) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 }
 
-// GA: 본문을 50% · 90%까지 읽으면 read_post (각각 한 번)
-// 완독 보정 (PRD FR-02): 본문 도달 비율 + 최소 읽기 시간을 둘 다 채워야 보내요 (docs/analytics-events.md "완독 보정")
-// 90% 최소 시간 = 글자 수 ÷ 500 × 60초 × 0.5 (5~60초), 50% = 그 절반 (단, 5초 안 이탈은 0건이 되도록 최소 5초)
+// GA: 글 상세에서 읽기 · 스크롤 · 떠남을 기록해요 (docs/analytics-events.md)
+// - read_post 50 · 90  = 읽었다 (위치 + 최소 읽기 시간) — PRD FR-02 완독 보정
+// - scroll_post 30 · 50 · 90 = 거기까지 내려갔다 (위치만)
+// - leave_post = 떠날 때 한 번 (가장 많이 내려간 깊이 · 머문 시간 · 완독 여부)
+// 완독 최소 시간: 90% = 글자 수 ÷ 500 × 60초 × 0.5 (5~60초), 50% = 그 절반 (단, 5초 안 이탈은 0건이 되도록 최소 5초)
 const CHARS_PER_MIN = 500, MIN_SEC = 5, MAX_SEC_90 = 60, RECHECK_MS = 2000;
+const READ_DEPTHS = [50, 90], SCROLL_DEPTHS = [30, 50, 90];
 
 function trackReading(p) {
   if (typeof window.trackEvent !== "function") return;
   const body = $("post-body");
-  const sent = new Set();
+  const read = new Set(), scrolled = new Set();
   let maxSeen = 0;
 
   // 탭을 보고 있던 시간만 세요
@@ -58,8 +61,7 @@ function trackReading(p) {
   const required90 = () => {
     // 위젯(명언 · 포켓몬) 글자는 본문이 아니라서 빼요
     const widgetText = [...body.querySelectorAll("[data-widget]")].map((w) => w.textContent || "").join("");
-    const chars = ((body.textContent || "").length - widgetText.length) > 0
-      ? (body.textContent || "").replace(/\s+/g, "").length - widgetText.replace(/\s+/g, "").length : 0;
+    const chars = Math.max(0, (body.textContent || "").replace(/\s+/g, "").length - widgetText.replace(/\s+/g, "").length);
     return Math.min(MAX_SEC_90, Math.max(MIN_SEC, (chars / CHARS_PER_MIN) * 60 * 0.5));
   };
   const requiredSec = (depth) => (depth === 90 ? required90() : Math.max(MIN_SEC, required90() / 2));
@@ -68,12 +70,32 @@ function trackReading(p) {
     const r = body.getBoundingClientRect();
     if (r.height > 0) maxSeen = Math.max(maxSeen, Math.min(1, Math.max(0, (window.innerHeight - r.top) / r.height)));
     const t = activeSec();
-    for (const depth of [50, 90]) {
-      if (sent.has(depth) || maxSeen * 100 < depth || t < requiredSec(depth)) continue;
-      sent.add(depth);
+    for (const depth of SCROLL_DEPTHS) {
+      if (scrolled.has(depth) || maxSeen * 100 < depth) continue;
+      scrolled.add(depth);
+      window.trackEvent("scroll_post", { ...postParams(p), scroll_depth: String(depth), engaged_seconds: Math.round(t) });
+    }
+    for (const depth of READ_DEPTHS) {
+      if (read.has(depth) || maxSeen * 100 < depth || t < requiredSec(depth)) continue;
+      read.add(depth);
       window.trackEvent("read_post", { ...postParams(p), read_depth: String(depth) });
     }
-    if (sent.size === 2) stop();
+    if (read.size === READ_DEPTHS.length) clearInterval(timer); // 완독까지 끝나면 시간 재확인은 그만
+  };
+
+  // 떠날 때 한 번 (탭 닫기 · 다른 페이지 · 뒤로 가기). 페이지가 닫히는 중이라 beacon으로 보내요
+  let left = false;
+  const onLeave = () => {
+    if (left) return;
+    left = true;
+    check();
+    window.trackEvent("leave_post", {
+      ...postParams(p),
+      max_scroll_depth: String(Math.floor(maxSeen * 10) * 10),
+      engaged_seconds: Math.round(activeSec()),
+      read_completed: read.has(90) ? "yes" : "no",
+      transport_type: "beacon"
+    });
   };
 
   let ticking = false;
@@ -81,14 +103,9 @@ function trackReading(p) {
   // 사진이 늦게 떠서 본문 높이가 바뀌면 다시 재요
   const resize = typeof ResizeObserver === "function" ? new ResizeObserver(onScroll) : null;
   const timer = setInterval(check, RECHECK_MS); // 스크롤 없는 짧은 글 · 멈춰서 읽는 동안에도 2초마다 다시 확인
-  function stop() {
-    clearInterval(timer);
-    window.removeEventListener("scroll", onScroll);
-    document.removeEventListener("visibilitychange", onVisibility);
-    if (resize) resize.disconnect();
-  }
   window.addEventListener("scroll", onScroll, { passive: true });
   document.addEventListener("visibilitychange", onVisibility);
+  window.addEventListener("pagehide", onLeave);
   if (resize) resize.observe(body);
   check();
 }
