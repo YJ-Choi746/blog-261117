@@ -29,11 +29,11 @@
 | 이벤트 | 보내는 순간 | 매개변수 | 페이지 | 핵심 이벤트 |
 |---|---|---|---|---|
 | `page_view` | 페이지를 열 때. 글 상세는 **글 제목을 불러온 뒤**, 주소를 `/post/글ID`로 바꿔서 (GA는 `?id=`를 떼고 경로만 보여줘서 모든 글이 `/post.html` 한 줄로 합쳐지기 때문) | `page_title`, `page_location` | 전체 (관리자 제외) | |
-| `view_post` | 글 상세가 열렸을 때 | `post_id`, `post_title`, `post_category` | 글 상세 | |
+| `view_post` | 글 상세가 열렸을 때 | `post_id`, `post_title`, `post_category`, `post_published_date` | 글 상세 | |
 | `select_post` | 목록에서 글을 눌렀을 때 · 글 아래 이전/다음 글을 눌렀을 때 | `post_id`, `post_title`, `post_category`, `list_name`, `list_position` | 홈 최근 기록, 글 목록, 글 상세 | |
 | `share_post` | 글 상세에서 "공유 링크 복사"를 눌렀을 때 | `post_id`, `post_title`, `post_category`, `method` | 글 상세 | |
 | `filter_posts` | 카테고리 버튼을 눌렀을 때 | `filter_category`, `list_name` | 홈 최근 기록, 글 목록 | |
-| `read_post` | 본문을 50% · 90%까지 읽었을 때 (각 1번) | `post_id`, `post_title`, `post_category`, `read_depth` | 글 상세 | |
+| `read_post` | 본문을 50% · 90%까지 읽었을 때 (각 1번). **완독 보정**: 스크롤 위치와 함께 *화면을 보고 있던 시간*도 채워야 보내요 (아래 "완독 보정") | `post_id`, `post_title`, `post_category`, `post_published_date`, `read_depth`, `read_seconds` | 글 상세 | |
 | `click_cta` | 의뢰 · 기록 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈, 글 목록, 글 상세 | |
 | `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_name` | 홈 | |
 | `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_name`, `request_types`, `budget_range` | 홈 | |
@@ -48,10 +48,26 @@
 | `method` | `copy_link` (공유 링크 복사) |
 | `filter_category` | `전체` · `바이브코딩` · `디자인` · `콘텐츠` |
 | `read_depth` | `50` · `90` |
+| `post_published_date` | 글 발행일 `YYYY-MM-DD` (한국 시간). 발행 전 글(임시저장 · 비공개)은 `미발행` |
+| `read_seconds` | 그 깊이에 닿을 때까지 탭을 보고 있던 시간(초, 정수). 탭을 숨긴 시간은 빼요 |
 | `cta_name` · `cta_location` | `header_request` · `header` / `hero_request` · `hero` / `hero_blog` · `hero` / `home_all_posts` · `recent_posts` / `nav_blog` · `header` |
 | `form_name` | `project_request` |
 | `request_types` | 고른 의뢰 분야를 쉼표로 (`브랜딩,UI/UX 디자인`) |
 | `budget_range` | 고른 예산 구간 그대로 (안 고르면 `미선택`) |
+
+### 완독 보정 (`read_post`)
+
+보정 전에는 스크롤 위치만 봐서, 짧은 글은 열자마자 50 · 90이 같이 찍히고 빠르게 훑고 내려가도 "완독"으로 셌어요. 그리고 사진이 늦게 뜨면 본문 길이가 바뀌는데 다시 재지 않았어요.
+
+| 깊이 | 스크롤 조건 | 시간 조건 (탭을 보고 있던 시간) |
+|---|---|---|
+| `50` | 본문의 50%가 화면 아래 끝을 지남 | 예상 읽기 시간의 **15%** 이상, 최소 **5초** |
+| `90` | 본문의 90%가 화면 아래 끝을 지남 | 예상 읽기 시간의 **30%** 이상, 최소 **10초** |
+
+- **예상 읽기 시간** = 본문 글자 수(공백 뺌) ÷ 분당 500자 + 사진 1장당 5초. 시간 조건은 최대 3분까지만 요구해요 (아주 긴 글도 3분 보면 충족).
+- 스크롤 조건을 채운 뒤에 시간이 차도 보내요 (1초마다 다시 확인). 50과 90은 각각 한 번만.
+- 사진이 늦게 떠서 본문 높이가 바뀌면 다시 재요.
+- 탭을 숨기거나 다른 앱으로 가 있던 시간은 세지 않아요.
 
 ### GA가 자동으로 모으는 것 (향상된 측정)
 `session_start`, `first_visit`, `user_engagement`, `scroll`(90%), `click`(다른 사이트로 나가는 링크) + 지역 · 기기 · OS · 브라우저 · 유입 경로.
@@ -75,6 +91,13 @@
 | 필터 카테고리 | `filter_category` | 등록함 (2026-11-17) |
 | 읽은 정도 | `read_depth` | 등록함 (2026-11-17) |
 | 의뢰 분야 | `request_types` | 등록함 (2026-11-17) |
+| 글 발행일 | `post_published_date` | **등록 필요** (2026-11-18 추가) |
+
+**맞춤 측정항목 (범위: 이벤트)**
+
+| 이름 | 매개변수 | 단위 | 상태 |
+|---|---|---|---|
+| 읽은 시간 | `read_seconds` | 초 | **등록 필요** (2026-11-18 추가) |
 
 **핵심 이벤트 (전환)**: 관리 → 데이터 표시 → **이벤트** → `generate_lead` 옆 **핵심 이벤트로 표시** 켜기. (`generate_lead`는 첫 의뢰가 들어온 뒤 목록에 나타나요.) — 사용자가 설정함 (2026-11-17)
 

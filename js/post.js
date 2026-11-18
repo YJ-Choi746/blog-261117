@@ -18,30 +18,79 @@ function trackView(p) {
     ? location.origin + location.pathname.replace(/post\.html$/, "post/" + encodeURIComponent(id))
     : location.href;
   window.trackEvent("page_view", { page_title: document.title, page_location: pageLocation });
-  if (p) window.trackEvent("view_post", { post_id: id, post_title: p.title, post_category: p.category || "" });
+  if (p) window.trackEvent("view_post", postParams(p));
+}
+
+// GA: 글마다 같이 보내는 매개변수 (docs/analytics-events.md)
+function postParams(p) {
+  return { post_id: id, post_title: p.title, post_category: p.category || "", post_published_date: publishedDate(p) };
+}
+
+// 발행일 YYYY-MM-DD (한국 시간). 발행 전 글은 "미발행"
+function publishedDate(p) {
+  const ts = p.status === "published" ? p.publishedAt : null;
+  const d = ts && typeof ts.toDate === "function" ? ts.toDate() : null;
+  if (!d || Number.isNaN(d.getTime())) return "미발행";
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 }
 
 // GA: 본문을 50% · 90%까지 읽으면 read_post (각각 한 번)
+// 완독 보정: 스크롤 위치 + 탭을 보고 있던 시간을 둘 다 채워야 보내요 (docs/analytics-events.md "완독 보정")
+const READ_RULES = [
+  { depth: 50, share: 0.15, minSec: 5 },
+  { depth: 90, share: 0.30, minSec: 10 }
+];
+const CHARS_PER_MIN = 500, SEC_PER_IMAGE = 5, MAX_REQUIRED_SEC = 180;
+
 function trackReading(p) {
   if (typeof window.trackEvent !== "function") return;
   const body = $("post-body");
   const sent = new Set();
+  let maxSeen = 0;
+
+  // 탭을 보고 있던 시간만 세요
+  let activeMs = 0, since = document.visibilityState === "visible" ? performance.now() : null;
+  const activeSec = () => (activeMs + (since === null ? 0 : performance.now() - since)) / 1000;
+  const onVisibility = () => {
+    if (document.visibilityState === "visible") { if (since === null) since = performance.now(); }
+    else if (since !== null) { activeMs += performance.now() - since; since = null; }
+    check();
+  };
+
+  // 예상 읽기 시간(초): 글자 수(공백 뺌) ÷ 분당 500자 + 사진 1장당 5초
+  const expectedSec = () => {
+    const chars = (body.textContent || "").replace(/\s+/g, "").length;
+    return (chars / CHARS_PER_MIN) * 60 + body.querySelectorAll("img").length * SEC_PER_IMAGE;
+  };
+  const requiredSec = (rule) => Math.max(rule.minSec, Math.min(MAX_REQUIRED_SEC, expectedSec() * rule.share));
+
   const check = () => {
     const r = body.getBoundingClientRect();
-    if (r.height <= 0) return;
-    const seen = Math.min(1, Math.max(0, (window.innerHeight - r.top) / r.height));
-    for (const depth of [50, 90]) {
-      if (seen * 100 >= depth && !sent.has(depth)) {
-        sent.add(depth);
-        window.trackEvent("read_post", { post_id: id, post_title: p.title, post_category: p.category || "", read_depth: String(depth) });
-      }
+    if (r.height > 0) maxSeen = Math.max(maxSeen, Math.min(1, Math.max(0, (window.innerHeight - r.top) / r.height)));
+    const t = activeSec();
+    for (const rule of READ_RULES) {
+      if (sent.has(rule.depth) || maxSeen * 100 < rule.depth || t < requiredSec(rule)) continue;
+      sent.add(rule.depth);
+      window.trackEvent("read_post", { ...postParams(p), read_depth: String(rule.depth), read_seconds: Math.round(t) });
     }
-    if (sent.size === 2) window.removeEventListener("scroll", onScroll);
+    if (sent.size === READ_RULES.length) stop();
   };
+
   let ticking = false;
   const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; check(); }); } };
+  // 사진이 늦게 떠서 본문 높이가 바뀌면 다시 재요
+  const resize = typeof ResizeObserver === "function" ? new ResizeObserver(onScroll) : null;
+  const timer = setInterval(check, 1000); // 스크롤을 멈추고 읽는 동안 시간 조건이 차는 경우
+  function stop() {
+    clearInterval(timer);
+    window.removeEventListener("scroll", onScroll);
+    document.removeEventListener("visibilitychange", onVisibility);
+    if (resize) resize.disconnect();
+  }
   window.addEventListener("scroll", onScroll, { passive: true });
-  setTimeout(check, 800); // 짧은 글은 열자마자 다 보일 수 있어요
+  document.addEventListener("visibilitychange", onVisibility);
+  if (resize) resize.observe(body);
+  check();
 }
 
 // 글 아래 "이전 글 · 다음 글" — 발행된 글을 발행일 순으로 놓고 바로 앞 · 뒤 글을 보여줘요
