@@ -30,6 +30,7 @@ js/data/advices.js  명언 목록 (한국어 명언 API 저장소에서 옮김)
 js/editor.js        에디터 서식 도구 · 사진 넣기 · 붙여넣기
 js/images.js        사진 줄이기 · Firestore images 저장 · 불러오기
 js/post-actions.js  관리자 수정·삭제 버튼, 글+사진 삭제
+js/reactions.js     좋아요(Firestore postStats) · 저장(브라우저 저장소) 버튼
 js/home.js          첫 화면 최근 기록
 js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화면 제외)
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
@@ -44,6 +45,7 @@ docs/user-stories.md    사용자 스토리와 완료 기준
 docs/firebase-setup.md  Firebase 연결 순서 (처음 한 번)
 docs/analytics.md       방문자 통계(GA4) 보는 법
 docs/analytics-events.md  이벤트 택소노미 (이벤트 이름 · 매개변수 · 보내는 순간)
+docs/dashboard.md       인기 글 대시보드(Looker Studio) 만드는 법
 docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃, 로그인, 에디터, 공유-미리보기)
 ```
 

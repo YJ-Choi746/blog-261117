@@ -2,6 +2,7 @@ import { db, isConfigured, collection, getDocs, query, where, friendlyError, for
 import { getImageData } from "./images.js";
 import { auth, onAuthStateChanged } from "./firebase.js";
 import { adminButtons } from "./post-actions.js";
+import { getBookmarks } from "./reactions.js";
 
 let isAdminView = false;
 
@@ -22,16 +23,33 @@ function trackFilter(cat, listName) {
 const list = document.getElementById("post-list");
 const statusEl = document.getElementById("list-status");
 const chips = [...document.querySelectorAll("#chips .chip")];
+// "저장한 글"을 고르면 보여주는 안내 (저장은 이 브라우저에만)
+const savedNote = document.createElement("p");
+savedNote.className = "saved-note";
+savedNote.textContent = "저장한 글은 이 브라우저에만 저장돼요. 다른 기기에서는 보이지 않아요.";
+savedNote.hidden = true;
+document.getElementById("chips").after(savedNote);
 let posts = [];
 let current = "";
 
+const SAVED = "__saved"; // "저장한 글" 필터 (PRD FR-05)
+
 function render() {
-  const shown = current ? posts.filter((p) => p.category === current) : posts;
+  let shown;
+  if (current === SAVED) {
+    // 이 브라우저에 저장한 순서(최근 저장 먼저). 발행된 글만 posts에 있어서, 삭제 · 비공개 글은 자동으로 빠져요
+    const byId = new Map(posts.map((p) => [p.id, p]));
+    shown = getBookmarks().map((b) => byId.get(b.id)).filter(Boolean);
+  } else {
+    shown = current ? posts.filter((p) => p.category === current) : posts;
+  }
   list.replaceChildren();
+  savedNote.hidden = current !== SAVED;
   if (!shown.length) {
     list.hidden = true;
     statusEl.hidden = false;
-    statusEl.textContent = posts.length ? "이 카테고리에는 아직 글이 없어요." : "아직 발행된 글이 없어요.";
+    statusEl.textContent = current === SAVED ? "저장한 글이 없어요. 글 아래 \"저장\"을 누르면 여기에 모여요."
+      : posts.length ? "이 카테고리에는 아직 글이 없어요." : "아직 발행된 글이 없어요.";
     return;
   }
   statusEl.hidden = true;
@@ -72,7 +90,7 @@ function render() {
 
 chips.forEach((c) => c.addEventListener("click", () => {
   current = c.dataset.cat;
-  trackFilter(current, "blog_list");
+  trackFilter(c.dataset.gaLabel || current, "blog_list");
   chips.forEach((x) => x.setAttribute("aria-pressed", String(x === c)));
   render();
 }));

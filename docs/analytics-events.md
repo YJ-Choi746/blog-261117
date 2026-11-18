@@ -9,6 +9,7 @@
 | 블로그 글이 읽힌다 | 어떤 글이 많이 열리고, 끝까지 읽히나? | `view_post` → `read_post` |
 | 어디서 떠나나 | 본문 어디까지 내려갔고, 몇 초 만에 · 어느 지점에서 떠났나? | `scroll_post`, `leave_post` |
 | 글이 퍼진다 | 어떤 글의 공유 링크를 복사하나? | `share_post` |
+| 글에 반응한다 | 어떤 글에 좋아요 · 저장을 누르나? (PRD 반응률) | `like_post` · `unlike_post`, `bookmark_post` · `unbookmark_post` |
 | 글을 찾아 들어온다 | 어디(홈/목록)에서, 몇 번째 글을 눌렀나? 어떤 카테고리를 고르나? | `select_post`, `filter_posts` |
 | 의뢰로 이어진다 | 의뢰 버튼을 어디서 눌렀나? 폼을 시작하고 끝까지 보냈나? | `click_cta` → `form_start` → `form_submit` → **`generate_lead`** |
 
@@ -37,6 +38,10 @@
 | `read_post` | 본문을 50% · 90%까지 읽었을 때 (각 1번). **완독 보정**: 스크롤 위치와 함께 *화면을 보고 있던 시간*도 채워야 보내요 (아래 "완독 보정") | `post_id`, `post_title`, `post_category`, `post_published_at`, `read_depth` | 글 상세 | |
 | `scroll_post` | 본문의 30% · 50% · 90%가 화면 아래 끝을 지났을 때 (각 1번, **시간 조건 없음**) | `post_id`, `post_title`, `post_category`, `post_published_at`, `scroll_depth`, `engaged_seconds` | 글 상세 | |
 | `leave_post` | 글 상세를 떠날 때 1번 (탭 닫기 · 다른 페이지로 이동 · 뒤로 가기, `pagehide`) | `post_id`, `post_title`, `post_category`, `post_published_at`, `max_scroll_depth`, `engaged_seconds`, `read_completed` | 글 상세 | |
+| `like_post` | 글 상세에서 좋아요(하트)를 눌러 **저장에 성공했을 때** | `post_id`, `post_title`, `post_category`, `post_published_at` | 글 상세 | |
+| `unlike_post` | 좋아요를 다시 눌러 취소하고 저장에 성공했을 때 | 위와 같음 | 글 상세 | |
+| `bookmark_post` | 글 상세에서 "저장"을 눌렀을 때 (이 브라우저에 저장) | 위와 같음 | 글 상세 | |
+| `unbookmark_post` | "저장됨"을 눌러 저장을 취소했을 때 | 위와 같음 | 글 상세 | |
 | `click_cta` | 의뢰 · 기록 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈, 글 목록, 글 상세 | |
 | `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_name` | 홈 | |
 | `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_name`, `request_types`, `budget_range` | 홈 | |
@@ -51,7 +56,7 @@
 | `list_name` | `home_recent` (홈 최근 기록) · `blog_list` (글 목록) · `post_nav_prev` · `post_nav_next` (글 상세 아래 이전 글 · 다음 글) |
 | `list_position` | 1, 2, 3 … (위에서 몇 번째) |
 | `method` | `copy_link` (공유 링크 복사) |
-| `filter_category` | `전체` · `바이브코딩` · `디자인` · `콘텐츠` |
+| `filter_category` | `전체` · `바이브코딩` · `디자인` · `콘텐츠` · `저장한 글`(글 목록만) |
 | `read_depth` | `50` · `90` |
 | `scroll_depth` | `30` · `50` · `90` |
 | `max_scroll_depth` | 떠날 때까지 가장 많이 내려간 본문 비율, 10 단위로 내림 (`0` · `10` … `100`) |
@@ -133,4 +138,5 @@
 | `click_cta` | HTML 링크의 `data-ga-event="click_cta" data-ga-cta_name="…" data-ga-cta_location="…"` |
 | `select_post`, `filter_posts`, `form_start`, `form_submit` | `js/home.js`, `js/posts.js` |
 | `view_post`, `read_post`, `scroll_post`, `leave_post`, 글 상세 `page_view` | `js/post.js` |
+| `like_post` · `unlike_post` · `bookmark_post` · `unbookmark_post` | `js/reactions.js` |
 | `generate_lead` | `thanks.html` |

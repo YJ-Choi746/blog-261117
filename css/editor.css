@@ -194,3 +194,9 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
   .rich .poke-result { grid-template-columns: 1fr; justify-items: center; text-align: center; }
   .rich .poke-img { max-width: 220px; }
 }
+
+/* ---------- 좋아요 · 저장 (js/reactions.js) ---------- */
+.react-btn { gap: 8px; min-height: var(--touch-min); }
+.react-btn[aria-pressed="true"] svg { fill: currentColor; }  /* 누른 상태 = 아이콘 채움 (색은 버튼 글자색 그대로) */
+.react-count { min-width: 1ch; font-variant-numeric: tabular-nums; }
+.saved-note { margin: -12px 0 20px; font-size: 14px; color: var(--gray-600); }

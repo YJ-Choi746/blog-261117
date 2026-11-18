@@ -2,6 +2,7 @@ import { auth, db, isConfigured, onAuthStateChanged, doc, getDoc, collection, ge
 import { renderBody } from "./render.js";
 import { sanitizeToFragment } from "./sanitize.js";
 import { mountWidgets } from "./widgets.js";
+import { likeButton, bookmarkButton } from "./reactions.js";
 import { resolveImages, getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
 
@@ -208,7 +209,11 @@ async function show(user) {
     $("post-cat").textContent = p.category || "";
     $("post-title").textContent = p.title;
     if (p.summary) { $("post-summary").textContent = p.summary; $("post-summary").hidden = false; }
-    if (p.status === "published") setupShare(p);
+    if (p.status === "published") {
+      setupShare(p);
+      // 좋아요 · 저장 (PRD FR-04 · FR-05) — 발행된 글에서만, 공유 버튼 앞에
+      $("share-btn").before(likeButton(id, postParams(p)), bookmarkButton({ id, title: p.title, category: p.category }, postParams(p), $("share-msg")));
+    }
     $("post-date").textContent = formatDate(p.publishedAt || p.updatedAt);
     $("post-meta").hidden = false;
     const note = { draft: "임시저장된 글이에요. 관리자에게만 보여요.", private: "비공개 글이에요. 관리자에게만 보여요." }[p.status];

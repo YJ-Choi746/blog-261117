@@ -5,8 +5,8 @@ import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore, collection, doc, addDoc, updateDoc, getDoc, getDocs, deleteDoc,
-  query, where, serverTimestamp
+  getFirestore, collection, doc, addDoc, updateDoc, setDoc, getDoc, getDocs, deleteDoc,
+  query, where, serverTimestamp, increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -19,7 +19,7 @@ export const db = app ? getFirestore(app) : null;
 
 export {
   onAuthStateChanged, signInWithEmailAndPassword, signOut,
-  collection, doc, addDoc, updateDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp
+  collection, doc, addDoc, updateDoc, setDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp, increment
 };
 
 // 관리자로 로그인한 브라우저는 방문자 통계(GA)에서 빼요 (js/analytics.js가 이 표시를 보고 GA를 켜지 않아요).
