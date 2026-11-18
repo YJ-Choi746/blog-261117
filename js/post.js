@@ -23,7 +23,7 @@ function trackView(p) {
 
 // GA: 글마다 같이 보내는 매개변수 (docs/analytics-events.md)
 function postParams(p) {
-  return { post_id: id, post_title: p.title, post_category: p.category || "", post_published_date: publishedDate(p) };
+  return { post_id: id, post_title: p.title, post_category: p.category || "", post_published_at: publishedDate(p) };
 }
 
 // 발행일 YYYY-MM-DD (한국 시간). 발행 전 글은 "미발행"
@@ -35,12 +35,9 @@ function publishedDate(p) {
 }
 
 // GA: 본문을 50% · 90%까지 읽으면 read_post (각각 한 번)
-// 완독 보정: 스크롤 위치 + 탭을 보고 있던 시간을 둘 다 채워야 보내요 (docs/analytics-events.md "완독 보정")
-const READ_RULES = [
-  { depth: 50, share: 0.15, minSec: 5 },
-  { depth: 90, share: 0.30, minSec: 10 }
-];
-const CHARS_PER_MIN = 500, SEC_PER_IMAGE = 5, MAX_REQUIRED_SEC = 180;
+// 완독 보정 (PRD FR-02): 본문 도달 비율 + 최소 읽기 시간을 둘 다 채워야 보내요 (docs/analytics-events.md "완독 보정")
+// 90% 최소 시간 = 글자 수 ÷ 500 × 60초 × 0.5 (5~60초), 50% = 그 절반 (단, 5초 안 이탈은 0건이 되도록 최소 5초)
+const CHARS_PER_MIN = 500, MIN_SEC = 5, MAX_SEC_90 = 60, RECHECK_MS = 2000;
 
 function trackReading(p) {
   if (typeof window.trackEvent !== "function") return;
@@ -57,30 +54,29 @@ function trackReading(p) {
     check();
   };
 
-  // 예상 읽기 시간(초): 글자 수(공백 뺌) ÷ 분당 500자 + 사진 1장당 5초
-  const expectedSec = () => {
+  const required90 = () => {
     const chars = (body.textContent || "").replace(/\s+/g, "").length;
-    return (chars / CHARS_PER_MIN) * 60 + body.querySelectorAll("img").length * SEC_PER_IMAGE;
+    return Math.min(MAX_SEC_90, Math.max(MIN_SEC, (chars / CHARS_PER_MIN) * 60 * 0.5));
   };
-  const requiredSec = (rule) => Math.max(rule.minSec, Math.min(MAX_REQUIRED_SEC, expectedSec() * rule.share));
+  const requiredSec = (depth) => (depth === 90 ? required90() : Math.max(MIN_SEC, required90() / 2));
 
   const check = () => {
     const r = body.getBoundingClientRect();
     if (r.height > 0) maxSeen = Math.max(maxSeen, Math.min(1, Math.max(0, (window.innerHeight - r.top) / r.height)));
     const t = activeSec();
-    for (const rule of READ_RULES) {
-      if (sent.has(rule.depth) || maxSeen * 100 < rule.depth || t < requiredSec(rule)) continue;
-      sent.add(rule.depth);
-      window.trackEvent("read_post", { ...postParams(p), read_depth: String(rule.depth), read_seconds: Math.round(t) });
+    for (const depth of [50, 90]) {
+      if (sent.has(depth) || maxSeen * 100 < depth || t < requiredSec(depth)) continue;
+      sent.add(depth);
+      window.trackEvent("read_post", { ...postParams(p), read_depth: String(depth) });
     }
-    if (sent.size === READ_RULES.length) stop();
+    if (sent.size === 2) stop();
   };
 
   let ticking = false;
   const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; check(); }); } };
   // 사진이 늦게 떠서 본문 높이가 바뀌면 다시 재요
   const resize = typeof ResizeObserver === "function" ? new ResizeObserver(onScroll) : null;
-  const timer = setInterval(check, 1000); // 스크롤을 멈추고 읽는 동안 시간 조건이 차는 경우
+  const timer = setInterval(check, RECHECK_MS); // 스크롤 없는 짧은 글 · 멈춰서 읽는 동안에도 2초마다 다시 확인
   function stop() {
     clearInterval(timer);
     window.removeEventListener("scroll", onScroll);
