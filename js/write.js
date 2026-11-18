@@ -3,6 +3,7 @@ import {
   collection, doc, addDoc, updateDoc, getDoc, serverTimestamp, friendlyError, markAdminBrowser
 } from "./firebase.js";
 import { sanitizeToFragment, sanitizeElementToHtml, htmlToText, imageIds } from "./sanitize.js";
+import { mountWidgets } from "./widgets.js";
 import { uploadImage, resolveImages, getImageData } from "./images.js";
 import { setupEditor } from "./editor.js";
 import { renderBody } from "./render.js";
@@ -197,6 +198,7 @@ $("preview-btn").addEventListener("click", () => {
   const frag = sanitizeToFragment(sanitizeElementToHtml(editorEl));
   $("preview-body").replaceChildren(frag);
   resolveImages($("preview-body"));
+  mountWidgets($("preview-body"));
   $("preview-dialog").showModal();
 });
 $("preview-close").addEventListener("click", () => $("preview-dialog").close());

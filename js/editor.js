@@ -1,7 +1,7 @@
 // 글쓰기 에디터 — 서식 도구, 사진 넣기, 붙여넣기 정리, 링크
 // 브라우저의 contenteditable + execCommand를 써요 (오래된 방식이지만 모든 주요 브라우저에서 동작하고,
 // 실행 취소(Ctrl+Z)가 자연스럽게 돼요). 저장할 때는 sanitize.js가 허용한 것만 남겨요.
-import { FONTS, SIZES, COLORS, HIGHLIGHTS, sanitizeToFragment } from "./sanitize.js";
+import { FONTS, SIZES, COLORS, HIGHLIGHTS, WIDGETS, sanitizeToFragment } from "./sanitize.js";
 
 const BLOCK_TAGS = ["P", "H2", "H3", "BLOCKQUOTE", "PRE", "LI", "FIGURE", "UL", "OL", "HR", "DIV"];
 
@@ -241,6 +241,32 @@ export function setupEditor({ editor, toolbar, imgBar, paper, onChange, onImageF
     changed();
   }
 
+  // ---------- 위젯 (오늘의 명언 · 성격별 포켓몬) ----------
+  // 에디터에서는 안내 상자로만 보이고, 글 화면 · 미리보기에서 js/widgets.js가 움직이는 상자로 그려요
+  function lockWidgets() { editor.querySelectorAll("[data-widget]").forEach((w) => { w.contentEditable = "false"; }); }
+  function insertWidget(name) {
+    if (!Object.hasOwn(WIDGETS, name)) return;
+    const box = document.createElement("div");
+    box.setAttribute("data-widget", name);
+    box.textContent = WIDGETS[name];
+    box.contentEditable = "false";
+    const block = topBlockAt(savedRange);
+    if (block) {
+      const isEmpty = block.tagName === "P" && !(block.textContent || "").trim() && !block.querySelector("img");
+      if (isEmpty) block.replaceWith(box); else block.after(box);
+    } else editor.appendChild(box);
+    let next = box.nextElementSibling;
+    if (!next || next.tagName !== "P") { next = emptyPara(); box.after(next); }
+    const r = document.createRange(); r.setStart(next, 0); r.collapse(true);
+    savedRange = r;
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    changed();
+  }
+  toolbar.querySelectorAll("[data-widget-insert]").forEach((btn) => {
+    btn.addEventListener("mousedown", (e) => e.preventDefault());
+    btn.addEventListener("click", () => { restore(); insertWidget(btn.dataset.widgetInsert); });
+  });
+
   // 붙여넣기: 사진 파일이면 올리고, 글이면 허용된 서식만 남겨서 넣어요
   editor.addEventListener("paste", (e) => {
     const dt = e.clipboardData;
@@ -251,6 +277,7 @@ export function setupEditor({ editor, toolbar, imgBar, paper, onChange, onImageF
     const html = dt.getData("text/html");
     if (html) {
       insertNodeAtCaret(sanitizeToFragment(html));
+      lockWidgets();
     } else {
       exec("insertText", dt.getData("text/plain"));
     }
@@ -300,7 +327,7 @@ export function setupEditor({ editor, toolbar, imgBar, paper, onChange, onImageF
 
   return {
     insertImage,
-    setContent(fragment) { editor.replaceChildren(fragment); if (!editor.firstChild) editor.appendChild(emptyPara()); ensureTrailingPara(); updateCount(); },
+    setContent(fragment) { editor.replaceChildren(fragment); if (!editor.firstChild) editor.appendChild(emptyPara()); lockWidgets(); ensureTrailingPara(); updateCount(); },
     updateCount,
     hideImgBar
   };

@@ -94,3 +94,9 @@
 - **공유 페이지는 스크립트로만 이동**: meta refresh · canonical을 빼서 Slack 같은 미리보기 봇이 post.html로 따라가지 않게. 대표 이미지 없는 글은 og-home.png를 기본 썸네일로.
 - **완독 보정 (FR-02, 2026-11-18, PRD v2.0)**: `read_post`는 스크롤 + 탭을 보고 있던 시간 둘 다 채워야 보냄. 90 = 글자 수 ÷ 500 × 60 × 0.5초(5~60초), 50 = 그 절반이되 최소 5초(PRD 인수조건 "5초 안 이탈 시 read_post 없음"과 맞추려고). 2초마다 재확인, 사진 늦게 떠도 다시 잼.
 - **게시일 전송 (FR-03, 2026-11-18, PRD v2.0)**: `view_post`에 `post_published_at`(YYYY-MM-DD, 한국 시간, 발행 전 글은 `미발행`). 같은 기간 완독률 비교를 위해 `read_post`에도 붙임.
+
+## 2026-11-18
+
+- **본문 위젯 (US-10)**: 글 본문에 `<div data-widget="이름">` 자리를 허용(sanitize.js의 `WIDGETS`에 있는 이름만, 속성은 data-widget 하나만). 에디터에서는 고칠 수 없는 안내 상자, 글 상세 · 미리보기에서는 `js/widgets.js`가 그림. 툴바에 "명언" · "포켓몬" 버튼.
+- **오늘의 명언**: 한국어 명언 API(korean-advice-open-api.vercel.app)는 서버가 멈춰 있고(Deployment Paused) CORS 헤더가 없어 브라우저에서 부를 수 없음 → 저장소의 명언 목록 135개를 `js/data/advices.js`로 옮겨 방문할 때마다 무작위로 보여줌.
+- **성격별 포켓몬**: 성격 6가지 버튼, 누르면 PokéAPI에서 후보 3마리 중 하나를 불러옴(같은 성격을 다시 누르면 다른 포켓몬). 외부 리소스에 PokéAPI 추가.

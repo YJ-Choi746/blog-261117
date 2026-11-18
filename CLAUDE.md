@@ -24,7 +24,9 @@ css/editor.css      에디터 · 서식 있는 본문(.rich) · 글 관리 스�
 css/fx.css          모든 페이지 공통: 세미볼드(600) · 버튼 물 차오름 효과
 js/firebase.js      Firebase 연결 · SDK 버전은 여기 한 곳에서만
 js/firebase-config.js  Firebase 웹 설정값 (공개값)
-js/sanitize.js      본문 HTML 허용 목록 정리기 + 허용 글꼴·크기·색 목록
+js/sanitize.js      본문 HTML 허용 목록 정리기 + 허용 글꼴·크기·색 · 위젯 목록
+js/widgets.js       글 본문 위젯 (오늘의 명언 · 성격별 포켓몬) — 글 상세 · 미리보기에서 그림
+js/data/advices.js  명언 목록 (한국어 명언 API 저장소에서 옮김)
 js/editor.js        에디터 서식 도구 · 사진 넣기 · 붙여넣기
 js/images.js        사진 줄이기 · Firestore images 저장 · 불러오기
 js/post-actions.js  관리자 수정·삭제 버튼, 글+사진 삭제
@@ -47,7 +49,7 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 
 ## 기술 규칙
 - 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요.
-- 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요.
+- 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`), **PokéAPI**(`pokeapi.co` 데이터 + `raw.githubusercontent.com/PokeAPI/sprites` 그림, `js/widgets.js`의 포켓몬 위젯만)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요.
 - GA 이벤트를 새로 만들거나 바꾸면 **먼저 `docs/analytics-events.md`에 적고** 이름 규칙(`동사_대상`, snake_case)을 지켜요. 이름 · 이메일 · 의뢰 내용 같은 개인 정보는 GA로 보내지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
 - 사용자가 쓴 글의 제목·태그는 **`textContent`로만** 넣어요. 서식 있는 본문은 **반드시 `js/sanitize.js`를 거친 요소만** 넣어요. HTML 문자열을 `innerHTML`/`insertAdjacentHTML`에 넣지 않아요 (XSS).
 - 본문에 새 태그·스타일·글꼴을 허용하려면 `js/sanitize.js`의 허용 목록에만 추가해요.

@@ -18,6 +18,11 @@ export const SIZES = [13, 15, 17, 19, 24, 30, 38];
 export const COLORS = ["#111111", "#5F5F5F", "#2F6BEA", "#1F4FB8", "#B42318", "#C2410C", "#2B8A3E", "#6741D9", "#FFFFFF"];
 export const HIGHLIGHTS = ["#FFF3BF", "#D3F9D8", "#E8EFFD", "#FFE3E3", "#F3F0FF"];
 export const IMAGE_SIZES = ["full", "medium", "small"];
+// 본문에 넣을 수 있는 위젯 (이름 → 에디터에 보이는 안내 글). 화면에서는 js/widgets.js가 그려요.
+export const WIDGETS = {
+  "daily-quote": "오늘의 명언 — 방문할 때마다 새 명언이 나와요",
+  "pokemon-match": "성격별 포켓몬 추천 — 성격을 누르면 포켓몬이 나와요"
+};
 
 const DROP_WITH_CONTENT = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "SVG", "MATH", "NOSCRIPT", "TEMPLATE", "TEXTAREA", "SELECT", "BUTTON", "INPUT", "FORM", "HEAD", "TITLE", "META", "LINK"]);
 const RENAME = { B: "strong", I: "em", STRIKE: "s", DEL: "s", INS: "u", H1: "h2", H4: "h3", H5: "h3", H6: "h3", FONT: "span" };
@@ -100,6 +105,15 @@ function cleanNode(node, depth) {
   if (node.nodeType !== 1) return null;
   const tagUp = node.tagName.toUpperCase();
   if (DROP_WITH_CONTENT.has(tagUp)) return null;
+
+  // 위젯 자리: 허용한 이름만, 속성은 data-widget 하나만, 안의 글은 우리가 정한 안내 글로 바꿔요
+  if (tagUp === "DIV" && Object.hasOwn(WIDGETS, node.getAttribute("data-widget") || "")) {
+    const name = node.getAttribute("data-widget");
+    const w = document.createElement("div");
+    w.setAttribute("data-widget", name);
+    w.textContent = WIDGETS[name];
+    return w;
+  }
 
   // div: 줄 단위면 문단으로, 안에 블록이 있으면 껍데기만 벗겨요
   let tag;
@@ -191,6 +205,7 @@ export function htmlToText(html) {
   const frag = sanitizeToFragment(html);
   const box = document.createElement("div");
   box.appendChild(frag);
+  box.querySelectorAll("[data-widget]").forEach((w) => w.remove()); // 위젯 안내 글은 요약 · 글자 수에서 빼요
   box.querySelectorAll("p, h2, h3, li, blockquote, figcaption, pre").forEach((b) => b.append("\n"));
   return (box.textContent || "").replace(/\n{3,}/g, "\n\n").trim();
 }

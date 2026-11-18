@@ -1,6 +1,7 @@
 import { auth, db, isConfigured, onAuthStateChanged, doc, getDoc, collection, getDocs, query, where, friendlyError, formatDate } from "./firebase.js";
 import { renderBody } from "./render.js";
 import { sanitizeToFragment } from "./sanitize.js";
+import { mountWidgets } from "./widgets.js";
 import { resolveImages, getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
 
@@ -207,6 +208,7 @@ async function show(user) {
       body.style.padding = "40px 0 56px";
       body.replaceChildren(sanitizeToFragment(p.contentHtml || ""));
       resolveImages(body);
+      mountWidgets(body);
     } else {
       renderBody(p.body, body);
     }

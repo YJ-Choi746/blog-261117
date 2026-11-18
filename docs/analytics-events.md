@@ -38,6 +38,8 @@
 | `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_name` | 홈 | |
 | `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_name`, `request_types`, `budget_range` | 홈 | |
 | `generate_lead` | 의뢰가 접수되어 완료 페이지가 열렸을 때 | `form_name` | 의뢰 완료 | **예** |
+| `refresh_quote` | 오늘의 명언 위젯에서 "다른 명언 보기"를 눌렀을 때 | `widget_name` | 글 상세 (위젯이 있는 글) | |
+| `select_personality` | 성격별 포켓몬 위젯에서 성격 버튼 · "같은 성격의 다른 포켓몬"을 눌렀을 때 | `personality`, `pokemon_id`, `widget_name` | 글 상세 (위젯이 있는 글) | |
 
 ### 값 목록
 
@@ -53,6 +55,9 @@
 | `form_name` | `project_request` |
 | `request_types` | 고른 의뢰 분야를 쉼표로 (`브랜딩,UI/UX 디자인`) |
 | `budget_range` | 고른 예산 구간 그대로 (안 고르면 `미선택`) |
+| `widget_name` | `daily_quote` · `pokemon_match` |
+| `personality` | `challenger` · `mood_maker` · `healer` · `thinker` · `strategist` · `explorer` |
+| `pokemon_id` | PokéAPI 도감 번호 (`6`, `25` …) |
 
 ### 완독 보정 (`read_post`)
 
