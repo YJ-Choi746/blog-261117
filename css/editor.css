@@ -161,7 +161,8 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 
 /* 글 상세: 제목 아래 요약 · 공유 링크 */
 .post-summary { margin: 0; font-size: 18px; line-height: 1.7; color: var(--gray-700); }
-.post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 32px; }
+/* 해시태그와 아래 줄(댓글 위 선)의 가운데: 위 = 태그 아래 여백 56 + 16 = 72, 아래 = 댓글 margin-top 72 */
+.post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
 .post-share .btn { font-size: 15px; }
 .share-msg { font-size: 14px; color: var(--gray-600); overflow-wrap: anywhere; }
 
@@ -202,7 +203,7 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .saved-note { margin: -12px 0 20px; font-size: 14px; color: var(--gray-600); }
 
 /* ---------- 댓글 (js/comments.js · admin/comments.html) ---------- */
-.comments { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
+.comments { margin: 72px 0 56px; padding-top: 32px; border-top: 1px solid var(--line); }  /* 아래 56 = 이전 · 다음 글 선과 띄우기 */
 .comments-title { margin: 0 0 20px; font-size: 21px; font-weight: 600; }
 .comments-count { color: var(--blue); }                 /* blue · bg 위 4.6:1 */
 .comments-empty { margin: 0 0 24px; font-size: 15px; color: var(--gray-600); }
