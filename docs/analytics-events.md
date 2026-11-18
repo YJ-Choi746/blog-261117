@@ -9,7 +9,7 @@
 | 블로그 글이 읽힌다 | 어떤 글이 많이 열리고, 끝까지 읽히나? | `view_post` → `read_post` |
 | 어디서 떠나나 | 본문 어디까지 내려갔고, 몇 초 만에 · 어느 지점에서 떠났나? | `scroll_post`, `leave_post` |
 | 글이 퍼진다 | 어떤 글의 공유 링크를 복사하나? | `share_post` |
-| 글에 반응한다 | 어떤 글에 좋아요 · 저장을 누르나? (PRD 반응률) | `like_post` · `unlike_post`, `bookmark_post` · `unbookmark_post` |
+| 글에 반응한다 | 어떤 글에 좋아요 · 저장 · 댓글을 남기나? (PRD 반응률) | `like_post` · `unlike_post`, `bookmark_post` · `unbookmark_post`, `comment_post` |
 | 글을 찾아 들어온다 | 어디(홈/목록)에서, 몇 번째 글을 눌렀나? 어떤 카테고리를 고르나? | `select_post`, `filter_posts` |
 | 의뢰로 이어진다 | 의뢰 버튼을 어디서 눌렀나? 폼을 시작하고 끝까지 보냈나? | `click_cta` → `form_start` → `form_submit` → **`generate_lead`** |
 
@@ -42,6 +42,7 @@
 | `unlike_post` | 좋아요를 다시 눌러 취소하고 저장에 성공했을 때 | 위와 같음 | 글 상세 | |
 | `bookmark_post` | 글 상세에서 "저장"을 눌렀을 때 (이 브라우저에 저장) | 위와 같음 | 글 상세 | |
 | `unbookmark_post` | "저장됨"을 눌러 저장을 취소했을 때 | 위와 같음 | 글 상세 | |
+| `comment_post` | 글 상세에서 댓글을 등록해 **저장에 성공했을 때** (승인 전). 닉네임 · 내용은 보내지 않아요 | `post_id`, `post_title`, `post_category`, `post_published_at` | 글 상세 | |
 | `click_cta` | 의뢰 · 기록 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈, 글 목록, 글 상세 | |
 | `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_name` | 홈 | |
 | `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_name`, `request_types`, `budget_range` | 홈 | |
@@ -139,4 +140,5 @@
 | `select_post`, `filter_posts`, `form_start`, `form_submit` | `js/home.js`, `js/posts.js` |
 | `view_post`, `read_post`, `scroll_post`, `leave_post`, 글 상세 `page_view` | `js/post.js` |
 | `like_post` · `unlike_post` · `bookmark_post` · `unbookmark_post` | `js/reactions.js` |
+| `comment_post` | `js/comments.js` |
 | `generate_lead` | `thanks.html` |

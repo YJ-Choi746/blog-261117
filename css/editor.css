@@ -200,3 +200,29 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .react-btn[aria-pressed="true"] svg { fill: currentColor; }  /* 누른 상태 = 아이콘 채움 (색은 버튼 글자색 그대로) */
 .react-count { min-width: 1ch; font-variant-numeric: tabular-nums; }
 .saved-note { margin: -12px 0 20px; font-size: 14px; color: var(--gray-600); }
+
+/* ---------- 댓글 (js/comments.js · admin/comments.html) ---------- */
+.comments { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
+.comments-title { margin: 0 0 20px; font-size: 21px; font-weight: 600; }
+.comments-count { color: var(--blue); }                 /* blue · bg 위 4.6:1 */
+.comments-empty { margin: 0 0 24px; font-size: 15px; color: var(--gray-600); }
+.comment-list { list-style: none; margin: 0 0 32px; padding: 0; border-top: 1px solid var(--line); }
+.comment { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.comment-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin: 0 0 6px; }
+.comment-nick { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.comment-date { font-size: 13px; color: var(--gray-600); }
+.comment-body { margin: 0; font-size: 16px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--gray-700); }
+.comment-form { display: flex; flex-direction: column; gap: 16px; }
+.comment-form .input { max-width: 320px; }
+.comment-counter { align-self: flex-end; font-size: 13px; font-weight: 400; color: var(--gray-600); }
+.comment-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.comment-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.comment-note { margin: 0; font-size: 14px; color: var(--gray-600); }
+.comment-msg { margin: 0; overflow-wrap: anywhere; }
+/* 관리자 댓글 관리 */
+.cmt-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 20px; align-items: start; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.cmt-row .cmt-post { margin: 0 0 4px; font-size: 13px; color: var(--gray-600); overflow-wrap: anywhere; }
+.cmt-row .cmt-post a { color: inherit; }
+.cmt-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.cmt-state { font-size: 13px; color: var(--gray-600); }
+@media (max-width: 560px) { .cmt-row { grid-template-columns: 1fr; } .cmt-actions { justify-content: flex-start; } }

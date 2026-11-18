@@ -17,6 +17,7 @@ posts.html          글 목록 (발행된 글, 카테고리 필터, 관리자면
 post.html           글 상세 (?id=글ID)
 admin/login.html    관리자 로그인
 admin/posts.html    글 관리 (공개 범위 · 보기 · 수정 · 삭제)
+admin/comments.html 댓글 관리 (승인 대기 · 공개 · 숨김 · 삭제)
 admin/write.html    글쓰기 에디터 (서식 · 사진 · 미리보기 · 자동 백업, ?id=로 수정)
 images/og-home.png  홈 · 글 목록 공유 미리보기 이미지 (1200×630)
 css/site.css        공통 스타일 (디자인 시스템 토큰 = CSS 변수)
@@ -31,6 +32,7 @@ js/editor.js        에디터 서식 도구 · 사진 넣기 · 붙여넣기
 js/images.js        사진 줄이기 · Firestore images 저장 · 불러오기
 js/post-actions.js  관리자 수정·삭제 버튼, 글+사진 삭제
 js/reactions.js     좋아요(Firestore postStats) · 저장(브라우저 저장소) 버튼
+js/comments.js      글 상세 댓글 (승인된 것만 보임 · 등록은 승인 대기) · js/admin-comments.js 관리자 댓글 관리
 js/home.js          첫 화면 최근 기록
 js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화면 제외)
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
