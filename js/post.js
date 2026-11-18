@@ -56,7 +56,10 @@ function trackReading(p) {
   };
 
   const required90 = () => {
-    const chars = (body.textContent || "").replace(/\s+/g, "").length;
+    // 위젯(명언 · 포켓몬) 글자는 본문이 아니라서 빼요
+    const widgetText = [...body.querySelectorAll("[data-widget]")].map((w) => w.textContent || "").join("");
+    const chars = ((body.textContent || "").length - widgetText.length) > 0
+      ? (body.textContent || "").replace(/\s+/g, "").length - widgetText.replace(/\s+/g, "").length : 0;
     return Math.min(MAX_SEC_90, Math.max(MIN_SEC, (chars / CHARS_PER_MIN) * 60 * 0.5));
   };
   const requiredSec = (depth) => (depth === 90 ? required90() : Math.max(MIN_SEC, required90() / 2));
