@@ -30,7 +30,7 @@ GA 관리 → 데이터 표시 → 맞춤 정의. 범위는 모두 **이벤트**
 |---|---|
 | 조회수 | `SUM(CASE WHEN 이벤트 이름 = "view_post" THEN 이벤트 수 ELSE 0 END)` |
 | 완독 수 | `SUM(CASE WHEN 이벤트 이름 = "read_post" AND 읽은 정도 = "90" THEN 이벤트 수 ELSE 0 END)` |
-| 반응 수 | `SUM(CASE WHEN 이벤트 이름 IN ("like_post", "bookmark_post", "share_post", "comment_post") THEN 이벤트 수 ELSE 0 END)` |
+| 반응 수 | `SUM(CASE WHEN 이벤트 이름 IN ("like_post", "bookmark_post", "share_post") THEN 이벤트 수 ELSE 0 END)` |
 | 떠남 수 | `SUM(CASE WHEN 이벤트 이름 = "leave_post" THEN 이벤트 수 ELSE 0 END)` |
 | 머문 시간 합 | `SUM(CASE WHEN 이벤트 이름 = "leave_post" THEN 머문 시간 ELSE 0 END)` |
 | 완독률 | `완독 수 / 조회수` |
@@ -75,4 +75,4 @@ GA 관리 → 데이터 표시 → 맞춤 정의. 범위는 모두 **이벤트**
 - GA 데이터는 24~48시간 늦게 들어와요. 실시간 순위가 아니에요.
 - 광고 차단 방문자는 GA에 안 잡혀요. 좋아요 수의 정답은 Firestore(`postStats`) 숫자예요.
 - 글별 조회수가 적은 초기에는 비율이 크게 흔들려요. 카테고리별로 먼저 보는 걸 추천해요.
-- 댓글(`comment_post`)은 FR-06을 만들면 자동으로 반응에 들어가요.
+- 댓글 기능은 없어서(2026-11-19 제거) PRD 반응률의 댓글 항목은 0으로 봐요.

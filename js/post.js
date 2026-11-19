@@ -3,7 +3,6 @@ import { renderBody } from "./render.js";
 import { sanitizeToFragment } from "./sanitize.js";
 import { mountWidgets } from "./widgets.js";
 import { likeButton, bookmarkButton } from "./reactions.js";
-import { mountComments } from "./comments.js";
 import { resolveImages, getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
 
@@ -214,7 +213,6 @@ async function show(user) {
       setupShare(p);
       // 좋아요 · 저장 (PRD FR-04 · FR-05) — 발행된 글에서만, 공유 버튼 앞에
       $("share-btn").before(likeButton(id, postParams(p)), bookmarkButton({ id, title: p.title, category: p.category }, postParams(p), $("share-msg")));
-      mountComments($("comments"), id, postParams(p)); // 댓글 (PRD FR-06) — 발행된 글에서만
     }
     $("post-date").textContent = formatDate(p.publishedAt || p.updatedAt);
     $("post-meta").hidden = false;
