@@ -1,6 +1,7 @@
 // 작업 상세 (PRD v1.3 F3, 프로토타입 디자인) — 제목 · 요약 → 정보 줄 → 커버 → 01 요청 · 02 과정 · 03 결과 → 다른 프로젝트 → 의뢰 띠
 // 공개 문서(works)만 읽어요. 메모 · 비공개 실명은 관리자 문서(workNotes)에 있어 여기서 읽을 수 없어요.
 // 모든 내용은 textContent로만 넣어요 (XSS)
+import { normLayout, applyLayout } from "./image-layout.js";
 import { db, isConfigured, doc, getDoc } from "./firebase.js";
 import { getImageData } from "./images.js";
 import { CATEGORIES, loadPublishedWorks } from "./works-data.js";
@@ -16,11 +17,8 @@ function paragraphs(el, text) {
     return p;
   }));
 }
-function image(id, alt, size) {
+function image(id, alt) {
   const img = document.createElement("img");
-    // 관리자가 고른 폭(%) 20~100 (예전 값 l · m · s도 읽음). 휴대폰에서 너무 작아지지 않게 최소 200px
-  const n = typeof size === "number" ? size : ({ l: 100, m: 70, s: 45 })[size] ?? 100;
-  img.style.width = `max(${Math.min(100, Math.max(20, Math.round(n)))}%, min(100%, 200px))`;
   img.alt = alt; img.loading = "lazy";
   getImageData(id).then((d) => { if (d) img.src = d; });
   return img;
@@ -43,8 +41,6 @@ async function load() {
   const desc = document.querySelector('meta[name="description"]');
   if (desc && w.summary) desc.setAttribute("content", w.summary);
 
-  if (w.coverImageId) $("work-cover").appendChild(image(w.coverImageId, `${w.title || w.name} 커버 이미지`, (w.imageSizes || [])[0]));
-  else $("work-cover").hidden = true;
   $("work-cat").textContent = w.category || "";
   $("work-title").textContent = w.title || w.name || "";
   $("work-summary").textContent = w.summary || "";
@@ -60,8 +56,16 @@ async function load() {
   paragraphs($("work-problem"), w.problem);
   paragraphs($("work-process"), w.process);
   paragraphs($("work-result"), w.result);
-  $("work-images").replaceChildren(...(w.imageIds || []).slice(1).map((im, i) => image(im, `${w.title || w.name} 이미지 ${i + 2}`, (w.imageSizes || [])[i + 1])));
-  $("work-images").hidden = (w.imageIds || []).length < 2;
+  // 이미지: 관리자가 정한 위치 · 폭 · 정렬대로 (js/image-layout.js)
+  const boxes = { cover: $("work-cover"), problem: $("work-imgs-problem"), process: $("work-images"), result: $("work-imgs-result") };
+  Object.values(boxes).forEach((b) => b.replaceChildren());
+  (w.imageIds || []).forEach((im, i) => {
+    const l = normLayout((w.imageSizes || [])[i], i);
+    const img = image(im, `${w.title || w.name} 이미지 ${i + 1}`);
+    applyLayout(img, l);
+    boxes[l.at].appendChild(img);
+  });
+  Object.values(boxes).forEach((b) => { b.hidden = !b.children.length; });
   pager(w);
   $("work-tags").replaceChildren(...(w.tags || []).map((t) => { const s = document.createElement("span"); s.className = "tag"; s.textContent = `#${t}`; return s; }));
 

@@ -33,6 +33,7 @@ js/firebase-config.js  Firebase 웹 설정값 (공개값)
 js/sanitize.js      본문 HTML 허용 목록 정리기 + 허용 글꼴·크기·색 · 위젯 목록
 js/ai-direct.js     관리자 전용: 운영자 키로 브라우저에서 AI 초안 · 문구 (D30) · 프롬프트 사본 js/ai-prompt.js (functions/casestudy-prompt.js와 같게)
 js/request-dialog.js  홈 의뢰서 창 열기 · 닫기 (Firebase 없이 동작)
+js/image-layout.js  작업 이미지 위치 · 폭 · 정렬 규칙 (작업 상세 · 관리자 미리보기 공용, works.imageSizes)
 js/widgets.js       글 본문 위젯 (오늘의 명언 · 성격별 포켓몬) — 글 상세 · 미리보기에서 그림
 js/data/advices.js  명언 목록 (한국어 명언 API 저장소에서 옮김)
 js/editor.js        에디터 서식 도구 · 사진 넣기 · 붙여넣기

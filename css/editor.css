@@ -339,3 +339,24 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pw-fullpv-bar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 10px 24px; background: var(--white); border-bottom: 1px solid var(--line); font-size: 14px; color: var(--gray-700); } /* white · line */
 .pw-fullpv-bar strong { color: var(--black); font-weight: 600; }
 .pw-fullpv .case-band { margin-top: 56px; }
+
+/* 미리보기 안 이미지 편집: 고르기 · 끌어서 옮기기 · 모서리로 크기 · 정렬 도구 */
+.pv-fig { position: relative; margin-top: 0; margin-bottom: 12px; cursor: grab; outline-offset: 2px; }
+.pv-fig img { width: 100%; height: auto; display: block; user-select: none; }
+.pv-fig:hover { outline: 1px dashed var(--line-strong); } /* line-strong */
+.pv-fig.on { outline: 2px solid var(--blue); z-index: 3; } /* blue */
+.pv-imgwrap { position: relative; }
+.pv-fig.on img { touch-action: none; }
+.pv-fig.pv-moving { opacity: .35; }
+.pv-handle { position: absolute; right: -8px; bottom: -8px; width: 18px; height: 18px; background: var(--blue); border: 2px solid #FFFFFF; cursor: nwse-resize; touch-action: none; z-index: 2; } /* blue · white */
+.pv-handle::after { content: ""; position: absolute; inset: -13px; } /* 눌리는 영역 44px */
+.pv-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 10px; padding: 8px; background: var(--white); border: 1px solid var(--line); font-size: 13px; cursor: default; }
+.pv-tools button, .pv-tools select { min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--white); color: var(--black); font: inherit; font-size: 13px; cursor: pointer; }
+.pv-tools select { border-radius: 0; }
+.pv-tools button[aria-pressed="true"] { background: var(--black); border-color: var(--black); color: var(--white); font-weight: 600; }
+.pv-w { min-width: 44px; font-weight: 600; color: var(--blue-tint-ink); }
+.pv-drop { min-height: 64px; outline: 2px dashed var(--line-strong); outline-offset: 4px; }
+.pv-drop-on { outline-color: var(--blue); background: var(--blue-tint); }
+.pv-ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: .75; margin: 0; max-width: 240px; }
+.pv-ghost img { width: 100%; display: block; }
+.pv-ghost .pv-tools, .pv-ghost .pv-handle { display: none; }

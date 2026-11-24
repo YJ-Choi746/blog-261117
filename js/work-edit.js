@@ -9,6 +9,7 @@ import {
 } from "./firebase.js";
 import { uploadImage, getImageData } from "./images.js";
 import { templateDraft, templateSns } from "./templates.js";
+import { SPOTS, normLayout, applyLayout, sortBySpot, clampW } from "./image-layout.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_IMAGES = 4;
@@ -59,33 +60,33 @@ $("undo").addEventListener("click", () => {
 });
 
 // ---- 이미지 ----
-// 이미지 크기: 게시 화면에서 보이는 폭(%) 20~100. 예전 값 크게 · 보통 · 작게(l · m · s)도 읽어요
-const LEGACY = { l: 100, m: 70, s: 45 };
-export const pctOf = (v) => { const n = typeof v === "number" ? v : LEGACY[v] ?? Number(v); return Number.isFinite(n) ? Math.min(100, Math.max(20, Math.round(n))) : 100; };
-const sizeOf = (im) => pctOf(im && im.size);
+// 위치 · 폭 · 정렬은 오른쪽 미리보기에서 바로 바꿔요 (끌어서 옮기기 · 모서리로 크기). js/image-layout.js
+const layoutOf = (im) => normLayout({ w: im.w, align: im.align, at: im.at }, 0);
+function reorderImages() { images = sortBySpot(images, layoutOf); }
+let selImg = -1; // 미리보기에서 고른 이미지 번호
 function renderImages() {
   const box = $("images");
   box.replaceChildren(...images.map((im, i) => {
     const fig = document.createElement("figure");
     fig.className = "work-image";
     const img = document.createElement("img");
-    img.alt = i === 0 ? "커버 이미지" : `이미지 ${i + 1}`;
+    img.alt = i === 0 ? "대표 이미지" : `이미지 ${i + 1}`;
     img.src = im.data || "";
     const cap = document.createElement("figcaption");
-    cap.textContent = i === 0 ? "커버" : `${i + 1}`;
+    cap.textContent = i === 0 ? "대표 (카드)" : `${i + 1}`;
     const rm = document.createElement("button");
     rm.type = "button"; rm.className = "pw-x"; rm.title = "이미지 빼기";
     rm.setAttribute("aria-label", `${img.alt} 빼기`);
     rm.appendChild(xIcon());
-    rm.addEventListener("click", () => { images.splice(i, 1); dirty = true; renderImages(); });
-    // 이미지 크기: 슬라이더로 20~100% 자유롭게 (오른쪽 미리보기에 바로 보여요). 자르지 않고 원래 비율
+    rm.addEventListener("click", () => { images.splice(i, 1); selImg = -1; dirty = true; renderImages(); });
+    // 폭 슬라이더 (미리보기 모서리를 끌어도 같이 바뀌어요)
     const size = document.createElement("label");
     size.className = "pw-size";
-    const out = document.createElement("span"); out.textContent = `${sizeOf(im)}%`;
+    const out = document.createElement("span"); out.textContent = `${layoutOf(im).w}%`;
     const range = document.createElement("input");
-    range.type = "range"; range.min = "20"; range.max = "100"; range.step = "5"; range.value = String(sizeOf(im));
-    range.setAttribute("aria-label", `${img.alt} 크기 (%)`);
-    range.addEventListener("input", () => { im.size = Number(range.value); out.textContent = `${im.size}%`; dirty = true; setState("저장 안 된 변경 있음"); renderLive(); });
+    range.type = "range"; range.min = "20"; range.max = "100"; range.step = "1"; range.value = String(layoutOf(im).w);
+    range.setAttribute("aria-label", `${img.alt} 폭 (%)`);
+    range.addEventListener("input", () => { im.w = Number(range.value); out.textContent = `${im.w}%`; changed(); renderLive(); });
     size.append(out, range);
     fig.append(rm, img, cap, size);
     return fig;
@@ -93,6 +94,7 @@ function renderImages() {
   $("add-image").disabled = images.length >= MAX_IMAGES;
   renderLive();
 }
+function changed() { dirty = true; setState("저장 안 된 변경 있음"); }
 // 닫기(X) 선 아이콘 — innerHTML 없이 만들어요
 function xIcon() {
   const NS = "http://www.w3.org/2000/svg";
@@ -107,7 +109,7 @@ $("image-input").addEventListener("change", async (e) => {
   e.target.value = "";
   for (const f of files) {
     setState("이미지 올리는 중…");
-    try { images.push(await uploadImage(f, user.uid)); dirty = true; renderImages(); }
+    try { images.push({ ...(await uploadImage(f, user.uid)), ...normLayout(null, images.length) }); dirty = true; renderImages(); }
     catch (err) { say(`이미지를 올리지 못했어요. ${friendlyError(err)}`, true); }
   }
   setState(dirty ? "저장 안 된 변경 있음" : "");
@@ -320,7 +322,6 @@ function paragraphsInto(box, text) {
     return p;
   }));
 }
-function pvImage(im, alt) { const img = document.createElement("img"); img.style.width = `max(${sizeOf(im)}%, min(100%, 200px))`; img.alt = alt; img.src = im.data || ""; return img; }
 function renderFullPreview(px = "fp") {
   const $p = (k) => $(`${px}-${k}`);
   const title = val("c-title") || val("f-name") || "제목 없음";
@@ -330,15 +331,144 @@ function renderFullPreview(px = "fp") {
   const meta = [["업종", val("f-industry") || "-"], ["기간", val("f-period") || "-"], ["맡은 일", val("f-role") || "-"]];
   if ($("f-client-public").checked && val("f-client")) meta.push(["클라이언트", val("f-client")]);
   $p("meta").replaceChildren(...meta.map(([k, v]) => { const d = document.createElement("div"); const dt = document.createElement("dt"); dt.textContent = k; const dd = document.createElement("dd"); dd.textContent = v; d.append(dt, dd); return d; }));
-  $p("cover").replaceChildren(...(images[0] && images[0].data ? [pvImage(images[0], `${title} 커버 이미지`)] : []));
-  $p("cover").hidden = !(images[0] && images[0].data);
   paragraphsInto($p("problem"), val("c-problem") || "-");
   paragraphsInto($p("process"), val("c-process") || "-");
   paragraphsInto($p("result"), val("c-result") || "-");
-  $p("images").replaceChildren(...images.slice(1).filter((im) => im.data).map((im, i) => pvImage(im, `${title} 이미지 ${i + 2}`)));
-  $p("images").hidden = images.length < 2;
+  // 이미지: 위치 · 폭 · 정렬대로 (방문자 화면과 같은 규칙)
+  const boxes = spotBoxes(px);
+  Object.values(boxes).forEach((b) => b.replaceChildren());
+  const live = px === "lp";
+  images.forEach((im, i) => {
+    if (!im.data) return;
+    const l = layoutOf(im);
+    const img = document.createElement("img"); img.alt = `${title} 이미지 ${i + 1}`; img.src = im.data; img.draggable = false;
+    if (!live) { applyLayout(img, l); boxes[l.at].appendChild(img); return; }
+    boxes[l.at].appendChild(editableFigure(im, i, img, l));
+  });
+  Object.values(boxes).forEach((b) => { b.hidden = !b.children.length && !(live && dragging); });
   $p("tags").replaceChildren(...tagsFromInput().map((t) => { const sp = document.createElement("span"); sp.className = "tag"; sp.textContent = `#${t}`; return sp; }));
 }
+const spotBoxes = (px) => ({ cover: $(`${px}-cover`), problem: $(`${px}-imgs-problem`), process: $(`${px}-images`), result: $(`${px}-imgs-result`) });
+
+// ---- 미리보기 안에서 이미지 고르기 · 끌어서 옮기기 · 모서리로 크기 바꾸기 · 정렬 ----
+let dragging = false;
+function editableFigure(im, i, img, l) {
+  const fig = document.createElement("figure");
+  fig.className = "pv-fig" + (i === selImg ? " on" : "");
+  fig.dataset.i = String(i);
+  applyLayout(fig, l);
+  fig.tabIndex = 0;
+  fig.setAttribute("aria-label", `이미지 ${i + 1} · 폭 ${l.w}% · 눌러서 편집`);
+  const wrap = document.createElement("div"); wrap.className = "pv-imgwrap"; wrap.appendChild(img);
+  fig.appendChild(wrap);
+  fig.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selImg = i; renderLive(); } });
+  // 끌어서 옮기기: 사진을 누른 채 다른 칸(맨 위 · 01 · 02 · 03)으로 옮겨요
+  img.addEventListener("pointerdown", (e) => startMove(e, i, fig));
+  if (i === selImg) {
+    const handle = document.createElement("span");
+    handle.className = "pv-handle"; handle.title = "끌어서 크기 바꾸기";
+    handle.addEventListener("pointerdown", (e) => startResize(e, im, fig));
+    wrap.appendChild(handle);
+    fig.appendChild(imageToolbar(im, i));
+  }
+  return fig;
+}
+function tbButton(text, label, on, fn) {
+  const b = document.createElement("button");
+  b.type = "button"; b.textContent = text; b.setAttribute("aria-label", label);
+  if (on) b.setAttribute("aria-pressed", "true");
+  b.addEventListener("click", (e) => { e.stopPropagation(); fn(); });
+  return b;
+}
+function imageToolbar(im, i) {
+  const bar = document.createElement("div");
+  bar.className = "pv-tools";
+  const l = layoutOf(im);
+  const wlab = document.createElement("span"); wlab.className = "pv-w"; wlab.textContent = `${l.w}%`;
+  bar.append(wlab,
+    tbButton("왼쪽", "왼쪽 정렬", l.align === "left", () => { im.align = "left"; changed(); renderLive(); }),
+    tbButton("가운데", "가운데 정렬", l.align === "center", () => { im.align = "center"; changed(); renderLive(); }),
+    tbButton("오른쪽", "오른쪽 정렬", l.align === "right", () => { im.align = "right"; changed(); renderLive(); }));
+  const sel = document.createElement("select");
+  sel.setAttribute("aria-label", "이미지 위치");
+  SPOTS.forEach(([k, t]) => { const o = document.createElement("option"); o.value = k; o.textContent = t; sel.appendChild(o); });
+  sel.value = l.at;
+  sel.addEventListener("click", (e) => e.stopPropagation());
+  sel.addEventListener("change", () => { im.at = sel.value; moveSelected(im); });
+  bar.append(sel,
+    tbButton("위로", "같은 칸에서 위로", false, () => { swapInSpot(i, -1); }),
+    tbButton("아래로", "같은 칸에서 아래로", false, () => { swapInSpot(i, 1); }),
+    tbButton("완료", "편집 끝내기", false, () => { selImg = -1; renderLive(); }));
+  return bar;
+}
+function moveSelected(im) { reorderImages(); selImg = images.indexOf(im); changed(); renderImages(); }
+function swapInSpot(i, dir) {
+  const at = layoutOf(images[i]).at;
+  let j = i + dir;
+  while (j >= 0 && j < images.length && layoutOf(images[j]).at !== at) j += dir;
+  if (j < 0 || j >= images.length) return;
+  [images[i], images[j]] = [images[j], images[i]]; selImg = j; changed(); renderImages();
+}
+function startResize(e, im, fig) {
+  e.preventDefault(); e.stopPropagation();
+  const box = fig.parentElement.getBoundingClientRect();
+  const r0 = fig.getBoundingClientRect();
+  const align = layoutOf(im).align;
+  const wlab = fig.querySelector(".pv-w");
+  const move = (ev) => {
+    let px = align === "left" ? ev.clientX - r0.left : align === "right" ? r0.right - ev.clientX : (ev.clientX - (r0.left + r0.width / 2)) * 2;
+    im.w = clampW((px / box.width) * 100);
+    applyLayout(fig, layoutOf(im));
+    if (wlab) wlab.textContent = `${im.w}%`;
+  };
+  const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); changed(); renderImages(); };
+  window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+}
+function startMove(e, i, fig) {
+  if (e.button !== 0) return;
+  const sx = e.clientX, sy = e.clientY; let moved = false; let ghost = null;
+  const boxes = spotBoxes("lp");
+  const target = (x, y) => {
+    // 가장 가까운 칸 (맨 위 · 01 · 02 · 03): 칸이 차지하는 세로 범위로 찾아요
+    const zones = [["cover", boxes.cover], ["problem", boxes.problem.closest(".case-step")], ["process", boxes.process.closest(".case-step")], ["result", boxes.result.closest(".case-step")]];
+    let best = null, dist = Infinity;
+    zones.forEach(([k, z]) => { const r = z.getBoundingClientRect(); const d = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0; if (d < dist) { dist = d; best = k; } });
+    return best;
+  };
+  const move = (ev) => {
+    if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
+    if (!moved) {
+      moved = true; dragging = true; selImg = i;
+      Object.values(boxes).forEach((b) => { b.hidden = false; b.classList.add("pv-drop"); });
+      ghost = fig.cloneNode(true); ghost.className = "pv-ghost"; ghost.style.width = `${fig.getBoundingClientRect().width}px`; document.body.appendChild(ghost);
+      fig.classList.add("pv-moving");
+    }
+    ghost.style.left = `${ev.clientX + 8}px`; ghost.style.top = `${ev.clientY + 8}px`;
+    const at = target(ev.clientX, ev.clientY);
+    Object.entries(boxes).forEach(([k, b]) => b.classList.toggle("pv-drop-on", k === at));
+  };
+  const up = (ev) => {
+    window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up);
+    if (!moved) { selImg = selImg === i ? -1 : i; renderLive(); return; } // 그냥 누르면 고르기
+    ghost?.remove(); dragging = false;
+    Object.values(boxes).forEach((b) => b.classList.remove("pv-drop", "pv-drop-on"));
+    const im = images[i];
+    const at = target(ev.clientX, ev.clientY);
+    // 같은 칸 안 순서: 놓은 높이보다 아래에 있는 첫 이미지 앞에
+    const others = images.filter((x) => x !== im && layoutOf(x).at === at);
+    const figs = [...boxes[at].querySelectorAll(".pv-fig")].filter((f) => Number(f.dataset.i) !== i);
+    let before = figs.findIndex((f) => { const r = f.getBoundingClientRect(); return ev.clientY < r.top + r.height / 2; });
+    im.at = at;
+    const rest = images.filter((x) => x !== im);
+    const anchor = before >= 0 ? others[before] : null;
+    const pos = anchor ? rest.indexOf(anchor) : (() => { let last = -1; rest.forEach((x, k) => { if (layoutOf(x).at === at) last = k; }); return last + 1; })();
+    rest.splice(pos, 0, im); images = rest; reorderImages(); selImg = images.indexOf(im); changed(); renderImages();
+  };
+  window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+}
+// 미리보기 빈 곳을 누르면 고르기 해제
+document.addEventListener("pointerdown", (e) => { if (selImg >= 0 && !e.target.closest(".pv-fig") && !e.target.closest(".pw-thumbs")) { selImg = -1; renderLive(); } });
+
 // 오른쪽 화면 미리보기: 쓰는 대로 바로 바뀌어요
 function renderLive() { if ($("lp-title")) renderFullPreview("lp"); }
 document.querySelectorAll("#editor .pw-left input, #editor .pw-left textarea, #editor .pw-left select").forEach((x) => x.addEventListener("input", renderLive));
@@ -369,7 +499,7 @@ async function save(status, showDone = false) {
     name, title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
     tags: tagsFromInput(), category: $("f-category").value, industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
     client: clientPublic ? val("f-client") : "",
-    coverImageId: images[0] ? images[0].id : "", imageIds: images.map((im) => im.id), imageSizes: images.map(sizeOf),
+    coverImageId: images[0] ? images[0].id : "", imageIds: images.map((im) => im.id), imageSizes: images.map(layoutOf),
     status, createdAt: existing && existing.createdAt ? existing.createdAt : serverTimestamp(), updatedAt: serverTimestamp(),
     publishedAt: existing && existing.publishedAt ? existing.publishedAt : (status === "published" ? serverTimestamp() : null),
     authorUid: user.uid,
@@ -434,7 +564,7 @@ async function load() {
   if (REQUIRED_TO_PUBLISH.some(([id]) => val(id))) showDraft(n.ai && n.ai.promptVersion === "template" ? "template" : n.ai && n.ai.promptVersion === "manual" ? "manual" : n.ai ? "ai" : "saved");
   if (n.ai) showWarnings(n.ai.warnings);
   if (n.sns) { snsCaptions = Array.isArray(n.sns.captions) ? n.sns.captions : []; snsIndex = Math.max(0, snsCaptions.indexOf(n.sns.caption)); if (snsCaptions.length) showSnsVariant(); $("s-caption").value = n.sns.caption || ""; $("s-hashtags").value = (n.sns.hashtags || []).join(", "); if (n.sns.ai) $("sns-badge").hidden = false; if (n.sns.copiedAt) $("sns-copied").textContent = "이전에 복사한 적 있어요."; }
-  images = await Promise.all((existing.imageIds || []).map(async (id, i) => ({ id, size: (existing.imageSizes || [])[i] || "l", data: await getImageData(id) })));
+  images = await Promise.all((existing.imageIds || []).map(async (id, i) => ({ id, ...normLayout((existing.imageSizes || [])[i], i), data: await getImageData(id) })));
   renderImages();
   applyStatus(existing.status);
   setState(existing.status === "published" ? "게시됨" : "초안");
