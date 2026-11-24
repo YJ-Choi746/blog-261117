@@ -17,6 +17,8 @@ posts.html          글 목록 (발행된 글, 카테고리 필터, 관리자면
 post.html           글 상세 (?id=글ID)
 admin/login.html    관리자 로그인
 admin/posts.html    글 관리 (공개 범위 · 보기 · 수정 · 삭제)
+admin/works.html    작업 관리 목록 (케이스 스터디 초안 · 게시)
+admin/work.html     작업 편집 (입력 좌 · AI 초안 우, ?id=로 수정) — js/work-edit.js, works(공개) + workNotes(관리자 전용)
 admin/requests.html 의뢰 관리 (의뢰 카드: AI 요약 · 빠진 항목 · 적합도 · 상태)
 admin/write.html    글쓰기 에디터 (서식 · 사진 · 미리보기 · 자동 백업, ?id=로 수정)
 images/og-home.png  홈 · 글 목록 공유 미리보기 이미지 (1200×630)

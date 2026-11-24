@@ -17,7 +17,7 @@
 | **④ 완료 페이지** | **⑤ 관리자 로그인** | **⑥ 의뢰 관리 (휴대폰 360px)** |
 | <img src="screenshots/04-thanks.png" width="260" alt="완료 페이지"> | <img src="screenshots/05-admin-login.png" width="260" alt="관리자 로그인"> | <img src="screenshots/07-admin-requests-360.png" width="140" alt="의뢰 관리 360px"> |
 
-⑦ 의뢰 관리 카드 (데스크톱): 위는 AI 분석 성공(요약 → 빠진 항목 → 적합도, 'AI 초안' 배지), 아래는 AI 실패 시 원문 + 다시 분석 → [`screenshots/06-admin-requests.png`](screenshots/06-admin-requests.png)
+⑧ 작업 편집 (입력 좌 · AI 초안 우, 숫자 경고) → [`screenshots/08-work-editor.png`](screenshots/08-work-editor.png) · ⑦ 의뢰 관리 카드 (데스크톱): 위는 AI 분석 성공(요약 → 빠진 항목 → 적합도, 'AI 초안' 배지), 아래는 AI 실패 시 원문 + 다시 분석 → [`screenshots/06-admin-requests.png`](screenshots/06-admin-requests.png)
 
 ## 2. 기능별 단위 테스트
 
@@ -25,6 +25,7 @@
 |---|---|---|---|
 | AI 분석 함수 `analyzeRequest` | `functions/test/analyze.test.js` (`npm test`) | **8/8 통과** | 입력 검사, 이름·이메일 미전달, 태그 주입 차단, JSON 파싱·검증, check는 누락만, 실패 5종(파싱·거절·토큰 초과·타임아웃·API 오류) → 오류 대신 `ok:false` |
 | AI 케이스 스터디 생성 `generateCaseStudy` (PRD v0.5 F2) | `functions/test/casestudy.test.js` | **7/7 통과** | 입력 검사, 실명 비공개 시 미전달, 메모에 없는 숫자 검출(30%·1,200명), 실패 시 `ok:false`(빈 템플릿 경로) |
+| 작업 편집 `admin/work.html` (F1 · F3 · F7) | 크롬 + 가짜 Firebase · 에뮬레이터 | **7/7 · 규칙 18/18 통과** | AI 초안 채움·숫자 경고, AI 실패 시 직접 작성 후 게시, 빈 칸 게시 차단, 메모·비공개 실명은 관리자 문서에만 |
 | 의뢰 저장 보안 규칙 | Firestore 에뮬레이터 | **24/24 통과** | 방문자는 만들기만, 읽기·수정·삭제는 관리자만, 추가 필드·3000자 초과·잘못된 이메일·가짜 시각 거부, 기존 규칙 회귀 없음 |
 | 의뢰 폼 저장 `js/request-form.js` | 크롬 + 가짜 Firebase | **4/4 통과** | 성공 시 메일에 의뢰번호 / 저장 실패 시 메일 즉시 / 응답 없음 시 3초 후 메일 / 스팸 칸이면 저장 안 함, 두 번 클릭해도 1회 |
 | 관리자 의뢰 카드 `admin/requests.html` | 크롬 + 가짜 Firebase | **6/6 통과** | 판단 순서·배지·스팸 표시, 미분석 건만 자동 분석 1회, 실패 시 원문·다시 분석, 상태·답장 시각 저장, XSS 차단, 360px·버튼 44px |
