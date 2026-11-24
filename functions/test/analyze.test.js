@@ -1,4 +1,4 @@
-// F1 단위 테스트 — 가짜 AI 클라이언트로 돌려서 API 키 없이 실행돼요. 실행: cd functions && npm test
+// v0.2 의뢰 AI 분석 단위 테스트 — 가짜 AI 클라이언트로 돌려서 API 키 없이 실행돼요. 실행: cd functions && npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import Anthropic from "@anthropic-ai/sdk";
@@ -58,7 +58,7 @@ test("full 모드 성공", async () => {
   assert.doesNotMatch(JSON.stringify(sent.messages), /홍길동|@/, "개인정보 미전달");
 });
 
-test("F6 경로: 파싱 실패 · 거절 · 토큰 초과 · 타임아웃 · API 오류는 ok:false (throw 안 함)", async () => {
+test("실패 대체 경로: 파싱 실패 · 거절 · 토큰 초과 · 타임아웃 · API 오류는 ok:false (throw 안 함)", async () => {
   const input = validateInput(base);
   assert.equal((await analyze(input, { client: fake(reply("not json")) })).reason, "parse_error");
   assert.equal((await analyze(input, { client: fake(reply("", "refusal")) })).reason, "refusal");

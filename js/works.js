@@ -1,4 +1,4 @@
-// 작업 목록 (PRD v0.6 F4) — 게시된 작업을 분야로 걸러 보여줘요
+// 작업 목록 (PRD v1.1 F3) — 게시된 작업을 분야로 걸러 보여줘요
 import { loadPublishedWorks, workCard } from "./works-data.js";
 
 const list = document.getElementById("work-list");

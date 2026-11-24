@@ -1,4 +1,4 @@
-// 홈 '선택한 작업' (PRD v0.6 F4) — 플레이스홀더 대신 게시된 작업 최신 3개
+// 홈 '선택한 작업' (PRD v1.1 F3) — 플레이스홀더 대신 게시된 작업 최신 3개
 import { loadPublishedWorks, workCard } from "./works-data.js";
 
 const grid = document.getElementById("home-works");

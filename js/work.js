@@ -1,4 +1,4 @@
-// 작업 상세 (PRD v0.6 F4 · F5) — 커버 → 제목 · 요약 → 문제 → 과정 → 결과 → 의뢰 버튼
+// 작업 상세 (PRD v1.1 F3) — 커버 → 제목 · 요약 → 문제 → 과정 → 결과 → 의뢰 버튼
 // 공개 문서(works)만 읽어요. 메모 · 비공개 실명은 관리자 문서(workNotes)에 있어 여기서 읽을 수 없어요.
 // 모든 내용은 textContent로만 넣어요 (XSS)
 import { db, isConfigured, doc, getDoc } from "./firebase.js";
@@ -54,7 +54,7 @@ async function load() {
   $("work-images").hidden = (w.imageIds || []).length < 2;
   $("work-tags").replaceChildren(...(w.tags || []).map((t) => { const s = document.createElement("span"); s.className = "tag"; s.textContent = `#${t}`; return s; }));
 
-  // F5: 의뢰 폼으로 가면서 이 작업의 분야를 자동 선택 (허용된 분야만 넘겨요)
+  // F3 의뢰 버튼: 의뢰 폼으로 가면서 이 작업의 분야를 자동 선택 (허용된 분야만 넘겨요)
   const cta = $("work-cta");
   const cat = CATEGORIES.includes(w.category) ? w.category : "";
   cta.href = `index.html${cat ? `?category=${encodeURIComponent(cat)}` : ""}#request`;

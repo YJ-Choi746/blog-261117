@@ -1,4 +1,4 @@
-// F1 AI 분석 프롬프트
+// v0.2 의뢰 기능: AI 분석 프롬프트
 // 프롬프트를 바꾸면 이유와 결과를 docs/SUCCESS_FAILURE_LOG.md에 남기고 `prompt:` 커밋으로 올려요 (docs/AGENT_GUIDE.md).
 
 export const PROMPT_VERSION = "v1";

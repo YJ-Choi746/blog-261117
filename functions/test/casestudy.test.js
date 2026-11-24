@@ -1,4 +1,4 @@
-// F2 AI 케이스 스터디 생성 단위 테스트 — 가짜 AI 클라이언트, API 키 없이 실행. 실행: cd functions && npm test
+// F5 AI 케이스 스터디 초안 단위 테스트 — 가짜 AI 클라이언트, API 키 없이 실행. 실행: cd functions && npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import Anthropic from "@anthropic-ai/sdk";
@@ -52,7 +52,7 @@ test("생성 성공: 결과 + 지어낸 숫자는 warnings로", async () => {
   assert.deepEqual(bad.warnings, { unsupportedNumbers: ["45"] });
 });
 
-test("F7 경로: 실패는 throw 없이 ok:false", async () => {
+test("F6 직접 쓰기 경로: 실패는 throw 없이 ok:false", async () => {
   const input = validateCaseInput(base);
   assert.equal((await generateCase(input, { client: fake(reply("not json")) })).reason, "parse_error");
   assert.equal((await generateCase(input, { client: fake(reply("", "refusal")) })).reason, "refusal");

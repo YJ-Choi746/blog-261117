@@ -55,7 +55,7 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // 작업 · 케이스 스터디 (PRD v0.6 F1 · F3 · F4): 게시된 작업은 누구나, 초안은 관리자만 읽어요.
+    // 작업 · 케이스 스터디 (PRD v1.1 F3 · F4 · F6): 게시된 작업은 누구나, 초안은 관리자만 읽어요.
     // 방문자에게 보이면 안 되는 메모 · 비공개 클라이언트 이름은 workNotes(관리자 전용)에 따로 둬요.
     match /works/{workId} {
       allow read: if resource.data.status == "published" || isAdmin();
@@ -81,7 +81,7 @@ service cloud.firestore {
         && w.authorUid == request.auth.uid;
     }
 
-    // 의뢰 (PRD F3): 방문자는 만들기만, 읽기 · 수정 · 삭제는 관리자만.
+    // 의뢰 (v0.2 의뢰 저장 기능): 방문자는 만들기만, 읽기 · 수정 · 삭제는 관리자만.
     // 이름 · 이메일이 들어 있는 개인정보라 방문자 읽기는 절대 열지 않아요.
     // AI 분석 결과(ai) · 상태 변경(status)은 관리자만 update로 붙여요.
     match /requests/{requestId} {

@@ -1,4 +1,4 @@
-// 작업 관리 목록 (PRD v0.6 F3) — 초안 · 게시 상태를 보고 편집 화면으로 들어가요
+// 작업 관리 목록 (PRD v1.1 F6) — 초안 · 게시 상태를 보고 편집 화면으로 들어가요
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut, collection, getDocs, friendlyError, formatDate, markAdminBrowser
 } from "./firebase.js";

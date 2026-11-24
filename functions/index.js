@@ -1,5 +1,5 @@
 // Firebase Functions 진입점
-// analyzeRequest: F1 AI 분석 함수 (onCall)
+// analyzeRequest: v0.2 의뢰 기능 AI 분석 함수 (onCall)
 // - API 키는 Secret Manager의 ANTHROPIC_API_KEY에만 둬요 (코드·로그·커밋에 없음)
 //     firebase functions:secrets:set ANTHROPIC_API_KEY
 // - mode "check"는 누구나(의뢰 폼), mode "full"은 관리자 로그인 필수
@@ -49,12 +49,12 @@ export const analyzeRequest = onCall(
     // 로그에는 결과 코드와 시간만 남겨요 (의뢰 원문 · 키 미기록)
     logger.info("analyzeRequest", { mode: input.mode, ok: out.ok, reason: out.reason ?? null, ms: out.ms, len: input.content.length });
 
-    // ok:false여도 오류로 던지지 않아요 → 화면은 F6(점검 생략 후 제출) 경로로
+    // ok:false여도 오류로 던지지 않아요 → 화면은 실패 대체(점검 생략 후 제출) 경로로
     return out;
   }
 );
 
-// generateCaseStudy: PRD v0.5 F2 AI 케이스 스터디 생성 (관리자 전용)
+// generateCaseStudy: PRD v1.1 F5 AI 케이스 스터디 초안 (관리자 전용)
 export const generateCaseStudy = onCall(
   {
     region: "asia-northeast3",
@@ -75,11 +75,11 @@ export const generateCaseStudy = onCall(
     }
     const out = await generateCase(input, { apiKey: ANTHROPIC_API_KEY.value() });
     logger.info("generateCaseStudy", { ok: out.ok, reason: out.reason ?? null, ms: out.ms, warnings: out.warnings ? out.warnings.unsupportedNumbers.length : 0 });
-    return out; // 실패해도 throw 안 함 → 화면은 빈 템플릿(F7)
+    return out; // 실패해도 throw 안 함 → 화면은 직접 쓰기(F6)
   }
 );
 
-// generateSnsCopy: PRD v0.7 F6 인스타그램 문구 · 해시태그 (관리자 전용)
+// generateSnsCopy: PRD v1.1 F7 인스타그램 문구 3안 · 해시태그 (관리자 전용)
 export const generateSnsCopy = onCall(
   { region: "asia-northeast3", secrets: [ANTHROPIC_API_KEY], cors: ALLOWED_ORIGINS, timeoutSeconds: 60, memory: "256MiB", maxInstances: 2 },
   async (request) => {
@@ -93,6 +93,6 @@ export const generateSnsCopy = onCall(
     }
     const out = await generateSns(input, { apiKey: ANTHROPIC_API_KEY.value() });
     logger.info("generateSnsCopy", { ok: out.ok, reason: out.reason ?? null, ms: out.ms });
-    return out; // 실패해도 throw 안 함 → 화면에서 직접 작성 (F7)
+    return out; // 실패해도 throw 안 함 → 화면에서 직접 작성
   }
 );

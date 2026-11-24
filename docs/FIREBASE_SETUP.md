@@ -83,7 +83,7 @@
 
 함수를 고친 뒤에는 Cloud Shell에서 `git pull && firebase deploy --only functions`만 다시 하면 돼요.
 
-## AI 의뢰 분석 함수(F1) 배포 — 처음 한 번
+## AI 의뢰 분석 함수(v0.2) 배포 — 처음 한 번
 
 서버 함수 `analyzeRequest`는 `functions/` 폴더에 있어요. GitHub Actions는 호스팅만 배포하므로, 함수는 아래 순서로 직접 한 번 배포해요.
 

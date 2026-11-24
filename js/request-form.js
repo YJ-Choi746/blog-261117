@@ -1,4 +1,4 @@
-// 의뢰 저장 (PRD F3) — 의뢰 폼을 낼 때 Firestore `requests`에 먼저 저장하고, 원래대로 FormSubmit 메일을 보내요.
+// 의뢰 저장 (v0.2 의뢰 기능) — 의뢰 폼을 낼 때 Firestore `requests`에 먼저 저장하고, 원래대로 FormSubmit 메일을 보내요.
 // 원칙: 저장은 접수를 절대 막지 않아요. 실패하거나 3초를 넘기면 저장 없이 메일만 보내요.
 // 이름 · 이메일은 여기서 Firestore에만 저장해요 (GA · AI로는 보내지 않음). 읽기는 관리자만 (firestore.rules).
 import { db, isConfigured, collection, doc, setDoc, serverTimestamp } from "./firebase.js";
@@ -52,7 +52,7 @@ function setRequestId(f, id) {
   input.value = id;
 }
 
-// F5 (PRD v0.6): 작업 상세의 "이런 작업 의뢰하기"로 오면 ?category= 분야를 자동 선택해요 (허용된 분야만)
+// PRD v1.1 F3 의뢰 버튼: 작업 상세의 "이런 작업 의뢰하기"로 오면 ?category= 분야를 자동 선택해요 (허용된 분야만)
 export function preselectCategory(f, search) {
   const cat = new URLSearchParams(search).get("category");
   if (!cat || !CATEGORIES.includes(cat)) return false;

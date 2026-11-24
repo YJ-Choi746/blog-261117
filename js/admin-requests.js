@@ -1,7 +1,7 @@
-// 의뢰 관리 (PRD F4 관리자 의뢰 카드)
+// 의뢰 관리 (v0.2 의뢰 기능: 관리자 의뢰 카드)
 // - 카드 순서는 판단 순서: AI 요약 → 빠진 항목 → 적합도 (PRD 8)
 // - 분석 안 된 의뢰는 화면을 열 때 한 번 자동 분석해서 결과를 문서(ai)에 저장해요
-// - AI가 실패해도 원문은 항상 보여요 (F6). 의뢰자가 쓴 글은 textContent로만 넣어요 (XSS)
+// - AI가 실패해도 원문은 항상 보여요 (실패 대체). 의뢰자가 쓴 글은 textContent로만 넣어요 (XSS)
 // - 읽기 · 수정 권한은 firestore.rules의 관리자 UID가 지켜요
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut,

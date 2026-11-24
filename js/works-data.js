@@ -1,4 +1,4 @@
-// 게시된 작업 불러오기 · 카드 만들기 (PRD v0.6 F4) — 홈 '선택한 작업'과 작업 목록이 같이 써요
+// 게시된 작업 불러오기 · 카드 만들기 (PRD v1.1 F3) — 홈 '선택한 작업'과 작업 목록이 같이 써요
 // 첫 화면처럼 인라인 스타일 페이지에서도 쓰도록 카드는 인라인 스타일로 만들어요 (색은 디자인 시스템 토큰 값)
 // 작업 내용은 모두 textContent로만 넣어요 (XSS)
 import { db, isConfigured, collection, getDocs, query, where } from "./firebase.js";

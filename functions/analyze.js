@@ -1,7 +1,7 @@
-// F1 AI 분석 핵심 로직 (Firebase와 분리해 테스트할 수 있게 둠)
+// v0.2 의뢰 기능: AI 분석 핵심 로직 (Firebase와 분리해 테스트할 수 있게 둠)
 // - 입력: 의뢰 분야, 예산 선택값, 프로젝트 내용 (이름·이메일은 받지 않음)
 // - mode "check": missing만 / mode "full": 전체
-// - 파싱 실패 · 타임아웃 · API 오류는 throw 하지 않고 { ok: false, reason }으로 돌려줘요 → 화면은 F6 경로로
+// - 파싱 실패 · 타임아웃 · API 오류는 throw 하지 않고 { ok: false, reason }으로 돌려줘요 → 화면은 실패 대체 경로로
 
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT, PROMPT_VERSION, buildUserMessage } from "./prompt.js";
