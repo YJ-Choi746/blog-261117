@@ -47,10 +47,10 @@
     <p id="msg-error" class="notice notice-error" role="alert" hidden></p>
     <p id="msg-ok" class="notice notice-ok" role="status" hidden></p>
 
-    <section id="published-panel" class="pw-panel pw-done" hidden>
-      <span class="pw-ok" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg></span>
-      <div class="pw-done-text"><h2 id="done-title"></h2><p>홈 '선택한 작업'과 상세 페이지에 반영됐어요.</p></div>
-      <a id="done-view" class="btn btn-outline" href="../works.html">게시된 페이지 보기</a>
+    <section id="published-panel" class="pw-done" role="status" hidden>
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+      <span id="done-title"></span>
+      <a id="done-view" href="../works.html">페이지 보기 →</a>
     </section>
 
     <div class="pw-cols">
@@ -110,7 +110,7 @@
           </div>
           <div class="pw-row">
             <button type="button" id="generate" class="btn btn-outline">메모로 AI 초안</button>
-            <button type="button" id="c-template" class="btn btn-outline">문장 틀로 채우기</button>
+            <button type="button" id="c-template" class="btn btn-outline">직접 쓰기</button>
           </div>
           <p class="hint">메모는 관리자만 보고, 위 칸을 채우는 데만 써요. 0원으로 쓰려면 <a href="https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA" target="_blank" rel="noopener">AI 작성기(Claude 아티팩트)</a>에서 만든 글을 위 칸에 붙여 넣으세요.</p>
         </details>
@@ -164,13 +164,13 @@
       <p id="sns-status" class="notice notice-info" role="status" hidden></p>
       <div id="sns-warn" class="notice notice-error" role="alert" hidden></div>
       <label class="sr-only" for="s-caption">소개 문구</label>
-      <textarea id="s-caption" class="pw-copybox" rows="6" maxlength="2200" placeholder="'AI 문구 만들기'나 '문장 틀 문구'를 누르거나 직접 써 주세요."></textarea>
+      <textarea id="s-caption" class="pw-copybox" rows="6" maxlength="2200" placeholder="'AI 문구 만들기'나 '직접 쓰기'를 누르거나 바로 써 주세요."></textarea>
       <label class="pw-tags-in">해시태그 (쉼표로 구분, # 없이)<input id="s-hashtags" placeholder="브랜딩, 카페로고, 성수카페"></label>
       <div class="pw-row">
         <button type="button" id="sns-copy" class="btn btn-primary">문구 복사</button>
         <button type="button" id="sns-next" class="btn btn-outline" hidden>다른 문구 보기</button>
         <button type="button" id="sns-generate" class="btn btn-outline">AI 문구 만들기</button>
-        <button type="button" id="sns-template" class="btn btn-outline">문장 틀 문구</button>
+        <button type="button" id="sns-template" class="btn btn-outline">직접 쓰기</button>
         <span id="sns-copied" class="save-state" role="status" aria-live="polite"></span>
       </div>
       <p class="hint">게시는 직접 해주세요.</p>

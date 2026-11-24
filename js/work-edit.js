@@ -36,7 +36,7 @@ function setState(t) { $("save-state").textContent = t; }
 const val = (id) => $(id).value.trim();
 
 // ---- 초안 표시: 누가 썼는지 배지 (AI가 쓴 글이면 '확인해 주세요' 안내) ----
-const BADGE = { ai: "AI 초안 · 검토 필요", polish: "AI로 수정함 · 검토 필요", template: "문장 틀 초안", manual: "직접 작성", saved: "저장된 초안" };
+const BADGE = { ai: "AI 초안 · 검토 필요", polish: "AI로 수정함 · 검토 필요", template: "직접 작성", manual: "직접 작성", saved: "저장된 초안" };
 function showDraft(kind) {
   if (kind) $("ai-badge").textContent = BADGE[kind] || BADGE.saved;
   $("draft-check").hidden = !(kind === "ai" || kind === "polish");
@@ -97,7 +97,7 @@ function renderImages() {
 function xIcon() {
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(NS, "svg");
-  for (const [k, v] of Object.entries({ width: 12, height: 12, viewBox: "0 0 14 14", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "aria-hidden": "true" })) svg.setAttribute(k, v);
+  for (const [k, v] of Object.entries({ width: 16, height: 16, viewBox: "0 0 14 14", fill: "none", stroke: "currentColor", "stroke-width": 2.2, "stroke-linecap": "round", "aria-hidden": "true" })) svg.setAttribute(k, v);
   const path = document.createElementNS(NS, "path"); path.setAttribute("d", "M3 3l8 8M11 3l-8 8");
   svg.appendChild(path); return svg;
 }
@@ -156,7 +156,7 @@ $("generate").addEventListener("click", async () => {
       dirty = true; setState("저장 안 된 변경 있음");
     } else {
       gs.className = "notice notice-error";
-      gs.textContent = `AI 초안을 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '문장 틀로 채우기'를 누르거나 칸에 직접 써 주세요.`;
+      gs.textContent = `AI 초안을 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '직접 쓰기'를 누르거나 칸에 바로 써 주세요.`;
     }
   } catch (err) {
     // AI 서버 함수(generateCaseStudy)가 배포되지 않았거나 꺼져 있으면, 기다리게 하지 않고 문장 틀로 바로 채워요 (0원, D27)
@@ -165,7 +165,7 @@ $("generate").addEventListener("click", async () => {
     aiMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
     dirty = true; setState("저장 안 된 변경 있음");
     gs.className = "notice notice-info";
-    gs.textContent = `AI 서버가 아직 꺼져 있어 문장 틀로 먼저 채웠어요 (${(err && err.code) || "연결 안 됨"}). 아래 '내 API 키로 AI 쓰기'에 키를 넣으면 AI가 바로 써요.`;
+    gs.textContent = `AI 서버가 아직 꺼져 있어 메모를 칸에 먼저 옮겼어요 (${(err && err.code) || "연결 안 됨"}). 아래 '내 API 키로 AI 쓰기'에 키를 넣으면 AI가 바로 써요.`;
   } finally {
     btn.disabled = false; btn.textContent = "메모로 AI 초안";
   }
@@ -243,11 +243,11 @@ $("sns-generate").addEventListener("click", async () => {
       dirty = true; setState("저장 안 된 변경 있음");
     } else {
       st.className = "notice notice-error";
-      st.textContent = `문구를 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '문장 틀 문구'를 누르거나 직접 써서 복사할 수 있어요.`;
+      st.textContent = `문구를 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '직접 쓰기'를 누르거나 바로 써서 복사할 수 있어요.`;
     }
   } catch (err) {
     st.className = "notice notice-error";
-    st.textContent = `문구를 만들지 못했어요. ${friendlyError(err)} '문장 틀 문구'를 누르거나 직접 써서 복사할 수 있어요.`;
+    st.textContent = `문구를 만들지 못했어요. ${friendlyError(err)} '직접 쓰기'를 누르거나 바로 써서 복사할 수 있어요.`;
   } finally { btn.disabled = false; btn.textContent = "인스타그램 문구 만들기"; }
 });
 
@@ -290,24 +290,24 @@ $("c-template").addEventListener("click", () => {
   const input = memoInput();
   if (!input.title) { say("작업명을 먼저 써 주세요.", true); $("f-name").focus(); return; }
   if (!input.memo.request && !input.memo.work && !input.memo.result) { say("메모를 한 칸 이상 써 주세요.", true); $("m-request").focus(); return; }
-  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !confirm("위 칸에 쓴 내용을 문장 틀 초안으로 바꿀까요? ('되돌리기'로 돌아올 수 있어요)")) return;
+  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !confirm("위 칸에 쓴 내용을 메모로 바꿀까요? ('되돌리기'로 돌아올 수 있어요)")) return;
   pushUndo();
   fillDraft(templateDraft(input));
   showDraft("template"); $("warn").hidden = true;
   const gs = $("gen-status"); gs.hidden = false; gs.className = "notice notice-info";
-  gs.textContent = "문장 틀로 채웠어요. 메모를 그대로 옮긴 초안이라 문장을 다듬어 주세요.";
+  gs.textContent = "메모를 칸에 옮겼어요. 문장을 다듬거나 'AI로 수정하기'를 눌러 주세요.";
   aiMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
   dirty = true; setState("저장 안 된 변경 있음");
 });
 $("sns-template").addEventListener("click", () => {
   const miss = REQUIRED_TO_PUBLISH.filter(([id]) => id !== "c-summary" && !val(id)).map(([, n]) => n);
   if (miss.length) { say(`인스타그램 문구는 케이스 스터디로 만들어요. 먼저 채워 주세요: ${miss.join(" · ")}`, true); return; }
-  if (val("s-caption") && !confirm("지금 쓴 인스타그램 문구를 문장 틀 문구로 바꿀까요?")) return;
+  if (val("s-caption") && !confirm("지금 쓴 인스타그램 문구를 기본 문구로 바꿀까요?")) return;
   const out = templateSns({ title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"), category: $("f-category").value, industry: val("f-industry") });
   snsCaptions = out.captions; snsIndex = 0; showSnsVariant();
   $("s-hashtags").value = out.hashtags.join(", ");
   $("sns-badge").hidden = true; $("sns-warn").hidden = true;
-  const st = $("sns-status"); st.hidden = false; st.className = "notice notice-info"; st.textContent = "문장 틀 문구 3안이에요. 다듬어서 복사해 주세요.";
+  const st = $("sns-status"); st.hidden = false; st.className = "notice notice-info"; st.textContent = "기본 문구 3안이에요. 다듬어서 복사해 주세요.";
   snsMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
   dirty = true; setState("저장 안 된 변경 있음");
 });
@@ -395,7 +395,7 @@ async function save(status, showDone = false) {
     setState(status === "published" ? "게시됨" : "초안 저장됨");
     say(showDone ? "" : (status === "published" ? "저장했어요. 게시된 페이지에도 바로 반영돼요." : "초안으로 저장했어요."));
     if (showDone && status === "published") {
-      $("done-title").textContent = `${val("c-title") || name} 게시됨`;
+      $("done-title").textContent = "게시됐어요.";
       $("done-view").href = `../work.html?id=${encodeURIComponent(workId)}`;
       $("published-panel").hidden = false; $("sns-panel").hidden = false;
       $("published-panel").scrollIntoView({ block: "start" });
