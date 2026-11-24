@@ -167,7 +167,7 @@
       // 태극기 (국기 색: 빨강 #CD2E3A · 파랑 #0047A0 · 검정)
       g.appendChild(svgEl("rect", { width: 36, height: 36, fill: "#FFFFFF" }));
       const t = svgEl("g", { transform: "rotate(33.69 18 18)" });
-      t.appendChild(svgEl("path", { d: "M9 18a9 9 0 0 1 18 0a4.5 4.5 0 0 1 -9 0a4.5 4.5 0 0 0 -9 0z", fill: "#CD2E3A" }));
+      t.appendChild(svgEl("path", { d: "M9 18a9 9 0 0 1 18 0a4.5 4.5 0 0 0 -9 0a4.5 4.5 0 0 1 -9 0z", fill: "#CD2E3A" }));
       t.appendChild(svgEl("path", { d: "M9 18a4.5 4.5 0 0 0 9 0a4.5 4.5 0 0 1 9 0a9 9 0 0 1 -18 0z", fill: "#0047A0" }));
       g.appendChild(t);
       // 네 귀퉁이 괘 (작게, 동그라미 안에 들어오게)
@@ -185,10 +185,11 @@
       bars(28.5, 9, 56.31, [1, 0, 1]);   // 감
       bars(7.5, 27, 56.31, [0, 1, 0]);   // 리
     } else {
-      // 미국 국기 (빨강 #B22234 · 남색 #3C3B6E) — 작은 크기라 별(흰 점)은 빼고 남색 칸만
+      // 미국 국기 (빨강 #B22234 · 남색 #3C3B6E)
       g.appendChild(svgEl("rect", { width: 36, height: 36, fill: "#FFFFFF" }));
       for (let i = 0; i < 7; i++) g.appendChild(svgEl("rect", { y: i * 5.54, width: 36, height: 2.77, fill: "#B22234" }));
       g.appendChild(svgEl("rect", { width: 17, height: 16.6, fill: "#3C3B6E" }));
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) g.appendChild(svgEl("circle", { cx: 2.4 + c * 4 + (r % 2) * 1.6, cy: 2.4 + r * 3.9, r: 0.8, fill: "#FFFFFF" }));
     }
     svg.appendChild(g);
     svg.appendChild(svgEl("circle", { cx: 18, cy: 18, r: 17.5, fill: "none", stroke: "#D0D0D0", "stroke-width": 1 })); // line-strong
