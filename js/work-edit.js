@@ -2,7 +2,7 @@
 // - 왼쪽 입력 → "AI 초안 만들기" → 오른쪽 칸 채움 → 고쳐서 저장 · 게시
 // - 공개 문서 works/{id}: 방문자가 볼 내용만 / 관리자 문서 workNotes/{id}: 메모 · 클라이언트 실명 · AI 기록
 // - AI가 실패해도 오른쪽 칸에 직접 써서 저장 · 게시할 수 있어요 (F6)
-import { getKey, setKey, clearKey, isRemembered, looksLikeKey, generateCaseDirect, generateSnsDirect } from "./ai-direct.js";
+import { getKey, setKey, clearKey, isRemembered, looksLikeKey, generateCaseDirect, generateSnsDirect, polishCaseDirect } from "./ai-direct.js";
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
@@ -24,66 +24,45 @@ let images = [];          // [{ id, data }]
 let aiMeta = null;        // 마지막 AI 생성 기록
 let dirty = false;
 
-// 안내 문구: 초안 칸이 보이면 '게시하기 · 미리보기 · 초안 저장' 버튼 바로 밑에, 아니면 화면 위에 보여요
+// 안내 문구: '게시하기 · 초안 저장' 버튼 바로 밑에 보여요
 function say(msg, isError) {
   $("msg-error").hidden = true; $("msg-ok").hidden = true;
-  const act = $("act-msg"); act.hidden = true; act.textContent = "";
+  const act = $("act-msg"); act.hidden = !msg; act.textContent = msg || "";
   if (!msg) return;
-  if (!$("draft").hidden) {
-    act.textContent = msg; act.className = `notice ${isError ? "notice-error" : "notice-ok"}`;
-    act.setAttribute("role", isError ? "alert" : "status"); act.hidden = false;
-    return;
-  }
-  const el = $(isError ? "msg-error" : "msg-ok");
-  el.textContent = msg; el.hidden = false;
+  act.className = `notice ${isError ? "notice-error" : "notice-ok"}`;
+  act.setAttribute("role", isError ? "alert" : "status");
 }
 function setState(t) { $("save-state").textContent = t; }
 const val = (id) => $(id).value.trim();
 
-// ---- 초안 영역 (프로토타입 디자인): 비어 있으면 안내, 만들거나 직접 쓰면 편집칸을 보여줘요 ----
-const BADGE = { ai: "AI 초안 · 검토 필요", template: "문장 틀 초안 · AI 연결 안 됨", manual: "직접 작성", saved: "저장된 초안" };
+// ---- 초안 표시: 누가 썼는지 배지 (AI가 쓴 글이면 '확인해 주세요' 안내) ----
+const BADGE = { ai: "AI 초안 · 검토 필요", polish: "AI로 수정함 · 검토 필요", template: "문장 틀 초안", manual: "직접 작성", saved: "저장된 초안" };
 function showDraft(kind) {
-  $("draft-empty").hidden = true; $("draft").hidden = false;
   if (kind) $("ai-badge").textContent = BADGE[kind] || BADGE.saved;
-  $("draft-check").hidden = kind === "manual";
-  setPreview(false);
+  $("draft-check").hidden = !(kind === "ai" || kind === "polish");
+  renderLive();
 }
-function syncMeta() {
-  $("ms-industry").textContent = val("f-industry") || "-";
-  $("ms-period").textContent = val("f-period") || "-";
-  $("ms-role").textContent = val("f-role") || "-";
-}
-["f-industry", "f-period", "f-role"].forEach((id) => $(id).addEventListener("input", syncMeta));
-
-// 게시 화면 미리보기: 방문자 상세와 같은 순서로 그려요 (모두 textContent)
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
-function renderPreview() {
-  const box = $("draft-preview");
-  const parts = [el("span", "pv-cat", $("f-category").value), el("h3", "pv-t", val("c-title") || "제목 없음"), el("p", "pv-l", val("c-summary"))];
-  const meta = el("div", "pw-meta-s");
-  [["업종", val("f-industry")], ["기간", val("f-period")], ["맡은 일", val("f-role")]].forEach(([k, v]) => { const d = el("div"); d.append(el("span", "", k), el("span", "", v || "-")); meta.appendChild(d); });
-  parts.push(meta);
-  if (images[0] && images[0].data) { const img = el("img", `pv-cover sz-${sizeOf(images[0])}`); img.alt = "커버 이미지"; img.src = images[0].data; parts.push(img); }
-  [["01", "요청", val("c-problem")], ["02", "과정", val("c-process")], ["03", "결과", val("c-result")]].forEach(([n, h, t]) => {
-    const sec = el("div", "pv-s"); const body = el("div"); body.append(el("h4", "", h), el("p", "", t || "-"));
-    if (n === "02") images.slice(1).forEach((im, i) => { if (!im.data) return; const img = el("img", `pv-img sz-${sizeOf(im)}`); img.alt = `이미지 ${i + 2}`; img.src = im.data; body.appendChild(img); });
-    sec.append(el("span", "pv-no", n), body); parts.push(sec);
-  });
-  const tags = tagsFromInput(); if (tags.length) parts.push(el("p", "pv-tags", tags.map((t) => `#${t}`).join(" ")));
-  box.replaceChildren(...parts);
-}
-let previewing = false;
-function setPreview(on) {
-  previewing = on;
-  if (on) renderPreview();
-  $("draft-preview").hidden = !on; $("draft-edit").hidden = on;
-  $("preview-toggle").textContent = on ? "편집으로 돌아가기" : "게시 화면 미리보기";
-  $("draft-hint").textContent = on ? "방문자에게 이렇게 보여요" : "고칠 곳이 있으면 바로 수정하세요";
-}
+
+// ---- 되돌리기: 'AI로 수정하기' · 메모로 초안 · 문장 틀이 칸을 바꾸기 직전 내용을 쌓아 둬요 ----
+const DRAFT_IDS = ["c-title", "c-summary", "c-problem", "c-process", "c-result", "c-tags"];
+const undoStack = [];
+function snapshot() { return { fields: DRAFT_IDS.map((id) => $(id).value), badge: $("ai-badge").textContent, check: $("draft-check").hidden, warn: $("warn").hidden, warnText: $("warn").textContent }; }
+function pushUndo() { undoStack.push(snapshot()); if (undoStack.length > 20) undoStack.shift(); $("undo").disabled = false; }
+$("undo").addEventListener("click", () => {
+  const snap = undoStack.pop(); if (!snap) return;
+  DRAFT_IDS.forEach((id, i) => { $(id).value = snap.fields[i]; });
+  $("ai-badge").textContent = snap.badge; $("draft-check").hidden = snap.check; $("warn").hidden = snap.warn; $("warn").textContent = snap.warnText;
+  $("undo").disabled = !undoStack.length;
+  const gs = $("gen-status"); gs.hidden = false; gs.className = "notice notice-info"; gs.textContent = "바꾸기 전 내용으로 되돌렸어요.";
+  dirty = true; setState("저장 안 된 변경 있음"); renderLive();
+});
 
 // ---- 이미지 ----
-const SIZES = ["l", "m", "s"];
-const sizeOf = (im) => (SIZES.includes(im && im.size) ? im.size : "l");
+// 이미지 크기: 게시 화면에서 보이는 폭(%) 20~100. 예전 값 크게 · 보통 · 작게(l · m · s)도 읽어요
+const LEGACY = { l: 100, m: 70, s: 45 };
+export const pctOf = (v) => { const n = typeof v === "number" ? v : LEGACY[v] ?? Number(v); return Number.isFinite(n) ? Math.min(100, Math.max(20, Math.round(n))) : 100; };
+const sizeOf = (im) => pctOf(im && im.size);
 function renderImages() {
   const box = $("images");
   box.replaceChildren(...images.map((im, i) => {
@@ -95,19 +74,32 @@ function renderImages() {
     const cap = document.createElement("figcaption");
     cap.textContent = i === 0 ? "커버" : `${i + 1}`;
     const rm = document.createElement("button");
-    rm.type = "button"; rm.className = "btn btn-text"; rm.textContent = "빼기";
+    rm.type = "button"; rm.className = "pw-x"; rm.title = "이미지 빼기";
     rm.setAttribute("aria-label", `${img.alt} 빼기`);
+    rm.appendChild(xIcon());
     rm.addEventListener("click", () => { images.splice(i, 1); dirty = true; renderImages(); });
-    // 이미지 크기 (게시 화면에서 보이는 폭): 크게 100% · 보통 70% · 작게 45%. 자르지 않고 원래 비율로 보여요
-    const size = document.createElement("select");
-    size.className = "pw-size"; size.setAttribute("aria-label", `${img.alt} 크기`);
-    [["l", "크게"], ["m", "보통"], ["s", "작게"]].forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; size.appendChild(o); });
-    size.value = SIZES.includes(im.size) ? im.size : "l";
-    size.addEventListener("change", () => { im.size = size.value; dirty = true; setState("저장 안 된 변경 있음"); if (previewing) renderPreview(); });
-    fig.append(img, cap, size, rm);
+    // 이미지 크기: 슬라이더로 20~100% 자유롭게 (오른쪽 미리보기에 바로 보여요). 자르지 않고 원래 비율
+    const size = document.createElement("label");
+    size.className = "pw-size";
+    const out = document.createElement("span"); out.textContent = `${sizeOf(im)}%`;
+    const range = document.createElement("input");
+    range.type = "range"; range.min = "20"; range.max = "100"; range.step = "5"; range.value = String(sizeOf(im));
+    range.setAttribute("aria-label", `${img.alt} 크기 (%)`);
+    range.addEventListener("input", () => { im.size = Number(range.value); out.textContent = `${im.size}%`; dirty = true; setState("저장 안 된 변경 있음"); renderLive(); });
+    size.append(out, range);
+    fig.append(rm, img, cap, size);
     return fig;
   }));
   $("add-image").disabled = images.length >= MAX_IMAGES;
+  renderLive();
+}
+// 닫기(X) 선 아이콘 — innerHTML 없이 만들어요
+function xIcon() {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  for (const [k, v] of Object.entries({ width: 12, height: 12, viewBox: "0 0 14 14", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "aria-hidden": "true" })) svg.setAttribute(k, v);
+  const path = document.createElementNS(NS, "path"); path.setAttribute("d", "M3 3l8 8M11 3l-8 8");
+  svg.appendChild(path); return svg;
 }
 $("add-image").addEventListener("click", () => $("image-input").click());
 $("image-input").addEventListener("change", async (e) => {
@@ -134,12 +126,13 @@ function fillDraft(r) {
   $("c-title").value = r.title || ""; $("c-summary").value = r.summary || "";
   $("c-problem").value = r.problem || ""; $("c-process").value = r.process || ""; $("c-result").value = r.result || "";
   $("c-tags").value = (r.tags || []).join(", ");
+  renderLive();
 }
 function showWarnings(w) {
   const box = $("warn");
   const nums = w && w.unsupportedNumbers;
   box.hidden = !(nums && nums.length);
-  if (nums && nums.length) box.textContent = `게시 전에 보충하면 좋아요 · 메모에 없는 숫자가 들어 있어요: ${nums.join(", ")} — 사실인지 확인하고 고치거나 지워 주세요.`;
+  if (nums && nums.length) box.textContent = `게시 전에 보충하면 좋아요 · 쓴 내용에 없는 숫자가 들어 있어요: ${nums.join(", ")} — 사실인지 확인하고 고치거나 지워 주세요.`;
 }
 
 $("generate").addEventListener("click", async () => {
@@ -147,7 +140,8 @@ $("generate").addEventListener("click", async () => {
   if (!input.title) { say("작업명을 먼저 써 주세요.", true); $("f-name").focus(); return; }
   if (!input.memo.request && !input.memo.work && !input.memo.result) { say("메모를 한 칸 이상 써 주세요.", true); $("m-request").focus(); return; }
   const hasDraft = REQUIRED_TO_PUBLISH.some(([id]) => val(id));
-  if (hasDraft && !confirm("오른쪽에 쓴 내용을 AI 초안으로 바꿀까요?")) return;
+  if (hasDraft && !confirm("위 칸에 쓴 내용을 AI 초안으로 바꿀까요? ('되돌리기'로 돌아올 수 있어요)")) return;
+  pushUndo();
   say("");
   const btn = $("generate"); btn.disabled = true; btn.textContent = "AI가 쓰는 중… (20초 안팎)";
   const gs = $("gen-status"); gs.hidden = false; gs.className = "notice notice-info"; gs.textContent = "AI가 메모로 초안을 쓰고 있어요.";
@@ -162,7 +156,7 @@ $("generate").addEventListener("click", async () => {
       dirty = true; setState("저장 안 된 변경 있음");
     } else {
       gs.className = "notice notice-error";
-      gs.textContent = `AI 초안을 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '문장 틀로 채우기'를 누르거나 오른쪽 칸에 직접 써 주세요.`;
+      gs.textContent = `AI 초안을 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '문장 틀로 채우기'를 누르거나 칸에 직접 써 주세요.`;
     }
   } catch (err) {
     // AI 서버 함수(generateCaseStudy)가 배포되지 않았거나 꺼져 있으면, 기다리게 하지 않고 문장 틀로 바로 채워요 (0원, D27)
@@ -173,7 +167,41 @@ $("generate").addEventListener("click", async () => {
     gs.className = "notice notice-info";
     gs.textContent = `AI 서버가 아직 꺼져 있어 문장 틀로 먼저 채웠어요 (${(err && err.code) || "연결 안 됨"}). 아래 '내 API 키로 AI 쓰기'에 키를 넣으면 AI가 바로 써요.`;
   } finally {
-    btn.disabled = false; btn.textContent = "AI 초안 만들기";
+    btn.disabled = false; btn.textContent = "메모로 AI 초안";
+  }
+});
+
+// ---- AI로 수정하기 (D31): 칸에 간단히 쓴 글을 같은 칸 그대로 AI가 다듬어요. '되돌리기'로 돌아갈 수 있어요 ----
+$("polish").addEventListener("click", async () => {
+  const draft = { title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"), tags: tagsFromInput() };
+  if (!draft.title && !draft.problem && !draft.process && !draft.result) { say("고칠 글을 먼저 간단히 써 주세요. (제목이나 01 · 02 · 03 칸)", true); $("c-title").focus(); return; }
+  const gs = $("gen-status"); gs.hidden = false;
+  if (!getKey()) {
+    gs.className = "notice notice-error"; gs.textContent = "AI로 수정하려면 아래 '내 API 키로 AI 쓰기'에서 키를 연결해 주세요.";
+    const box = $("ai-key").closest("details"); if (box) { box.open = true; $("ai-key").focus(); }
+    return;
+  }
+  say("");
+  const btn = $("polish"); btn.disabled = true; btn.textContent = "AI가 고치는 중…";
+  gs.className = "notice notice-info"; gs.textContent = "AI가 쓴 글을 같은 형식으로 다듬고 있어요. (20초 안팎)";
+  const input = { ...draft, category: $("f-category").value, industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
+    client: $("f-client-public").checked ? val("f-client") : "" }; // 공개 동의 없으면 이름은 보내지 않아요
+  try {
+    const out = await polishCaseDirect(input);
+    if (out && out.ok) {
+      pushUndo();
+      fillDraft(out.result);
+      showDraft("polish");
+      showWarnings(out.warnings);
+      aiMeta = { promptVersion: out.promptVersion || "", ms: out.ms || 0, warnings: out.warnings || null, generatedAt: serverTimestamp() };
+      gs.textContent = "AI가 다듬었어요. 오른쪽 미리보기로 확인하고, 마음에 안 들면 '되돌리기'를 누르세요.";
+      dirty = true; setState("저장 안 된 변경 있음");
+    } else {
+      gs.className = "notice notice-error";
+      gs.textContent = `AI로 고치지 못했어요 (${(out && out.reason) || "알 수 없음"}). 쓴 글은 그대로예요.`;
+    }
+  } finally {
+    btn.disabled = false; btn.textContent = "AI로 수정하기";
   }
 });
 
@@ -262,7 +290,8 @@ $("c-template").addEventListener("click", () => {
   const input = memoInput();
   if (!input.title) { say("작업명을 먼저 써 주세요.", true); $("f-name").focus(); return; }
   if (!input.memo.request && !input.memo.work && !input.memo.result) { say("메모를 한 칸 이상 써 주세요.", true); $("m-request").focus(); return; }
-  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !confirm("오른쪽에 쓴 내용을 문장 틀 초안으로 바꿀까요?")) return;
+  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !confirm("위 칸에 쓴 내용을 문장 틀 초안으로 바꿀까요? ('되돌리기'로 돌아올 수 있어요)")) return;
+  pushUndo();
   fillDraft(templateDraft(input));
   showDraft("template"); $("warn").hidden = true;
   const gs = $("gen-status"); gs.hidden = false; gs.className = "notice notice-info";
@@ -283,15 +312,6 @@ $("sns-template").addEventListener("click", () => {
   dirty = true; setState("저장 안 된 변경 있음");
 });
 
-// 직접 쓰기: 메모를 그대로 옮긴 편집칸을 열어요 (AI 없이)
-$("c-manual").addEventListener("click", () => {
-  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !$("draft").hidden) { showDraft("manual"); $("c-title").focus(); return; }
-  fillDraft({ title: val("f-name"), summary: "", problem: val("m-request"), process: val("m-work"), result: val("m-result"), tags: [] });
-  showDraft("manual"); $("warn").hidden = true; $("gen-status").hidden = true;
-  aiMeta = { promptVersion: "manual", ms: 0, warnings: null, generatedAt: serverTimestamp() };
-  dirty = true; setState("저장 안 된 변경 있음"); $("c-title").focus();
-});
-$("regen").addEventListener("click", () => $("generate").click());
 // 게시 화면 미리보기: 전체 화면으로 방문자 작업 상세와 똑같이 보여 줘요 (모두 textContent)
 function paragraphsInto(box, text) {
   box.replaceChildren(...String(text || "").split(/\n{2,}/).map((t) => t.trim()).filter(Boolean).map((t) => {
@@ -300,24 +320,28 @@ function paragraphsInto(box, text) {
     return p;
   }));
 }
-function pvImage(im, alt) { const img = document.createElement("img"); img.className = `sz-${sizeOf(im)}`; img.alt = alt; img.src = im.data || ""; return img; }
-function renderFullPreview() {
+function pvImage(im, alt) { const img = document.createElement("img"); img.style.width = `max(${sizeOf(im)}%, min(100%, 200px))`; img.alt = alt; img.src = im.data || ""; return img; }
+function renderFullPreview(px = "fp") {
+  const $p = (k) => $(`${px}-${k}`);
   const title = val("c-title") || val("f-name") || "제목 없음";
-  $("fp-cat").textContent = $("f-category").value;
-  $("fp-title").textContent = title;
-  $("fp-summary").textContent = val("c-summary");
+  $p("cat").textContent = $("f-category").value;
+  $p("title").textContent = title;
+  $p("summary").textContent = val("c-summary");
   const meta = [["업종", val("f-industry") || "-"], ["기간", val("f-period") || "-"], ["맡은 일", val("f-role") || "-"]];
   if ($("f-client-public").checked && val("f-client")) meta.push(["클라이언트", val("f-client")]);
-  $("fp-meta").replaceChildren(...meta.map(([k, v]) => { const d = document.createElement("div"); const dt = document.createElement("dt"); dt.textContent = k; const dd = document.createElement("dd"); dd.textContent = v; d.append(dt, dd); return d; }));
-  $("fp-cover").replaceChildren(...(images[0] && images[0].data ? [pvImage(images[0], `${title} 커버 이미지`)] : []));
-  $("fp-cover").hidden = !(images[0] && images[0].data);
-  paragraphsInto($("fp-problem"), val("c-problem") || "-");
-  paragraphsInto($("fp-process"), val("c-process") || "-");
-  paragraphsInto($("fp-result"), val("c-result") || "-");
-  $("fp-images").replaceChildren(...images.slice(1).filter((im) => im.data).map((im, i) => pvImage(im, `${title} 이미지 ${i + 2}`)));
-  $("fp-images").hidden = images.length < 2;
-  $("fp-tags").replaceChildren(...tagsFromInput().map((t) => { const sp = document.createElement("span"); sp.className = "tag"; sp.textContent = `#${t}`; return sp; }));
+  $p("meta").replaceChildren(...meta.map(([k, v]) => { const d = document.createElement("div"); const dt = document.createElement("dt"); dt.textContent = k; const dd = document.createElement("dd"); dd.textContent = v; d.append(dt, dd); return d; }));
+  $p("cover").replaceChildren(...(images[0] && images[0].data ? [pvImage(images[0], `${title} 커버 이미지`)] : []));
+  $p("cover").hidden = !(images[0] && images[0].data);
+  paragraphsInto($p("problem"), val("c-problem") || "-");
+  paragraphsInto($p("process"), val("c-process") || "-");
+  paragraphsInto($p("result"), val("c-result") || "-");
+  $p("images").replaceChildren(...images.slice(1).filter((im) => im.data).map((im, i) => pvImage(im, `${title} 이미지 ${i + 2}`)));
+  $p("images").hidden = images.length < 2;
+  $p("tags").replaceChildren(...tagsFromInput().map((t) => { const sp = document.createElement("span"); sp.className = "tag"; sp.textContent = `#${t}`; return sp; }));
 }
+// 오른쪽 화면 미리보기: 쓰는 대로 바로 바뀌어요
+function renderLive() { if ($("lp-title")) renderFullPreview("lp"); }
+document.querySelectorAll("#editor .pw-left input, #editor .pw-left textarea, #editor .pw-left select").forEach((x) => x.addEventListener("input", renderLive));
 $("preview-toggle").addEventListener("click", () => {
   renderFullPreview();
   const d = $("full-pv");
@@ -356,7 +380,7 @@ async function save(status, showDone = false) {
   };
   if (aiMeta) notes.ai = aiMeta;
   notes.sns = { caption: val("s-caption"), captions: snsCaptions, hashtags: hashtagsFromInput(), ...(snsMeta ? { ai: snsMeta } : {}), ...(snsCopiedAt ? { copiedAt: snsCopiedAt } : {}) };
-  ["save", "publish", "unpublish", "regen", "preview-toggle"].forEach((id) => { $(id).disabled = true; });
+  ["save", "publish", "unpublish", "polish", "preview-toggle"].forEach((id) => { $(id).disabled = true; });
   setState("저장하는 중…");
   try {
     await setDoc(doc(db, "workNotes", workId), notes, { merge: true });
@@ -380,7 +404,7 @@ async function save(status, showDone = false) {
   } catch (err) {
     setState("저장 실패"); say(friendlyError(err), true); return false;
   } finally {
-    ["save", "publish", "unpublish", "regen", "preview-toggle"].forEach((id) => { $(id).disabled = false; });
+    ["save", "publish", "unpublish", "polish", "preview-toggle"].forEach((id) => { $(id).disabled = false; });
   }
 }
 function applyStatus(status) {
@@ -407,7 +431,6 @@ async function load() {
   $("f-client").value = n.client || existing.client || ""; $("f-client-public").checked = !!n.clientPublic;
   $("m-request").value = (n.memo && n.memo.request) || ""; $("m-work").value = (n.memo && n.memo.work) || ""; $("m-result").value = (n.memo && n.memo.result) || "";
   fillDraft(existing);
-  syncMeta();
   if (REQUIRED_TO_PUBLISH.some(([id]) => val(id))) showDraft(n.ai && n.ai.promptVersion === "template" ? "template" : n.ai && n.ai.promptVersion === "manual" ? "manual" : n.ai ? "ai" : "saved");
   if (n.ai) showWarnings(n.ai.warnings);
   if (n.sns) { snsCaptions = Array.isArray(n.sns.captions) ? n.sns.captions : []; snsIndex = Math.max(0, snsCaptions.indexOf(n.sns.caption)); if (snsCaptions.length) showSnsVariant(); $("s-caption").value = n.sns.caption || ""; $("s-hashtags").value = (n.sns.hashtags || []).join(", "); if (n.sns.ai) $("sns-badge").hidden = false; if (n.sns.copiedAt) $("sns-copied").textContent = "이전에 복사한 적 있어요."; }

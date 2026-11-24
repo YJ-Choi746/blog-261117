@@ -293,8 +293,22 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pw-pv .pv-l { margin: 0; font-size: 16px; color: var(--gray-700); }
 .pw-pv .pv-cover, .pw-pv .pv-img { width: 100%; height: auto; max-height: 70vh; object-fit: contain; background: var(--surface); display: block; margin: 0 auto; }
 .pw-pv .pv-img { margin-top: 10px; }
-.pw-pv .sz-m { width: 70%; } .pw-pv .sz-s { width: 45%; }
-.pw-thumbs .pw-size { min-height: 44px; width: 100%; font: inherit; font-size: 13px; border: 1px solid var(--line-strong); background: #FFFFFF; padding: 0 6px; } /* line-strong */
+#editor .pw-thumbs .pw-size { display: flex; flex-direction: column; gap: 0; font-size: 12px; color: var(--gray-600); min-height: 44px; justify-content: center; }
+#editor .pw-thumbs .pw-size input[type="range"] { width: 100%; min-height: 28px; padding: 0; border: 0; margin: 0; accent-color: var(--blue); } /* blue */
+.pw-thumbs .work-image { position: relative; }
+.pw-x { position: absolute; top: 4px; right: 4px; width: 32px; height: 32px; border: 0; border-radius: 999px; background: rgba(17, 17, 17, .75); color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1; } /* black 75% · white */
+.pw-x:hover { background: #111111; }
+.pw-x::after { content: ""; position: absolute; inset: -6px; } /* 눌리는 영역 44px */
+/* 왼쪽 입력 · 오른쪽 긴 화면 미리보기 */
+.pw-cols .pw-left { flex: 1 1 420px; max-width: 560px; }
+.pw-cols .pw-right { flex: 1.4 1 520px; padding: 20px; }
+.pw-live { border: 1px solid var(--line); background: var(--bg); overflow: hidden; }
+.pw-live .case-article { padding: 32px 20px 0; }
+.pw-live .case-head h1 { font-size: clamp(26px, 3vw, 40px); }
+.pw-live .case-band { margin-top: 40px; }
+.pw-live .case-band .wrap { padding-top: 40px; padding-bottom: 40px; }
+.pw-live .case-band h2 { font-size: clamp(26px, 3vw, 36px); }
+@media (max-width: 980px) { .pw-cols .pw-left { max-width: none; } }
 .pw-pv .pv-s { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
 .pw-pv .pv-no { font-family: var(--font-serif); font-weight: 600; font-size: 20px; color: var(--blue); }
 .pw-pv h4 { margin: 0 0 6px; font-family: var(--font-serif); font-weight: 600; font-size: 18px; }

@@ -18,8 +18,9 @@ function paragraphs(el, text) {
 }
 function image(id, alt, size) {
   const img = document.createElement("img");
-  // 크기: 관리자가 고른 폭 (크게 · 보통 · 작게), 자르지 않고 원래 비율
-  img.className = `sz-${["l", "m", "s"].includes(size) ? size : "l"}`;
+    // 관리자가 고른 폭(%) 20~100 (예전 값 l · m · s도 읽음). 휴대폰에서 너무 작아지지 않게 최소 200px
+  const n = typeof size === "number" ? size : ({ l: 100, m: 70, s: 45 })[size] ?? 100;
+  img.style.width = `max(${Math.min(100, Math.max(20, Math.round(n)))}%, min(100%, 200px))`;
   img.alt = alt; img.loading = "lazy";
   getImageData(id).then((d) => { if (d) img.src = d; });
   return img;

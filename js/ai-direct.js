@@ -3,7 +3,7 @@
 // - 키는 이 브라우저에만 둬요: 기본은 탭을 닫으면 지워지는 sessionStorage, "기억하기"를 켜면 localStorage.
 //   Firestore · GA · 로그 · 커밋에는 절대 보내거나 남기지 않아요. 방문자 화면에서는 이 파일을 쓰지 않아요.
 // - 규칙(프롬프트 · 출력 모양 · 메모에 없는 숫자 경고)은 서버 함수(functions/casestudy.js)와 같아요.
-import { CASE_SYSTEM_PROMPT, CASE_PROMPT_VERSION, buildCaseMessage, SNS_SYSTEM_PROMPT, SNS_PROMPT_VERSION, buildSnsMessage } from "./ai-prompt.js";
+import { CASE_SYSTEM_PROMPT, CASE_PROMPT_VERSION, buildCaseMessage, SNS_SYSTEM_PROMPT, SNS_PROMPT_VERSION, buildSnsMessage, POLISH_SYSTEM_PROMPT, POLISH_PROMPT_VERSION, buildPolishMessage } from "./ai-prompt.js";
 
 const API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-opus-5-5"; // functions/analyze.js와 같은 모델
@@ -135,5 +135,25 @@ export async function generateSnsDirect(input, key = getKey()) {
   if (!draft) return { ok: false, reason: "답을 읽지 못했어요", ...meta() };
   const nums = unsupportedNumbers([...draft.captions, ...draft.hashtags].join(" "),
     [input.title, input.summary, input.problem, input.process, input.result, input.category, input.industry, input.client, ...(input.tags || [])]);
+  return { ok: true, result: draft, warnings: nums.length ? { unsupportedNumbers: nums } : null, ...meta() };
+}
+
+// 'AI로 수정하기': 칸에 쓴 글을 같은 형식으로 다듬어요. 운영자가 쓴 칸이 AI 답에서 비면 원래 글을 그대로 둬요
+export function parsePolish(text, input) {
+  const o = parseJson(text);
+  if (!o || typeof o !== "object") return null;
+  const pick = (k) => (typeof o[k] === "string" && o[k].trim() ? o[k].trim() : String(input[k] || ""));
+  const tags = Array.isArray(o.tags) ? [...new Set(o.tags.filter((t) => typeof t === "string").map((t) => t.replace(/^#/, "").trim()).filter(Boolean))].slice(0, 6) : (input.tags || []);
+  return { title: pick("title"), summary: pick("summary"), problem: pick("problem"), process: pick("process"), result: pick("result"), tags };
+}
+export async function polishCaseDirect(input, key = getKey()) {
+  const started = Date.now();
+  const meta = () => ({ ms: Date.now() - started, promptVersion: `${POLISH_PROMPT_VERSION}-direct` });
+  const r = await callClaude({ key, system: POLISH_SYSTEM_PROMPT, user: buildPolishMessage(input), schema: CASE_SCHEMA, effort: "medium", maxTokens: 8000 });
+  if (!r.ok) return { ...r, ...meta() };
+  const draft = parsePolish(r.text, input);
+  if (!draft) return { ok: false, reason: "답을 읽지 못했어요", ...meta() };
+  const nums = unsupportedNumbers([draft.title, draft.summary, draft.problem, draft.process, draft.result, ...draft.tags].join(" "),
+    [input.title, input.summary, input.problem, input.process, input.result, input.category, input.industry, input.period, input.role, input.client, ...(input.tags || [])]);
   return { ok: true, result: draft, warnings: nums.length ? { unsupportedNumbers: nums } : null, ...meta() };
 }
