@@ -11,14 +11,15 @@
 | 글이 퍼진다 | 어떤 글의 공유 링크를 복사하나? | `share_post` |
 | 글에 반응한다 | 어떤 글에 좋아요 · 저장을 누르나? (PRD 반응률) | `like_post` · `unlike_post`, `bookmark_post` · `unbookmark_post` |
 | 글을 찾아 들어온다 | 어디(홈/목록)에서, 몇 번째 글을 눌렀나? 어떤 카테고리를 고르나? | `select_post`, `filter_posts` |
-| 의뢰로 이어진다 | 의뢰 버튼을 어디서 눌렀나? 폼을 시작하고 끝까지 보냈나? | `click_cta` → `form_start` → `form_submit` → **`generate_lead`** |
+| 의뢰로 이어진다 | 의뢰 버튼을 어디서 눌렀나? 폼을 시작하고 끝까지 보냈나? 어디서 막혔나? | `request_click` → `form_start` → `form_submit` → **`generate_lead`** (막히면 `form_error`) |
+| 작업이 읽힌다 | 어떤 작업(케이스 스터디)이 열리나? | `case_view` |
 
-**전환 깔때기 (의뢰)**: `page_view(홈)` → `click_cta` → `form_start` → `form_submit` → `generate_lead`
+**전환 깔때기 (의뢰)**: `page_view(홈)` → `request_click` → `form_start` → `form_submit` → `generate_lead`
 **콘텐츠 깔때기 (읽기)**: `select_post` → `view_post` → `scroll_post(30 · 50 · 90)` → `read_post(50)` → `read_post(90)` → `leave_post`
 
 ## 2. 이름 규칙
 
-- **이벤트 이름**: 영어 소문자 `snake_case`, `동사_대상` 순서 (`view_post`, `click_cta`). 40자 이하.
+- **이벤트 이름**: 영어 소문자 `snake_case`, 40자 이하. 기존 이벤트는 `동사_대상`(`view_post`), 2026-11-24에 새로 정한 의뢰 · 작업 이벤트는 `대상_동작`(`request_click`, `case_view`)이에요. 한 번 정한 이름은 바꾸지 않아요 (바꾸면 GA 보고서가 끊겨요).
 - GA가 정해 둔 **추천 이벤트 이름이 있으면 그대로** 써요 (`page_view`, `generate_lead`).
 - **매개변수 이름**: `snake_case`, 대상을 앞에 (`post_id`, `cta_name`, `list_name`). 같은 뜻이면 이벤트가 달라도 **같은 이름**을 써요 (`post_title`은 view_post · select_post · read_post에서 같음).
 - **값**: 위치 · 이름 같은 값은 영어 소문자 id (`hero_request`, `home_recent`). 글 제목 · 카테고리는 화면에 보이는 그대로.
@@ -42,10 +43,13 @@
 | `unlike_post` | 좋아요를 다시 눌러 취소하고 저장에 성공했을 때 | 위와 같음 | 글 상세 | |
 | `bookmark_post` | 글 상세에서 "저장"을 눌렀을 때 (이 브라우저에 저장) | 위와 같음 | 글 상세 | |
 | `unbookmark_post` | "저장됨"을 눌러 저장을 취소했을 때 | 위와 같음 | 글 상세 | |
-| `click_cta` | 의뢰 · 기록 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈, 글 목록, 글 상세 | |
-| `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_name` | 홈 | |
-| `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_name`, `request_types`, `budget_range` | 홈 | |
-| `generate_lead` | 의뢰가 접수되어 완료 페이지가 열렸을 때 | `form_name` | 의뢰 완료 | **예** |
+| `request_click` | 의뢰 버튼(프로젝트 의뢰 · 의뢰 문의하기 · 이런 작업 의뢰하기 등)을 눌렀을 때 | `cta_location` | 홈, 작업 · 글 페이지 | |
+| `click_cta` | 기록(블로그)으로 가는 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈 | |
+| `case_view` | 작업 상세(케이스 스터디)가 열렸을 때 | `post_id`, `post_title`, `post_category` | 작업 상세 | |
+| `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_id` | 홈 | |
+| `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_id`, `request_types`, `budget_range` | 홈 | |
+| `form_error` | 보내기를 눌렀는데 입력 확인에서 막혔을 때 | `form_id`, `reason`, `error_count` | 홈 | |
+| `generate_lead` | 의뢰가 접수되어 완료 페이지가 열렸을 때 (**전송 성공일 때만**) | `form_id` | 의뢰 완료 | **예** |
 | `refresh_quote` | 오늘의 명언 위젯에서 "다른 명언 보기"를 눌렀을 때 | `widget_name` | 글 상세 (위젯이 있는 글) | |
 | `select_personality` | 성격별 포켓몬 위젯에서 성격 버튼 · "같은 성격의 다른 포켓몬"을 눌렀을 때 | `personality`, `pokemon_id`, `widget_name` | 글 상세 (위젯이 있는 글) | |
 
@@ -63,8 +67,23 @@
 | `engaged_seconds` | 그때까지 탭을 보고 있던 시간(초, 정수). 탭을 숨긴 시간은 빼요 |
 | `read_completed` | 떠날 때까지 `read_post(90)`(완독)을 보냈으면 `yes`, 아니면 `no` |
 | `post_published_at` | 글 발행일 `YYYY-MM-DD` (한국 시간). 발행 전 글(임시저장 · 비공개)은 `미발행` |
-| `cta_name` · `cta_location` | `header_request` · `header` / `hero_request` · `hero` / `hero_blog` · `hero` / `home_all_posts` · `recent_posts` / `nav_blog` · `header` |
-| `form_name` | `project_request` |
+| `cta_location` (`request_click`) | `header` (헤더 프로젝트 의뢰) · `hero` (첫 화면 의뢰 문의하기) · `ask_result` (한 줄 의뢰 결과 '의뢰서 마저 쓰기') · `home_band` (홈 아래 '의뢰 문의하기') · `case_end` (작업 상세 아래 '이런 작업 의뢰하기') |
+| `cta_name` · `cta_location` (`click_cta`) | `hero_blog` · `hero` / `home_all_posts` · `recent_posts` / `nav_blog` · `header` |
+| `form_id` | `request` |
+| `reason` (`form_error`) | `validation` (이름 · 이메일 · 필요한 것 확인에서 막힘) |
+| `post_id` (`case_view`) | 작업 ID (`work.html?id=` 값) |
+
+### 기존 이름 → 새 이름 (2026-11-24)
+
+| 기존 | 새 이름 | 바뀐 점 |
+|---|---|---|
+| `click_cta` (의뢰 버튼, `cta_name: *_request`) | `request_click` | 이름 통일, `cta_location`만 보냄. 홈 아래 · 한 줄 의뢰 결과 · 작업 상세 의뢰 버튼도 새로 기록 |
+| `click_cta` (기록 버튼) | `click_cta` (그대로) | 바뀌지 않음 |
+| `form_name: project_request` | `form_id: request` | `form_start` · `form_submit` · `generate_lead` 매개변수 이름 |
+| (없음) | `form_error` | 새로 추가 |
+| (없음) | `case_view` | 새로 추가 |
+
+2026-11-24 이전 기록은 GA에 옛 이름으로 남아 있어요. 기간을 겹쳐 볼 때는 두 이름을 같이 골라요.
 | `request_types` | 고른 의뢰 분야를 쉼표로 (`브랜딩,UI/UX 디자인`) |
 | `budget_range` | 고른 예산 구간 그대로 (안 고르면 `미선택`) |
 | `widget_name` | `daily_quote` · `pokemon_match` |
@@ -111,6 +130,8 @@
 | 글 ID | `post_id` | 등록함 |
 | 목록 위치 | `list_name` | 등록함 (2026-11-17) |
 | CTA 이름 | `cta_name` | 등록함 (2026-11-17) |
+| 폼 ID | `form_id` | **등록 필요** (2026-11-24 추가) |
+| 오류 이유 | `reason` | **등록 필요** (2026-11-24 추가) |
 | CTA 위치 | `cta_location` | 등록함 (2026-11-17) |
 | 필터 카테고리 | `filter_category` | 등록함 (2026-11-17) |
 | 읽은 정도 | `read_depth` | 등록함 (2026-11-17) |
@@ -125,17 +146,22 @@
 | 이름 | 매개변수 | 단위 | 상태 |
 |---|---|---|---|
 | 머문 시간 | `engaged_seconds` | 초 | **등록 필요** (2026-11-18 추가) |
+| 틀린 칸 수 | `error_count` | 개 | **등록 필요** (2026-11-24 추가) |
 
 **핵심 이벤트 (전환)**: 관리 → 데이터 표시 → **이벤트** → `generate_lead` 옆 **핵심 이벤트로 표시** 켜기. (`generate_lead`는 첫 의뢰가 들어온 뒤 목록에 나타나요.) — 사용자가 설정함 (2026-11-17)
 
-**탐색**: 탐색 → 유입경로 탐색 "의뢰 흐름" (page_view → click_cta → form_start → form_submit → generate_lead) — 사용자가 만듦 (2026-11-17)
+**탐색**: 탐색 → 유입경로 탐색 "의뢰 흐름" (page_view → click_cta → form_start → form_submit → generate_lead) — 사용자가 만듦 (2026-11-17). **2026-11-24부터 두 번째 단계를 `request_click`으로 바꿔야 해요.**
+
+**향상된 측정**: 관리 → 데이터 수집 및 수정 → 데이터 스트림 → Blog-web → 향상된 측정 켜기, 톱니바퀴에서 스크롤 · 이탈 클릭 · 파일 다운로드 확인.
 
 ## 5. 코드 위치
 
 | 무엇 | 파일 |
 |---|---|
 | GA 불러오기 · `trackEvent()` · `data-ga-event` 클릭 자동 기록 | `js/analytics.js` |
-| `click_cta` | HTML 링크의 `data-ga-event="click_cta" data-ga-cta_name="…" data-ga-cta_location="…"` |
+| `request_click`, `click_cta` | HTML 링크 · 버튼의 `data-ga-event="request_click" data-ga-cta_location="…"` (기록 버튼은 `click_cta` + `cta_name`) |
+| `case_view` | `js/work.js` |
+| `form_error` | `js/request-form.js` |
 | `select_post`, `filter_posts`, `form_start`, `form_submit` | `js/home.js`, `js/posts.js` |
 | `view_post`, `read_post`, `scroll_post`, `leave_post`, 글 상세 `page_view` | `js/post.js` |
 | `like_post` · `unlike_post` · `bookmark_post` · `unbookmark_post` | `js/reactions.js` |

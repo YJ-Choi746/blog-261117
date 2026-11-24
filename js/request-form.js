@@ -218,7 +218,12 @@ if (form) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (sending) return; // 두 번 눌러도 한 번만
-    if (!validateRequest(form)) return;
+    if (!validateRequest(form)) {
+      // GA: 보내기 실패(입력 확인) — 칸 이름 · 내용은 보내지 않고 개수만
+      const n = form.querySelectorAll('[aria-invalid="true"]').length;
+      if (typeof window.trackEvent === "function") window.trackEvent("form_error", { form_id: "request", reason: "validation", error_count: n });
+      return;
+    }
     sending = true;
     const btn = form.querySelector('button[type="submit"]');
     if (btn) { btn.disabled = true; btn.setAttribute("aria-busy", "true"); btn.dataset.label = btn.textContent; btn.textContent = "보내는 중…"; }

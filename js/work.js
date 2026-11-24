@@ -38,6 +38,7 @@ async function load() {
   if (w.status !== "published") { $("work-status").textContent = "공개되지 않은 작업이에요."; return; }
 
   document.title = `${w.title || w.name} — Jae`;
+  if (typeof window.trackEvent === "function") window.trackEvent("case_view", { post_id: id, post_title: w.title || w.name || "", post_category: w.category || "" });
   const desc = document.querySelector('meta[name="description"]');
   if (desc && w.summary) desc.setAttribute("content", w.summary);
 

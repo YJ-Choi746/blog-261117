@@ -112,14 +112,14 @@ if (form) {
   form.addEventListener("focusin", () => {
     if (started) return;
     started = true;
-    if (typeof window.trackEvent === "function") window.trackEvent("form_start", { form_name: "project_request" });
+    if (typeof window.trackEvent === "function") window.trackEvent("form_start", { form_id: "request" });
   });
   form.addEventListener("submit", () => {
     const types = [...form.querySelectorAll('input[name="의뢰분야"]:checked')].map((x) => x.value).join(",");
     const budget = form.querySelector('select[name="예산"]');
     if (typeof window.trackEvent === "function") {
       window.trackEvent("form_submit", {
-        form_name: "project_request",
+        form_id: "request",
         request_types: types || "미선택",
         budget_range: (budget && budget.value) || "미선택"
       });
