@@ -54,5 +54,28 @@ service cloud.firestore {
             || request.resource.data.likeCount == resource.data.likeCount - 1);
       allow delete: if isAdmin();
     }
+
+    // 의뢰 (PRD F3): 방문자는 만들기만, 읽기 · 수정 · 삭제는 관리자만.
+    // 이름 · 이메일이 들어 있는 개인정보라 방문자 읽기는 절대 열지 않아요.
+    // AI 분석 결과(ai) · 상태 변경(status)은 관리자만 update로 붙여요.
+    match /requests/{requestId} {
+      allow create: if validNewRequest();
+      allow read, update, delete: if isAdmin();
+    }
+
+    function validNewRequest() {
+      let r = request.resource.data;
+      let fields = ["name", "email", "categories", "budget", "content", "status", "createdAt"];
+      return r.keys().hasOnly(fields) && r.keys().hasAll(fields)
+        && r.name is string && r.name.size() > 0 && r.name.size() <= 50
+        && r.email is string && r.email.size() <= 100
+        && r.email.matches("^[^@\\s]+@[^@\\s]+[.][^@\\s]+$")
+        && r.categories is list && r.categories.size() <= 4
+        && r.categories.hasOnly(["브랜딩", "UI/UX 디자인", "콘텐츠 제작", "기타"])
+        && r.budget is string && r.budget.size() <= 50
+        && r.content is string && r.content.size() >= 5 && r.content.size() <= 3000
+        && r.status == "new"
+        && r.createdAt == request.time;
+    }
   }
 }

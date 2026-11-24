@@ -167,7 +167,7 @@ input,select,textarea{font:inherit}
           </div>
         </fieldset>
         <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">예산 범위<select name="예산" style="min-height: 48px; padding: 0 12px; background: #2F6BEA; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px"><option value="">선택해주세요</option><option>[예산 구간 1]</option><option>[예산 구간 2]</option><option>협의</option></select></label>
-        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">프로젝트 내용<textarea name="프로젝트 내용" required rows="5" placeholder="만들고 싶은 것, 참고 사이트, 희망 일정을 알려주세요." style="padding: 14px 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px; resize: vertical"></textarea></label>
+        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">프로젝트 내용<textarea name="프로젝트 내용" required rows="5" maxlength="3000" placeholder="만들고 싶은 것, 참고 사이트, 희망 일정을 알려주세요." style="padding: 14px 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px; resize: vertical"></textarea></label>
         <button class="fx fx-wave fx-white" type="submit" style="min-height: 56px; border: 0; border-radius: 999px; background: #FFFFFF; color: #111111; font-weight: 600; font-size: 16px; cursor: pointer">의뢰 보내기</button>
       </form>
     </div>
@@ -181,5 +181,6 @@ input,select,textarea{font:inherit}
   </footer>
 </div>
 <script type="module" src="js/home.js"></script>
+<script type="module" src="js/request-form.js"></script>
 </body>
 </html>
