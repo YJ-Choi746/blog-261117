@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>의뢰 관리 — Jae 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/editor.css">
+<link rel="stylesheet" href="../css/fx.css">
+</head>
+<body class="write-body">
+<div class="page">
+  <header class="site-header">
+    <div class="wrap">
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center">
+        <a class="logo" href="../index.html">Jae</a>
+        <span class="badge">관리자</span>
+        <nav class="nav" aria-label="관리자 메뉴">
+          <a href="posts.html">글 관리</a>
+          <a href="write.html">글쓰기</a>
+          <a href="requests.html" aria-current="page">의뢰 관리</a>
+        </nav>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 14px; color: var(--gray-600)">
+        <span id="who"></span>
+        <button type="button" id="logout" class="btn btn-text">로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <p id="checking" class="wrap" style="padding-top: 48px; color: var(--gray-600)">로그인 상태를 확인하는 중…</p>
+  <p id="config-notice" class="wrap notice notice-info" style="margin-top: 24px" hidden>Firebase 설정이 아직 없어요. <code>js/firebase-config.js</code>에 설정값을 넣어 주세요.</p>
+
+  <main id="manage" class="wrap" style="padding-top: 48px; padding-bottom: 80px" hidden>
+    <div style="margin-bottom: 24px">
+      <h1 style="margin: 0; font-family: var(--font-serif); font-size: 40px">의뢰 관리</h1>
+      <p id="counts" style="margin: 6px 0 0; font-size: 14px; color: var(--gray-600)"></p>
+    </div>
+
+    <div class="chips" role="group" aria-label="상태" id="tabs" style="margin-bottom: 16px">
+      <button type="button" class="chip" aria-pressed="true" data-status="">전체</button>
+      <button type="button" class="chip" aria-pressed="false" data-status="new">신규</button>
+      <button type="button" class="chip" aria-pressed="false" data-status="reviewing">검토중</button>
+      <button type="button" class="chip" aria-pressed="false" data-status="replied">답장완료</button>
+    </div>
+
+    <p id="manage-error" class="notice notice-error" role="alert" hidden></p>
+    <p id="manage-ok" class="notice notice-ok" role="status" hidden></p>
+    <p id="list-status" role="status" style="color: var(--gray-600)">의뢰를 불러오는 중…</p>
+    <div id="request-list" class="req-list" hidden></div>
+  </main>
+</div>
+<script type="module" src="../js/admin-requests.js"></script>
+</body>
+</html>

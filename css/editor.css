@@ -201,3 +201,31 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .react-btn[aria-pressed="true"] svg { fill: currentColor; }  /* 누른 상태 = 아이콘 채움 (색은 버튼 글자색 그대로) */
 .react-count { min-width: 1ch; font-variant-numeric: tabular-nums; }
 .saved-note { margin: -12px 0 20px; font-size: 14px; color: var(--gray-600); }
+
+/* 의뢰 관리 카드 (admin/requests.html, PRD F4) — 판단 순서: 요약 → 빠진 항목 → 적합도 */
+.req-list { display: grid; gap: 16px; }
+.req-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.req-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; justify-content: space-between; }
+.req-who { min-width: 0; }
+.req-name { font-size: 18px; font-weight: 600; overflow-wrap: anywhere; }
+.req-meta { font-size: 13px; color: var(--gray-600); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.req-status { min-height: var(--touch-min); }
+.req-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.fit { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: var(--radius-pill); }
+.fit-high { background: var(--blue-tint); color: var(--blue-tint-ink); }
+.fit-medium { background: var(--surface); color: var(--gray-700); }
+.fit-low { background: var(--black); color: var(--white); }
+.req-cat { font-size: 13px; color: var(--gray-600); }
+.req-section { border-top: 1px solid var(--line); padding-top: 12px; }
+.req-section p { margin: 0; overflow-wrap: anywhere; }
+.req-h { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--gray-600); display: flex; gap: 8px; align-items: center; }
+.ai-badge { font-size: 11px; font-weight: 600; background: var(--blue-tint); color: var(--blue-tint-ink); padding: 1px 8px; border-radius: var(--radius-pill); }
+.req-muted { color: var(--gray-600); font-size: 14px; }
+.req-missing { display: flex; flex-wrap: wrap; gap: 6px; }
+.miss { font-size: 13px; padding: 2px 10px; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); }
+.req-raw summary { cursor: pointer; min-height: var(--touch-min); display: flex; align-items: center; font-size: 14px; font-weight: 600; }
+.req-dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; margin: 4px 0 0; font-size: 14px; }
+.req-dl dt { color: var(--gray-600); }
+.req-dl dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.req-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+@media (max-width: 480px) { .req-dl { grid-template-columns: minmax(0, 1fr); } .req-dl dd { margin-bottom: 6px; } }
