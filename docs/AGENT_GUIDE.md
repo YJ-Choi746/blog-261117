@@ -62,3 +62,11 @@
 - 테스트 실행과 실패: `docs/SUCCESS_FAILURE_LOG.md`에 (날짜, 대상, 결과, 실패 원인, 조치) 추가
 - 테스트셋: `testset/requests.json`의 각 의뢰와 정답을 기준으로 정확도를 계산한다
 - 화면 스크린샷: `docs/screenshots/`에 플로우 순서대로 번호를 붙여 저장한다
+
+## PRD v0.5 F2 AI 케이스 스터디 생성 규격 (`generateCaseStudy`, 관리자 전용)
+
+- 입력: 작업명(필수) · 분야 · 업종 · 기간 · 클라이언트(공개 동의 `clientPublic: true`일 때만 AI에 전달) · 메모 `{ request, work, result }` (한 칸 이상, 각 1500자 이하)
+- 출력: `{ title, summary, problem, process, result, tags[] }` JSON 스키마 강제
+- 메모에 없는 숫자가 초안에 있으면 `warnings.unsupportedNumbers`로 표시해 운영자가 게시 전에 확인 (H2)
+- 실패(타임아웃 25초 · 파싱 · 거절 · API 오류)는 `{ ok: false, reason }` → 화면은 빈 템플릿으로 직접 작성 (F7)
+- 프롬프트: `functions/casestudy-prompt.js` (메모에 있는 사실만, 수치·성과 생성 금지, 과장 수식어 금지)

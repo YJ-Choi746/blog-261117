@@ -38,6 +38,7 @@ js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
 firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
 functions/          Firebase Functions 서버 함수 (AI 의뢰 분석 analyzeRequest, 이 폴더만 npm 사용)
+functions/casestudy*.js  AI 케이스 스터디 생성 (PRD v0.5 F2, generateCaseStudy) · 프롬프트는 casestudy-prompt.js
 functions/prompt.js AI 분석 프롬프트 (바꾸면 docs/SUCCESS_FAILURE_LOG.md 기록 + `prompt:` 커밋)
 .github/workflows/firebase-hosting.yml  Firebase 배포 (main 푸시 · 매시 17분 · 직접 실행)
 .github/scripts/share-pages.mjs  배포 때 글마다 공유 미리보기 페이지 p/글ID.html 생성 (저장소엔 커밋 안 함)
