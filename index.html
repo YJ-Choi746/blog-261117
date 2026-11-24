@@ -97,21 +97,10 @@ input,select,textarea{font:inherit}
     <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px">
       <div style="padding: 40px 0; border-bottom: 1px solid #E5E5E5; display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; justify-content: space-between">
         <h2 style="margin: 0; font-family: 'Noto Serif KR', serif; font-size: 40px">선택한 작업</h2>
-        <a href="#" style="font-size: 15px">전체 작업 보기 →</a>
+        <a href="works.html" style="font-size: 15px">전체 작업 보기 →</a>
       </div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); column-gap: 48px">
-        <article style="padding: 32px 0; display: flex; flex-direction: column; gap: 18px">
-          <div style="aspect-ratio: 16 / 11; background: #F2F2F0; display: flex; align-items: center; justify-content: center; color: #6B6B6B; font-size: 14px">[프로젝트 이미지]</div>
-          <div style="display: flex; justify-content: space-between; gap: 12px"><h3 style="margin: 0; font-size: 18px">[프로젝트 이름]</h3><span style="color: #2F6BEA; font-size: 14px">웹 디자인</span></div>
-        </article>
-        <article style="padding: 32px 0; display: flex; flex-direction: column; gap: 18px">
-          <div style="aspect-ratio: 16 / 11; background: #F2F2F0; display: flex; align-items: center; justify-content: center; color: #6B6B6B; font-size: 14px">[프로젝트 이미지]</div>
-          <div style="display: flex; justify-content: space-between; gap: 12px"><h3 style="margin: 0; font-size: 18px">[프로젝트 이름]</h3><span style="color: #2F6BEA; font-size: 14px">앱 UI/UX</span></div>
-        </article>
-        <article style="padding: 32px 0; display: flex; flex-direction: column; gap: 18px">
-          <div style="aspect-ratio: 16 / 11; background: #F2F2F0; display: flex; align-items: center; justify-content: center; color: #6B6B6B; font-size: 14px">[프로젝트 이미지]</div>
-          <div style="display: flex; justify-content: space-between; gap: 12px"><h3 style="margin: 0; font-size: 18px">[프로젝트 이름]</h3><span style="color: #2F6BEA; font-size: 14px">콘텐츠</span></div>
-        </article>
+      <p id="home-works-status" role="status" style="margin: 0; padding: 32px 0; color: #5F5F5F">작업을 불러오는 중…</p>
+      <div id="home-works" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); column-gap: 48px" hidden></div>
       </div>
     </div>
   </section>
@@ -176,11 +165,12 @@ input,select,textarea{font:inherit}
   <footer style="flex: 1 0 auto; min-height: 72px; display: flex; align-items: center; background: #FAFAFA">
     <div style="width: 100%; box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; font-size: 14px; color: #5F5F5F">
       <span>© Jae</span>
-      <div style="display: flex; gap: 20px"><a href="#">Instagram</a><a href="#">Behance</a><a href="admin/login.html?next=posts.html">관리자</a></div>
+      <div style="display: flex; gap: 20px"><a href="#">Instagram</a><a href="admin/login.html?next=posts.html">관리자</a></div>
     </div>
   </footer>
 </div>
 <script type="module" src="js/home.js"></script>
 <script type="module" src="js/request-form.js"></script>
+<script type="module" src="js/home-works.js"></script>
 </body>
 </html>
