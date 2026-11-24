@@ -64,7 +64,7 @@
 동시 접속 50명을 가정하고, AI 생성은 20초, 작업 상세는 2.5초 안에 끝난다. API 키는 서버에만 두고 관리자 기능은 로그인으로 막는다.
 
 ## 8. 디자인 요구사항
-기존 디자인 시스템을 따르고 AI가 쓴 칸에 'AI 초안' 배지를 붙이며, 휴대폰 360px에서도 깨지지 않게 한다. 참고: [디자인 시안](https://claude.ai/artifact/4WLPHZ2fxuUN4uYXBvdAvE), [디자인 시스템](https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN), 배포 주소
+기존 디자인 시스템을 따르고 AI가 쓴 칸에 'AI 초안' 배지를 붙이며, 휴대폰 360px에서도 깨지지 않게 한다. 참고: [디자인 시안](https://claude.ai/artifact/4WLPHZ2fxuUN4uYXBvdAvE), [디자인 시스템](https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN), [프로토타입](../prototype.html)
 
 ## 9. 출시 및 운영 전략
 - **개발 범위**: Must는 F1부터 F7까지, F8과 F9는 Must를 마친 뒤에만 한다.

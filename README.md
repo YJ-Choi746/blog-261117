@@ -9,7 +9,8 @@
 | 결과물 | 위치 |
 |---|---|
 | 배포된 블로그 | https://blog---261117.web.app (GitHub Pages: https://yj-choi746.github.io/blog-261117/) |
-| PRD 기획서 | [docs/PRD.md](docs/PRD.md) v0.7, A4 2쪽 (v0.2 → v0.6 변화는 커밋 기록 `docs: PRD ...`) |
+| PRD 기획서 | [docs/PRD.md](docs/PRD.md) v0.8, A4 2쪽 (v0.2 → v0.8 변화는 커밋 기록 `docs: PRD ...`) |
+| 디자인 프로토타입 | [prototype.html](prototype.html) (배포 후 https://yj-choi746.github.io/blog-261117/prototype.html) — 방문자 · 관리자 화면 흐름을 한 파일로 클릭해 볼 수 있음 |
 | 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) · 스크린샷 [docs/screenshots/](docs/screenshots/) |
 | 에이전트용 지침 | [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) · [CLAUDE.md](CLAUDE.md) |
 | 의사결정 로그 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) |
@@ -17,7 +18,7 @@
 | 작업 일지 | [docs/WORKLOG.md](docs/WORKLOG.md) |
 
 ## 진행 상황 (2026-11-24)
-| 기능 (PRD v0.6) | 상태 |
+| 기능 (PRD v0.8) | 상태 |
 |---|---|
 | F2 AI 케이스 스터디 생성 (`functions/casestudy.js`) | 완료 · 단위 테스트 7/7 |
 | F1 작업 입력 · F3 편집·게시 · F7 실패 대체 (`admin/work.html`) | 완료 · 화면 7/7 · 규칙 18/18 |

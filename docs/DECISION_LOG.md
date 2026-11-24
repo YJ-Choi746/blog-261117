@@ -152,3 +152,4 @@
 - **PRD v0.4**: 문제 검증은 데스크 리서치(신뢰 출처만, 원문 대조), 승인은 J가 역할별 확인사항으로. 문서는 `docs/` 대문자 파일 + `README.md`로 정리 (D13 · D14).
 - **파일 이름 통일**: `docs/` 문서 7개를 대문자로 바꿈(ANALYTICS · ANALYTICS_EVENTS · DASHBOARD · DECISIONS · DESIGN_SYSTEM · FIREBASE_SETUP · USER_STORIES), 참조 15곳 함께 수정 (D21).
 - **결정 문서 하나로**: `DECISIONS.md`(블로그 날짜별 결정)를 `DECISION_LOG.md` 2부로 합침. 설계 결정은 1부 표, 작은 결정은 2부 날짜별 기록.
+- **디자인 프로토타입 공개**: 케이스 스터디 작성기 흐름을 담은 한 파일 프로토타입을 루트 `prototype.html`로 올림(제출 양식 예시와 같은 위치). 실제 사이트 데이터와는 연결되지 않고, AI가 없으면 예시 초안으로 동작.

@@ -13,6 +13,7 @@
 ```
 index.html          첫 화면 (소개 · 서비스 · 작업 · 기록 · 의뢰 폼)
 thanks.html         의뢰 폼 전송 후 보여주는 완료 페이지
+prototype.html      디자인 프로토타입 (한 파일, 방문자 · 관리자 흐름 클릭 시안, 실제 데이터와 연결 안 됨)
 works.html          작업 목록 (게시된 케이스 스터디, 분야 필터) — js/works.js
 work.html           작업 상세 (?id=, 커버 → 요약 → 문제 → 과정 → 결과 → 의뢰 버튼) — js/work.js, 카드는 js/works-data.js
 posts.html          글 목록 (발행된 글, 카테고리 필터, 관리자면 수정·삭제)
