@@ -38,27 +38,37 @@
   </header>
 
   <main>
-    <article class="article" style="padding-top: 72px; padding-bottom: 96px">
-      <a href="works.html" style="font-size: 14px; color: var(--gray-600); text-decoration: none">← 작업으로</a>
-      <p id="work-status" role="status" style="margin: 20px 0 0; color: var(--gray-600)">작업을 불러오는 중…</p>
-      <div id="work" hidden>
-        <div id="work-cover" class="case-cover"></div>
-        <span id="work-cat" class="case-cat"></span>
-        <h1 id="work-title"></h1>
-        <p id="work-summary" class="case-summary"></p>
+    <!-- 작업 상세 (PRD v1.3 F3, 프로토타입 디자인): 정보 줄 → 커버 → 01 요청 · 02 과정 · 03 결과 → 다른 프로젝트 → 의뢰 띠 -->
+    <article class="case-article">
+      <a href="works.html" class="case-back">← 선택한 작업</a>
+      <p id="work-status" role="status" style="margin: 0; color: var(--gray-600)">작업을 불러오는 중…</p>
+      <div id="work" class="case-body" hidden>
+        <div class="case-head">
+          <span id="work-cat" class="case-cat"></span>
+          <h1 id="work-title"></h1>
+          <p id="work-summary" class="case-lead"></p>
+        </div>
         <dl id="work-meta" class="case-meta"></dl>
-        <section class="case-section"><h2>문제</h2><div id="work-problem"></div></section>
-        <section class="case-section"><h2>과정</h2><div id="work-process"></div></section>
-        <div id="work-images" class="case-images"></div>
-        <section class="case-section"><h2>결과</h2><div id="work-result"></div></section>
+        <div id="work-cover" class="case-cover"></div>
+        <section class="case-step"><span class="case-no">01</span><div><h2>요청</h2><div id="work-problem"></div></div></section>
+        <section class="case-step"><span class="case-no">02</span><div><h2>과정</h2><div id="work-process"></div><div id="work-images" class="case-images"></div></div></section>
+        <section class="case-step"><span class="case-no">03</span><div><h2>결과</h2><div id="work-result"></div></div></section>
         <div id="work-tags" class="tags" style="padding-bottom: 0"></div>
-        <aside class="case-cta" aria-labelledby="cta-title">
-          <h2 id="cta-title">비슷한 고민이 있으신가요?</h2>
-          <p>이 작업처럼 문제부터 함께 정리해 드릴게요.</p>
-          <a id="work-cta" class="btn btn-primary fx-wave" href="index.html#request">이런 작업 의뢰하기</a>
-        </aside>
       </div>
     </article>
+    <nav id="work-pager" class="case-pager" aria-label="다른 프로젝트 보기" hidden>
+      <p class="case-cap">다른 프로젝트 보기</p>
+      <div class="case-pg">
+        <a id="pg-prev" rel="prev"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg><span><span class="case-cap">이전</span><span class="case-pt" id="pg-prev-t"></span></span></a>
+        <a id="pg-next" rel="next" class="next"><span><span class="case-cap">다음</span><span class="case-pt" id="pg-next-t"></span></span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></a>
+      </div>
+    </nav>
+    <section class="case-band" aria-labelledby="band-title">
+      <div class="wrap">
+        <div><h2 id="band-title">함께 만들어요.</h2><p>영업일 기준 3일 안에 답장드립니다.</p></div>
+        <a id="work-cta" class="btn case-band-btn fx-wave" href="index.html#request">의뢰 문의하기</a>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
