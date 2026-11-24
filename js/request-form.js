@@ -20,6 +20,10 @@ export function collectRequest(f) {
     budget: val("예산").slice(0, 50),
     content: val("프로젝트 내용").slice(0, MAX_CONTENT),
     status: "new",
+    // F2 의뢰서 (PRD v1.2): 희망 일정 · 레퍼런스 (선택)
+    schedule: val("희망 일정").slice(0, 50),
+    refWorks: [...f.querySelectorAll('input[name="레퍼런스 작업"]:checked')].map((x) => x.value.slice(0, 60)).slice(0, 5),
+    refLinks: ["레퍼런스 링크 1", "레퍼런스 링크 2", "레퍼런스 링크 3"].map(val).filter((u) => /^https?:\/\/\S+$/.test(u)).map((u) => u.slice(0, 300)),
   };
 }
 

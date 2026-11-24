@@ -71,6 +71,27 @@ input,select,textarea{font:inherit}
         <a class="fx fx-wave fx-outline" data-ga-event="click_cta" data-ga-cta_name="hero_blog" data-ga-cta_location="hero" href="posts.html" style="text-decoration: none; border: 1px solid #111111; padding: 13px 24px; border-radius: 999px; font-weight: 500">기록 읽기</a>
       </div>
     </div>
+    <!-- F1 한 줄 의뢰 (PRD v1.2) — js/ask.js -->
+    <div id="ask" style="margin-top: 64px; padding: 28px; border: 1px solid #E5E5E5; border-radius: 16px; background: #FFFFFF">
+      <form id="ask-form" aria-label="필요한 디자인 한 줄로 적기" style="display: flex; flex-direction: column; gap: 14px">
+        <label for="ask-q" style="font-family: 'Noto Serif KR', serif; font-size: clamp(22px, 3vw, 28px); font-weight: 600">어떤 디자인이 필요하세요?</label>
+        <p style="margin: 0; color: #5F5F5F; font-size: 15px">한 줄만 적어주세요. 비슷한 작업과 함께 의뢰서를 미리 채워드릴게요.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <input id="ask-q" type="text" maxlength="200" required placeholder="예: 동네 카페 로고를 새로 만들고 싶어요" style="flex: 1 1 260px; min-width: 0; min-height: 48px; padding: 0 16px; border: 1px solid #D0D0D0; border-radius: 10px; font: inherit">
+          <button class="fx fx-dark" type="submit" style="min-height: 48px; padding: 0 22px; border: 0; border-radius: 999px; background: #111111; color: #FFFFFF; font: inherit; font-weight: 600; cursor: pointer">시작하기</button>
+        </div>
+        <div id="ask-examples" role="group" aria-label="예시 문장" style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button type="button" class="fx fx-chip" data-ask="카페 로고를 새로 만들고 싶어요" style="min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #D0D0D0; background: #FFFFFF; color: #111111; font: inherit; font-size: 14px; cursor: pointer">카페 로고를 새로 만들고 싶어요</button>
+          <button type="button" class="fx fx-chip" data-ask="쇼핑몰 상세페이지가 필요해요" style="min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #D0D0D0; background: #FFFFFF; color: #111111; font: inherit; font-size: 14px; cursor: pointer">쇼핑몰 상세페이지가 필요해요</button>
+          <button type="button" class="fx fx-chip" data-ask="앱 화면을 다시 정리하고 싶어요" style="min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #D0D0D0; background: #FFFFFF; color: #111111; font: inherit; font-size: 14px; cursor: pointer">앱 화면을 다시 정리하고 싶어요</button>
+        </div>
+      </form>
+      <div id="ask-result" role="status" aria-live="polite" hidden style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #E5E5E5">
+        <p id="ask-msg" style="margin: 0 0 4px; font-weight: 600"></p>
+        <div id="ask-works" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); column-gap: 24px"></div>
+        <a class="fx fx-wave fx-blue" href="#request" style="display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; text-decoration: none; background: #2F6BEA; color: #FFFFFF; padding: 0 22px; border-radius: 999px; font-weight: 600">의뢰서 마저 쓰기</a>
+      </div>
+    </div>
   </section>
 
   <section id="service" style="border-top: 1px solid #E5E5E5">
@@ -156,7 +177,17 @@ input,select,textarea{font:inherit}
           </div>
         </fieldset>
         <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">예산 범위<select name="예산" style="min-height: 48px; padding: 0 12px; background: #2F6BEA; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px"><option value="">선택해주세요</option><option>[예산 구간 1]</option><option>[예산 구간 2]</option><option>협의</option></select></label>
+        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">희망 일정 <span style="opacity: .85">(선택)</span><input type="text" name="희망 일정" maxlength="50" placeholder="예: 다음 달 말까지, 오픈 전 3주" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px"></label>
         <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">프로젝트 내용<textarea name="프로젝트 내용" required rows="5" maxlength="3000" placeholder="만들고 싶은 것, 참고 사이트, 희망 일정을 알려주세요." style="padding: 14px 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px; resize: vertical"></textarea></label>
+        <fieldset id="refs" style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
+          <legend style="font-size: 14px; color: #FFFFFF; margin-bottom: 4px">레퍼런스 <span style="opacity: .85">(선택) 원하는 느낌을 보여주시면 설명이 짧아져요</span></legend>
+          <p style="margin: 0; font-size: 13px; color: #FFFFFF">제 작업에서 고르기</p>
+          <div id="ref-works" style="display: flex; flex-wrap: wrap; gap: 8px"><span style="font-size: 13px; color: #FFFFFF; opacity: .85">게시된 작업이 아직 없어요.</span></div>
+          <p style="margin: 6px 0 0; font-size: 13px; color: #FFFFFF">링크 붙이기 (최대 3개, 사진은 링크로 보내 주세요)</p>
+          <input type="url" name="레퍼런스 링크 1" maxlength="300" pattern="https?://.+" placeholder="https://www.instagram.com/..." aria-label="레퍼런스 링크 1" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px">
+          <input type="url" name="레퍼런스 링크 2" maxlength="300" pattern="https?://.+" placeholder="https://" aria-label="레퍼런스 링크 2" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px">
+          <input type="url" name="레퍼런스 링크 3" maxlength="300" pattern="https?://.+" placeholder="https://" aria-label="레퍼런스 링크 3" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px">
+        </fieldset>
         <button class="fx fx-wave fx-white" type="submit" style="min-height: 56px; border: 0; border-radius: 999px; background: #FFFFFF; color: #111111; font-weight: 600; font-size: 16px; cursor: pointer">의뢰 보내기</button>
       </form>
     </div>
@@ -172,5 +203,6 @@ input,select,textarea{font:inherit}
 <script type="module" src="js/home.js"></script>
 <script type="module" src="js/request-form.js"></script>
 <script type="module" src="js/home-works.js"></script>
+<script type="module" src="js/ask.js"></script>
 </body>
 </html>

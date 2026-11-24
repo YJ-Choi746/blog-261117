@@ -172,6 +172,9 @@ export function card(r) {
   row("분야", (r.categories || []).join(", ") || "선택 안 함");
   row("예산", r.budget || "선택 안 함");
   row("내용", r.content || "");
+  if (r.schedule) row("희망 일정", r.schedule);
+  if (r.refWorks && r.refWorks.length) row("레퍼런스 작업", r.refWorks.join(", "));
+  if (r.refLinks && r.refLinks.length) row("레퍼런스 링크", r.refLinks.join("\n"));
   det.appendChild(dl);
   c.appendChild(det);
 
