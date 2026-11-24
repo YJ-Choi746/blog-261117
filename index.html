@@ -246,14 +246,14 @@ input,select,textarea{font:inherit}
             <p id="err-link" class="rq-err" role="alert"></p>
             <input type="hidden" name="레퍼런스 링크 1"><input type="hidden" name="레퍼런스 링크 2"><input type="hidden" name="레퍼런스 링크 3">
           </fieldset>
+          <fieldset class="rq-photos">
+            <legend>사진 붙이기 <span style="font-size: 12px; color: #5F5F5F">최대 3장 · 메일에 함께 보내져요</span></legend>
+            <ul id="photo-list" class="rq-photo-list"></ul>
+            <label class="rq-btn-sm rq-photo-add" for="photo-in">사진 고르기</label>
+            <input id="photo-in" class="rq-sr" type="file" name="attachment" accept="image/*" multiple>
+            <p id="err-photo" class="rq-err" role="alert"></p>
+          </fieldset>
         </div>
-        <fieldset class="rq-photos">
-          <legend>사진 첨부 <span style="font-size: 12px; color: #5F5F5F">선택 · 최대 3장 · 메일에 함께 보내져요</span></legend>
-          <ul id="photo-list" class="rq-photo-list"></ul>
-          <label class="rq-btn-sm rq-photo-add" for="photo-in">사진 고르기</label>
-          <input id="photo-in" class="rq-sr" type="file" name="attachment" accept="image/*" multiple>
-          <p id="err-photo" class="rq-err" role="alert"></p>
-        </fieldset>
         <div class="rq-two">
           <label class="rq-label">희망 일정<input class="rq-input" type="date" name="희망 일정"></label>
           <label class="rq-label">예산 범위<select class="rq-input" name="예산"><option value="">선택 안 함</option><option>[예산 구간 1]</option><option>[예산 구간 2]</option><option>협의</option></select></label>
