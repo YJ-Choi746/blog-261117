@@ -112,7 +112,7 @@ input, select, textarea, button { font: inherit; }
 .case-body { display: flex; flex-direction: column; gap: 36px; }
 .case-head { display: flex; flex-direction: column; gap: 14px; }
 .case-cat { font-size: 13px; color: var(--blue); font-weight: 600; }
-.case-head h1 { margin: 0; font-family: var(--font-serif); font-weight: 600; font-size: clamp(32px, 4.6vw, 54px); line-height: 1.25; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.case-head h1 { margin: 0; font-family: var(--font-serif); font-weight: 600; font-size: clamp(26px, 3.4vw, 40px); line-height: 1.25; letter-spacing: -0.02em; overflow-wrap: break-word; }
 .case-lead { margin: 0; font-size: 19px; color: var(--gray-700); }
 .case-meta { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--black); border-bottom: 1px solid var(--line); }
 .case-meta div { padding: 12px 8px 12px 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -140,3 +140,6 @@ input, select, textarea, button { font: inherit; }
 .case-band p { margin: 12px 0 0; font-size: 17px; }
 .case-band-btn { background: var(--white); color: var(--black); border-color: var(--white) !important; font-weight: 600; min-height: 44px; padding: 0 32px; }
 @media (max-width: 520px) { .case-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); } .case-step { grid-template-columns: 44px minmax(0, 1fr); } }
+
+/* 제목은 단어(어절) 중간에서 끊지 않아요. 영어 긴 단어는 하이픈으로 나눠요 */
+h1, h2, h3, .case-head h1 { word-break: keep-all; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }

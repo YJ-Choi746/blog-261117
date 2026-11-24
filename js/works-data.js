@@ -21,16 +21,21 @@ export function workCard(w, base = "") {
   const cover = document.createElement("div");
   cover.style.cssText = "aspect-ratio: 16 / 11; background: #F2F2F0; overflow: hidden; border-radius: 4px"; // surface
   if (w.coverImageId) {
+    // 사진은 자르지 않고 전체를 보여주고, 비율이 달라 남는 칸은 같은 사진을 흐리게 크게 깔아 채워요 (빈 회색이 안 보이게)
+    cover.style.position = "relative";
+    const bg = document.createElement("img");
+    bg.alt = ""; bg.setAttribute("aria-hidden", "true"); bg.loading = "lazy";
+    bg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(18px) saturate(1.1); transform: scale(1.15); opacity: .85";
     const img = document.createElement("img");
     img.alt = ""; img.loading = "lazy";
-    img.style.cssText = "width: 100%; height: 100%; object-fit: contain; display: block"; // 자르지 않고 전체를 보여줘요 (남는 곳은 surface 배경)
-    getImageData(w.coverImageId).then((d) => { if (d) img.src = d; });
-    cover.appendChild(img);
+    img.style.cssText = "position: relative; width: 100%; height: 100%; object-fit: contain; display: block";
+    getImageData(w.coverImageId).then((d) => { if (d) { img.src = d; bg.src = d; } });
+    cover.append(bg, img);
   }
   const row = document.createElement("div");
   row.style.cssText = "display: flex; justify-content: space-between; gap: 12px; align-items: baseline";
   const h = document.createElement("h3");
-  h.style.cssText = "margin: 0; font-size: 18px; font-weight: 600; overflow-wrap: anywhere";
+  h.style.cssText = "margin: 0; font-size: 18px; font-weight: 600; word-break: keep-all; overflow-wrap: break-word; hyphens: auto";
   h.textContent = w.title || w.name || "";
   const cat = document.createElement("span");
   cat.style.cssText = "color: #2F6BEA; font-size: 14px; white-space: nowrap"; // blue

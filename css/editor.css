@@ -261,7 +261,7 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pw-panel textarea { resize: vertical; line-height: 1.7; }
 .pw-cap { font-size: 12px; color: var(--gray-600); margin: 0; }
 .pw-req::after { content: " *"; color: var(--danger); }
-#editor .pw-title-in { font-family: var(--font-serif); font-weight: 600; font-size: 24px; border: 0; border-bottom: 1px solid var(--line-strong); padding: 6px 0; background: transparent; }
+#editor .pw-title-in { font-family: var(--font-serif); font-weight: 600; font-size: 21px; border: 0; border-bottom: 1px solid var(--line-strong); padding: 6px 0; background: transparent; }
 .pw-meta-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--black); border-bottom: 1px solid var(--line); }
 .pw-panel .pw-meta-in label { gap: 2px; font-size: 12px; padding: 8px 8px 8px 0; color: var(--gray-600); }
 #editor .pw-meta-in input, #editor .pw-meta-in select { min-height: 44px; padding: 4px 8px; font-size: 13px; }
@@ -305,7 +305,7 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pw-cols .pw-right { flex: 1.4 1 520px; padding: 20px; }
 .pw-live { border: 1px solid var(--line); background: var(--bg); overflow: hidden; }
 .pw-live .case-article { padding: 32px 20px 0; }
-.pw-live .case-head h1 { font-size: clamp(26px, 3vw, 40px); }
+.pw-live .case-head h1 { font-size: clamp(22px, 2.4vw, 30px); }
 .pw-live .case-band { margin-top: 40px; }
 .pw-live .case-band .wrap { padding-top: 40px; padding-bottom: 40px; }
 .pw-live .case-band h2 { font-size: clamp(26px, 3vw, 36px); }
@@ -386,3 +386,10 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .crop-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 .crop-stage { overflow: hidden; }
 #editor .pw-thumbs .pw-crop { min-height: 44px; padding: 0; font-size: 12px; }
+
+/* 썸네일 끌어서 순서 바꾸기 · 파일 끌어다 놓기 */
+.pw-thumbs .work-image { cursor: grab; }
+.pw-thumbs .work-image.pw-dragging { opacity: .4; }
+.pw-thumbs .work-image.pw-drop-here { outline: 2px solid var(--blue); outline-offset: 2px; } /* blue */
+.pw-thumbs.pw-file-over, .pw-live.pw-file-over { outline: 2px dashed var(--blue); outline-offset: 4px; background: var(--blue-tint); } /* blue · blue-tint */
+.pw-summary { margin-top: 4px; }

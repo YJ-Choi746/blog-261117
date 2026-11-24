@@ -1,6 +1,6 @@
 // 관리자 이미지 자르기 (작업 편집). 창을 띄워 자를 영역을 끌어서 정하고, 잘린 canvas를 돌려줘요.
 // openCrop(dataUrl) → Promise<HTMLCanvasElement | null> (취소하면 null). innerHTML 없이 요소를 만들어요.
-const RATIOS = [["자유", 0], ["1:1", 1], ["4:3", 4 / 3], ["3:4", 3 / 4], ["16:9", 16 / 9]];
+const RATIOS = [["자유", 0], ["카드 16:11", 16 / 11], ["1:1", 1], ["4:3", 4 / 3], ["3:4", 3 / 4], ["16:9", 16 / 9]]; // 카드: 홈 · 작업 목록 카드 틀과 같은 비율
 const MIN = 0.05; // 최소 크기 (이미지 대비 5%)
 
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }

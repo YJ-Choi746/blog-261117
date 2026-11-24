@@ -14,7 +14,7 @@ import { SPOTS, normLayout, applyLayout, sortBySpot, clampW } from "./image-layo
 
 const $ = (id) => document.getElementById(id);
 const MAX_IMAGES = 4;
-const REQUIRED_TO_PUBLISH = [["c-title", "제목"], ["c-summary", "한 줄 요약"], ["c-problem", "요청"], ["c-process", "과정"], ["c-result", "결과"]];
+const REQUIRED_TO_PUBLISH = [["f-name", "제목"], ["c-summary", "한 줄 요약"], ["c-problem", "요청"], ["c-process", "과정"], ["c-result", "결과"]];
 
 const params = new URLSearchParams(location.search);
 const paramId = params.get("id");
@@ -47,7 +47,7 @@ function showDraft(kind) {
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 
 // ---- 되돌리기: 'AI로 수정하기' · 메모로 초안 · 문장 틀이 칸을 바꾸기 직전 내용을 쌓아 둬요 ----
-const DRAFT_IDS = ["c-title", "c-summary", "c-problem", "c-process", "c-result", "c-tags"];
+const DRAFT_IDS = ["f-name", "c-summary", "c-problem", "c-process", "c-result", "c-tags"];
 const undoStack = [];
 function snapshot() { return { fields: DRAFT_IDS.map((id) => $(id).value), badge: $("ai-badge").textContent, check: $("draft-check").hidden, warn: $("warn").hidden, warnText: $("warn").textContent }; }
 function pushUndo() { undoStack.push(snapshot()); if (undoStack.length > 20) undoStack.shift(); $("undo").disabled = false; }
@@ -94,12 +94,64 @@ function renderImages() {
     crop.setAttribute("aria-label", `${img.alt} 자르기`);
     crop.addEventListener("click", () => cropImage(im));
     fig.append(rm, img, cap, size, crop);
+    // 끌어서 순서 바꾸기 (컴퓨터): 다른 썸네일 위에 놓으면 그 자리로 가요
+    fig.draggable = true; fig.dataset.i = String(i);
+    fig.addEventListener("dragstart", (e) => { e.dataTransfer.setData("text/x-work-image", String(i)); e.dataTransfer.effectAllowed = "move"; fig.classList.add("pw-dragging"); });
+    fig.addEventListener("dragend", () => fig.classList.remove("pw-dragging"));
+    fig.addEventListener("dragover", (e) => { if ([...e.dataTransfer.types].includes("text/x-work-image")) { e.preventDefault(); fig.classList.add("pw-drop-here"); } });
+    fig.addEventListener("dragleave", () => fig.classList.remove("pw-drop-here"));
+    fig.addEventListener("drop", (e) => {
+      const from = Number(e.dataTransfer.getData("text/x-work-image"));
+      fig.classList.remove("pw-drop-here");
+      if (!Number.isInteger(from) || e.dataTransfer.files.length) return;
+      e.preventDefault(); e.stopPropagation();
+      moveImage(from, i);
+    });
     return fig;
   }));
   $("add-image").disabled = images.length >= MAX_IMAGES;
   renderLive();
 }
 function changed() { dirty = true; setState("저장 안 된 변경 있음"); }
+// 썸네일 순서 바꾸기: 옮긴 사진은 놓은 자리 사진과 같은 칸(맨 위 · 01 · 02 · 03)으로 가요. 맨 앞이 대표 이미지
+function moveImage(from, to) {
+  if (from === to || !images[from] || !images[to]) return;
+  const im = images[from];
+  im.at = layoutOf(images[to]).at;
+  images.splice(from, 1); images.splice(to, 0, im);
+  reorderImages(); selImg = -1; changed(); renderImages();
+}
+// 파일 올리기 (버튼 · 끌어다 놓기 공용). at을 주면 미리보기의 그 칸에 넣어요
+async function addFiles(fileList, at) {
+  const files = [...fileList].filter((f) => /^image\//.test(f.type)).slice(0, MAX_IMAGES - images.length);
+  if (!files.length) { if (fileList.length) say(images.length >= MAX_IMAGES ? `이미지는 ${MAX_IMAGES}장까지예요.` : "이미지 파일만 올릴 수 있어요.", true); return; }
+  for (const f of files) {
+    setState("이미지 올리는 중…");
+    try {
+      const lay = normLayout(null, images.length);
+      if (at) lay.at = at;
+      images.push({ ...(await uploadImage(f, user.uid)), ...lay });
+      reorderImages(); dirty = true; renderImages();
+    } catch (err) { say(`이미지를 올리지 못했어요. ${friendlyError(err)}`, true); }
+  }
+  setState(dirty ? "저장 안 된 변경 있음" : "");
+}
+// 컴퓨터에서 파일을 끌어다 놓기: 왼쪽 이미지 줄 · 오른쪽 미리보기 (미리보기에선 놓은 칸에 들어가요)
+function fileDropZone(zone, atFrom) {
+  zone.addEventListener("dragover", (e) => { if ([...e.dataTransfer.types].includes("Files")) { e.preventDefault(); zone.classList.add("pw-file-over"); } });
+  zone.addEventListener("dragleave", (e) => { if (!zone.contains(e.relatedTarget)) zone.classList.remove("pw-file-over"); });
+  zone.addEventListener("drop", (e) => {
+    if (!e.dataTransfer.files.length) return;
+    e.preventDefault(); zone.classList.remove("pw-file-over");
+    addFiles(e.dataTransfer.files, atFrom ? atFrom(e) : undefined);
+  });
+}
+fileDropZone(document.querySelector(".pw-thumbs"));
+fileDropZone(document.querySelector(".pw-live"), (e) => {
+  const step = e.target.closest && e.target.closest(".case-step");
+  if (!step) return "cover";
+  return step.querySelector("#lp-imgs-problem") ? "problem" : step.querySelector("#lp-imgs-result") ? "result" : "process";
+});
 // 자르기: 창에서 영역을 정하면 잘린 이미지를 새로 저장하고 바꿔 끼워요 (원본은 이 화면에서 '원본으로'로 되돌릴 수 있어요)
 async function cropImage(im) {
   if (!im.data) return;
@@ -123,16 +175,7 @@ function xIcon() {
   svg.appendChild(path); return svg;
 }
 $("add-image").addEventListener("click", () => $("image-input").click());
-$("image-input").addEventListener("change", async (e) => {
-  const files = [...e.target.files].slice(0, MAX_IMAGES - images.length);
-  e.target.value = "";
-  for (const f of files) {
-    setState("이미지 올리는 중…");
-    try { images.push({ ...(await uploadImage(f, user.uid)), ...normLayout(null, images.length) }); dirty = true; renderImages(); }
-    catch (err) { say(`이미지를 올리지 못했어요. ${friendlyError(err)}`, true); }
-  }
-  setState(dirty ? "저장 안 된 변경 있음" : "");
-});
+$("image-input").addEventListener("change", (e) => { const files = [...e.target.files]; e.target.value = ""; addFiles(files); });
 
 // ---- AI 초안 (F5) · 실패 시 직접 작성 (F6) ----
 function memoInput() {
@@ -144,7 +187,7 @@ function memoInput() {
   };
 }
 function fillDraft(r) {
-  $("c-title").value = r.title || ""; $("c-summary").value = r.summary || "";
+  if (r.title) $("f-name").value = r.title; $("c-summary").value = r.summary || "";
   $("c-problem").value = r.problem || ""; $("c-process").value = r.process || ""; $("c-result").value = r.result || "";
   $("c-tags").value = (r.tags || []).join(", ");
   renderLive();
@@ -158,7 +201,7 @@ function showWarnings(w) {
 
 $("generate").addEventListener("click", async () => {
   const input = memoInput();
-  if (!input.title) { say("작업명을 먼저 써 주세요.", true); $("f-name").focus(); return; }
+  if (!input.title) { say("제목을 먼저 써 주세요.", true); $("f-name").focus(); return; }
   if (!input.memo.request && !input.memo.work && !input.memo.result) { say("메모를 한 칸 이상 써 주세요.", true); $("m-request").focus(); return; }
   const hasDraft = REQUIRED_TO_PUBLISH.some(([id]) => val(id));
   if (hasDraft && !confirm("위 칸에 쓴 내용을 AI 초안으로 바꿀까요? ('되돌리기'로 돌아올 수 있어요)")) return;
@@ -194,8 +237,8 @@ $("generate").addEventListener("click", async () => {
 
 // ---- AI로 수정하기 (D31): 칸에 간단히 쓴 글을 같은 칸 그대로 AI가 다듬어요. '되돌리기'로 돌아갈 수 있어요 ----
 $("polish").addEventListener("click", async () => {
-  const draft = { title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"), tags: tagsFromInput() };
-  if (!draft.title && !draft.problem && !draft.process && !draft.result) { say("고칠 글을 먼저 간단히 써 주세요. (제목이나 01 · 02 · 03 칸)", true); $("c-title").focus(); return; }
+  const draft = { title: val("f-name"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"), tags: tagsFromInput() };
+  if (!draft.title && !draft.problem && !draft.process && !draft.result) { say("고칠 글을 먼저 간단히 써 주세요. (제목이나 01 · 02 · 03 칸)", true); $("f-name").focus(); return; }
   const gs = $("gen-status"); gs.hidden = false;
   if (!getKey()) {
     gs.className = "notice notice-error"; gs.textContent = "AI로 수정하려면 아래 '내 API 키로 AI 쓰기'에서 키를 연결해 주세요.";
@@ -244,7 +287,7 @@ $("sns-generate").addEventListener("click", async () => {
   const btn = $("sns-generate"); btn.disabled = true; btn.textContent = "만드는 중…";
   const st = $("sns-status"); st.hidden = false; st.className = "notice notice-info"; st.textContent = "AI가 케이스 스터디로 문구를 쓰고 있어요.";
   const input = {
-    title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
+    title: val("f-name"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
     category: $("f-category").value, industry: val("f-industry"),
     client: $("f-client-public").checked ? val("f-client") : "", // 공개 동의 없으면 이름은 보내지 않아요
     tags: tagsFromInput(),
@@ -309,7 +352,7 @@ $("sns-copy").addEventListener("click", async () => {
 // ---- 문장 틀 (AI 없이 0원, D27) ----
 $("c-template").addEventListener("click", () => {
   const input = memoInput();
-  if (!input.title) { say("작업명을 먼저 써 주세요.", true); $("f-name").focus(); return; }
+  if (!input.title) { say("제목을 먼저 써 주세요.", true); $("f-name").focus(); return; }
   if (!input.memo.request && !input.memo.work && !input.memo.result) { say("메모를 한 칸 이상 써 주세요.", true); $("m-request").focus(); return; }
   if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !confirm("위 칸에 쓴 내용을 메모로 바꿀까요? ('되돌리기'로 돌아올 수 있어요)")) return;
   pushUndo();
@@ -324,7 +367,7 @@ $("sns-template").addEventListener("click", () => {
   const miss = REQUIRED_TO_PUBLISH.filter(([id]) => id !== "c-summary" && !val(id)).map(([, n]) => n);
   if (miss.length) { say(`인스타그램 문구는 케이스 스터디로 만들어요. 먼저 채워 주세요: ${miss.join(" · ")}`, true); return; }
   if (val("s-caption") && !confirm("지금 쓴 인스타그램 문구를 기본 문구로 바꿀까요?")) return;
-  const out = templateSns({ title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"), category: $("f-category").value, industry: val("f-industry") });
+  const out = templateSns({ title: val("f-name"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"), category: $("f-category").value, industry: val("f-industry") });
   snsCaptions = out.captions; snsIndex = 0; showSnsVariant();
   $("s-hashtags").value = out.hashtags.join(", ");
   $("sns-badge").hidden = true; $("sns-warn").hidden = true;
@@ -343,7 +386,7 @@ function paragraphsInto(box, text) {
 }
 function renderFullPreview(px = "fp") {
   const $p = (k) => $(`${px}-${k}`);
-  const title = val("c-title") || val("f-name") || "제목 없음";
+  const title = val("f-name") || "제목 없음";
   $p("cat").textContent = $("f-category").value;
   $p("title").textContent = title;
   $p("summary").textContent = val("c-summary");
@@ -509,15 +552,15 @@ function tagsFromInput() {
 // showDone: '게시하기'만 게시 완료 화면으로 넘어가요. '초안 저장'은 서버에 저장만 하고 화면은 그대로예요.
 async function save(status, showDone = false) {
   say("");
-  const name = val("f-name");
-  if (!name) { say("작업명을 써 주세요.", true); $("f-name").focus(); return false; }
+  const name = val("f-name").slice(0, 60);
+  if (!name) { say("제목을 써 주세요.", true); $("f-name").focus(); return false; }
   if (status === "published") {
     const miss = REQUIRED_TO_PUBLISH.filter(([id]) => !val(id)).map(([, n]) => n);
     if (miss.length) { say(`게시하려면 다음 칸을 채워 주세요: ${miss.join(" · ")}`, true); return false; }
   }
   const clientPublic = $("f-client-public").checked;
   const work = {
-    name, title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
+    name, title: val("f-name"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
     tags: tagsFromInput(), category: $("f-category").value, industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
     client: clientPublic ? val("f-client") : "",
     coverImageId: images[0] ? images[0].id : "", imageIds: images.map((im) => im.id), imageSizes: images.map(layoutOf),
@@ -577,7 +620,7 @@ async function load() {
   if (!ws.exists()) { say("작업을 찾을 수 없어요. 새 작업으로 시작해요.", true); isNew = true; workId = doc(collection(db, "works")).id; renderImages(); return; }
   existing = ws.data();
   const n = ns.exists() ? ns.data() : {};
-  $("f-name").value = existing.name || ""; $("f-category").value = existing.category || "브랜딩";
+  $("f-name").value = existing.title || existing.name || ""; $("f-category").value = existing.category || "브랜딩";
   $("f-industry").value = existing.industry || ""; $("f-period").value = existing.period || ""; $("f-role").value = existing.role || "";
   $("f-client").value = n.client || existing.client || ""; $("f-client-public").checked = !!n.clientPublic;
   $("m-request").value = (n.memo && n.memo.request) || ""; $("m-work").value = (n.memo && n.memo.work) || ""; $("m-result").value = (n.memo && n.memo.result) || "";
