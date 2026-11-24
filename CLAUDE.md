@@ -38,17 +38,21 @@ js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
 firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
 functions/          Firebase Functions 서버 함수 (AI 의뢰 분석 analyzeRequest, 이 폴더만 npm 사용)
-functions/prompt.js AI 분석 프롬프트 (바꾸면 docs/run-log.md 기록 + `prompt:` 커밋)
-AGENTS.md           AI 의뢰 기능(F1~F8) 작업 지침
+functions/prompt.js AI 분석 프롬프트 (바꾸면 docs/SUCCESS_FAILURE_LOG.md 기록 + `prompt:` 커밋)
 .github/workflows/firebase-hosting.yml  Firebase 배포 (main 푸시 · 매시 17분 · 직접 실행)
 .github/scripts/share-pages.mjs  배포 때 글마다 공유 미리보기 페이지 p/글ID.html 생성 (저장소엔 커밋 안 함)
 .nojekyll           GitHub Pages가 파일을 가공하지 않게 하는 빈 파일
 CLAUDE.md           이 문서
+README.md           저장소 소개 · 제출물 링크 모음 (배포 URL · PRD · 테스트 보고서 · 로그)
 docs/design-system.md   색 · 글꼴 · 간격 · 컴포넌트 규칙
 docs/decisions.md       정한 것들 (날짜순)
-docs/PRD.md             AI 의뢰 점검·정리 자동화 PRD (범위 기준)
-docs/decision-log.md    AI 의뢰 기능 의사결정 (D1~)
-docs/run-log.md         테스트 실행 · 프롬프트 변경 기록
+docs/PRD.md             미니 프로젝트 PRD (범위 기준, 2쪽 이하, 버전은 커밋 기록으로 관리)
+docs/AGENT_GUIDE.md     에이전트용 작업 지침 (AI 기능 규격 · 보안 · 커밋 규칙)
+docs/DECISION_LOG.md    의사결정 로그 (D1~, 날짜 · 결정 · 대안 · 이유 · 상태)
+docs/SUCCESS_FAILURE_LOG.md  성공 · 실패 로그 (테스트 실행 · 프롬프트 변경 · 막힌 일)
+docs/TEST_REPORT.md     테스트 보고서 (유저플로우 스크린샷 + 기능별 단위 테스트, 2쪽 이하)
+docs/WORKLOG.md         작업 일지 (날짜 · 시간순)
+docs/screenshots/       유저플로우 스크린샷 (플로우 순서대로 번호)
 docs/user-stories.md    사용자 스토리와 완료 기준
 docs/firebase-setup.md  Firebase 연결 순서 (처음 한 번)
 docs/analytics.md       방문자 통계(GA4) 보는 법
@@ -58,7 +62,7 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 ```
 
 ## 기술 규칙
-- 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요. 예외: 서버 함수 `functions/` 폴더 (decision-log D10).
+- 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요. 예외: 서버 함수 `functions/` 폴더 (DECISION_LOG D10).
 - AI API 키는 Firebase Secret Manager(`ANTHROPIC_API_KEY`)에만 둬요. 방문자 화면 코드에서 AI API를 직접 부르지 않고 `analyzeRequest` 함수를 거쳐요.
 - 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`), **PokéAPI**(`pokeapi.co` 데이터 + `raw.githubusercontent.com/PokeAPI/sprites` 그림, `js/widgets.js`의 포켓몬 위젯만)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요.
 - GA 이벤트를 새로 만들거나 바꾸면 **먼저 `docs/analytics-events.md`에 적고** 이름 규칙(`동사_대상`, snake_case)을 지켜요. 이름 · 이메일 · 의뢰 내용 같은 개인 정보는 GA로 보내지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.

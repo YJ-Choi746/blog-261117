@@ -1,5 +1,5 @@
 // F1 AI 분석 프롬프트
-// 프롬프트를 바꾸면 이유와 결과를 docs/run-log.md에 남기고 `prompt:` 커밋으로 올려요 (AGENTS.md).
+// 프롬프트를 바꾸면 이유와 결과를 docs/SUCCESS_FAILURE_LOG.md에 남기고 `prompt:` 커밋으로 올려요 (docs/AGENT_GUIDE.md).
 
 export const PROMPT_VERSION = "v1";
 

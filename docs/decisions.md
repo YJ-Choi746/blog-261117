@@ -114,7 +114,8 @@
 
 ## 2026-11-24
 
-- **AI 의뢰 분석(F1) 서버 함수**: Firebase Functions `analyzeRequest`(서울)로. API 키는 Secret Manager `ANTHROPIC_API_KEY`에만. 누락 점검(check)은 누구나, 전체 분석(full)은 관리자 UID만. 자세한 결정은 `docs/decision-log.md` D8~D10.
+- **AI 의뢰 분석(F1) 서버 함수**: Firebase Functions `analyzeRequest`(서울)로. API 키는 Secret Manager `ANTHROPIC_API_KEY`에만. 누락 점검(check)은 누구나, 전체 분석(full)은 관리자 UID만. 자세한 결정은 `docs/DECISION_LOG.md` D8~D10.
 - **커밋 ≠ 배포**: 업데이트마다 작업 브랜치에 커밋·푸시만. `main`·`gh-pages`(사이트 배포)는 "배포해줘"라고 할 때만.
 - **의뢰 저장(F3)**: 의뢰 폼을 낼 때 브라우저가 Firestore `requests`에 먼저 저장(최대 3초)하고, 성공 여부와 상관없이 FormSubmit 메일을 보냄. 서버 함수 없이 보안 규칙으로 지켜서 Blaze 전환 전에도 동작. 방문자는 만들기만, 읽기·수정·삭제는 관리자만. 저장되면 메일에 `의뢰번호`를 함께 실음.
-- **PRD v0.3로 전환**: AI 케이스 스터디 작성기(작업 입력 → AI 초안 → 게시 → SNS 문구, 상세에서 의뢰 연결). v0.2 의뢰 기능(AI 분석 함수 · 의뢰 저장 · 의뢰 카드)은 유지. decision-log D11 · D12.
+- **PRD v0.3로 전환**: AI 케이스 스터디 작성기(작업 입력 → AI 초안 → 게시 → SNS 문구, 상세에서 의뢰 연결). v0.2 의뢰 기능(AI 분석 함수 · 의뢰 저장 · 의뢰 카드)은 유지. DECISION_LOG D11 · D12.
+- **PRD v0.4**: 문제 검증은 데스크 리서치(신뢰 출처만, 원문 대조), 승인은 J가 역할별 확인사항으로. 문서는 `docs/` 대문자 파일 + `README.md`로 정리 (D13 · D14).
