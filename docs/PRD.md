@@ -1,6 +1,6 @@
 # PRD: AI 케이스 스터디 작성기 (Jae 블로그)
 
-<sub>버전 v1.2 (이전 버전은 커밋 기록), 2026년 11월 24일 J 작성, 배포 https://blog---261117.web.app, 기준 화면 [프로토타입](../prototype.html)</sub>
+<sub>버전 v1.2 (이전 버전은 커밋 기록), 2026년 11월 24일 J 작성, 배포 https://blog---261117.web.app, 기준 화면 [프로토타입](../prototype.html), AI 작성기 [Claude 아티팩트](https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA)</sub>
 
 ## 1. 개요
 방문객이 거의 없고 작업 과정이 보이지 않아 의뢰가 들어오지 않는 1인 디자이너 블로그에서, 운영자가 메모만 넣으면 AI가 케이스 스터디와 인스타그램 문구를 만들어 소상공인과 스타트업 마케터를 데려오고, 한 줄 의뢰로 바로 의뢰하게 한다.

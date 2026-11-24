@@ -95,7 +95,7 @@ v0.2 의뢰 기능(AI 분석 · 의뢰 저장 · 관리자 의뢰 카드)은 이
 
 ## AI 비용 0원 운영 (D27)
 
-- AI 초안과 인스타그램 문구는 `prototype.html`을 Claude 아티팩트로 열어 만든다 (`window.claude.use`, 운영자의 Claude 요금제 안). 결과를 사이트 작업 편집 화면에 붙여 넣고 게시한다
+- AI 초안과 인스타그램 문구는 `prototype.html`을 Claude 아티팩트(https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA, 권한 `sample`)로 열어 만든다 (`window.claude.use`, 운영자의 Claude 요금제 안). 결과를 사이트 작업 편집 화면에 붙여 넣고 게시한다
 - AI를 쓸 수 없을 때는 문장 틀 초안(메모를 정해진 문장에 넣음)이나 직접 쓰기로 게시한다
 - 서버 함수(`generateCaseStudy` · `generateSnsCopy`)는 코드와 테스트를 유지하되 배포는 선택이다. 배포하면 API 비용이 생긴다
 - GA4 이벤트(F8)는 범위에서 뺐다 (D28)

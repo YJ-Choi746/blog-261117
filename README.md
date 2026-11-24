@@ -10,6 +10,7 @@
 |---|---|
 | 배포된 블로그 | https://blog---261117.web.app (GitHub Pages: https://yj-choi746.github.io/blog-261117/) |
 | PRD 기획서 | [docs/PRD.md](docs/PRD.md) v1.2, A4 2쪽 (v0.2 → v1.2 변화는 커밋 기록 `docs: PRD ...`) |
+| AI 작성기 (Claude 아티팩트, 비용 0원) | https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA — 메모로 AI 초안과 인스타그램 문구 3안을 만들어 사이트에 붙여 넣음 (소유자만 열림, 공유는 아티팩트 공유 메뉴에서) |
 | 디자인 프로토타입 | [prototype.html](prototype.html) (배포 후 https://yj-choi746.github.io/blog-261117/prototype.html) — 방문자 · 관리자 화면 흐름을 한 파일로 클릭해 볼 수 있음 |
 | 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) · 스크린샷 [docs/screenshots/](docs/screenshots/) |
 | 에이전트용 지침 | [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) · [CLAUDE.md](CLAUDE.md) |
