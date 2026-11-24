@@ -33,7 +33,7 @@
     "원하는 느낌을 보여주시면 설명이 짧아져요.": "Showing the feel you want saves a lot of explaining.",
     "제 작업에서 고르기": "Pick from my work", "게시된 작업이 아직 없어요.": "No published work yet.", "선택됨": "Selected",
     "링크 붙이기": "Add links", "최대 3개": "up to 3", "추가": "Add", "레퍼런스 링크": "Reference link", "링크 삭제": "Remove link",
-    "사진 붙이기": "Add photos", "최대 3장 · 메일에 함께 보내져요": "up to 3 · sent with the email", "사진 고르기": "Choose photos",
+    "사진 붙이기": "Add photos", "최대 3장": "up to 3", "링크 추가": "Add link", "사진 고르기": "Choose photos",
     "희망 일정": "Preferred date", "예산 범위": "Budget", "선택 안 함": "Not selected", "협의": "To discuss",
     "이름": "Name", "이메일": "Email", "의뢰 보내기": "Send request", "보내는 중…": "Sending…",
     "예: 동네 카페 로고를 새로 만들고 싶어요. 4월 오픈 전에 필요해요.": "e.g. I want a new logo for my neighborhood café before the April opening.",
