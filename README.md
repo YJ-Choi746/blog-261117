@@ -9,12 +9,19 @@
 | 결과물 | 위치 |
 |---|---|
 | 배포된 블로그 | https://blog---261117.web.app (GitHub Pages: https://yj-choi746.github.io/blog-261117/) |
-| PRD 기획서 | [docs/PRD.md](docs/PRD.md) (버전 변화는 커밋 기록 `docs: PRD ...`) |
+| PRD 기획서 | [docs/PRD.md](docs/PRD.md) v0.6, A4 2쪽 (v0.2 → v0.6 변화는 커밋 기록 `docs: PRD ...`) |
 | 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) · 스크린샷 [docs/screenshots/](docs/screenshots/) |
 | 에이전트용 지침 | [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) · [CLAUDE.md](CLAUDE.md) |
 | 의사결정 로그 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) |
 | 성공 · 실패 로그 | [docs/SUCCESS_FAILURE_LOG.md](docs/SUCCESS_FAILURE_LOG.md) · 주제별 [docs/failures/](docs/failures/) |
 | 작업 일지 | [docs/WORKLOG.md](docs/WORKLOG.md) |
+
+## 진행 상황 (2026-11-24)
+| 기능 (PRD v0.6) | 상태 |
+|---|---|
+| F2 AI 케이스 스터디 생성 (`functions/casestudy.js`) | 완료 · 단위 테스트 7/7 |
+| F1 작업 입력 · F3 편집·게시 · F4 목록·상세 · F5 의뢰 연결 · F6 SNS 문구 · F7 실패 대체 | 진행 예정 |
+| 이전 단계(v0.2) 의뢰 기능: AI 분석 · 의뢰 저장 · 관리자 의뢰 카드 | 완료 · 유지 |
 
 ## 구조
 | 경로 | 내용 |
