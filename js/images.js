@@ -19,8 +19,8 @@ function loadImage(file) {
 }
 
 // 큰 이미지를 한 번에 줄이면 흐려져서, 절반씩 여러 번 줄여요 (선명하게)
-function drawScaled(img, w, h) {
-  let src = img, sw = img.naturalWidth, sh = img.naturalHeight;
+function drawScaled(img, nw, nh, w, h) {
+  let src = img, sw = nw, sh = nh;
   while (sw / 2 >= w && sh / 2 >= h) {
     const c = document.createElement("canvas");
     c.width = Math.round(sw / 2); c.height = Math.round(sh / 2);
@@ -43,11 +43,15 @@ function drawScaled(img, w, h) {
 export async function compressImage(file) {
   if (!file || !/^image\//.test(file.type)) throw new Error("이미지 파일만 올릴 수 있어요.");
   const img = await loadImage(file);
-  let scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+  return compressFrom(img, img.naturalWidth, img.naturalHeight);
+}
+// 이미지 · canvas(원래 크기 nw × nh) → 줄인 data URL
+function compressFrom(img, nw, nh) {
+  let scale = Math.min(1, MAX_SIDE / Math.max(nw, nh));
   for (let round = 0; round < 10; round++) {
-    const w = Math.max(1, Math.round(img.naturalWidth * scale));
-    const h = Math.max(1, Math.round(img.naturalHeight * scale));
-    const canvas = drawScaled(img, w, h);
+    const w = Math.max(1, Math.round(nw * scale));
+    const h = Math.max(1, Math.round(nh * scale));
+    const canvas = drawScaled(img, nw, nh, w, h);
     for (const q of [0.92, 0.86, 0.8]) {
       let data = canvas.toDataURL("image/webp", q);
       if (!data.startsWith("data:image/webp")) data = canvas.toDataURL("image/jpeg", q);
@@ -56,6 +60,14 @@ export async function compressImage(file) {
     scale *= 0.85;
   }
   throw new Error("이미지가 너무 커서 줄일 수 없어요.");
+}
+
+// 잘라낸 canvas → 저장 → { id, data } (작업 편집 '자르기')
+export async function uploadCanvas(canvas, ownerUid, name = "cropped") {
+  const { data, width, height } = compressFrom(canvas, canvas.width, canvas.height);
+  const ref = await addDoc(collection(db, "images"), { data, width, height, ownerUid, name: String(name).slice(0, 120), createdAt: serverTimestamp() });
+  cache.set(ref.id, data);
+  return { id: ref.id, data, width, height };
 }
 
 // 파일 → 저장 → { id, data }

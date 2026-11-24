@@ -7,7 +7,8 @@ import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
 } from "./firebase.js";
-import { uploadImage, getImageData } from "./images.js";
+import { uploadImage, uploadCanvas, getImageData } from "./images.js";
+import { openCrop } from "./crop.js";
 import { templateDraft, templateSns } from "./templates.js";
 import { SPOTS, normLayout, applyLayout, sortBySpot, clampW } from "./image-layout.js";
 
@@ -88,13 +89,31 @@ function renderImages() {
     range.setAttribute("aria-label", `${img.alt} 폭 (%)`);
     range.addEventListener("input", () => { im.w = Number(range.value); out.textContent = `${im.w}%`; changed(); renderLive(); });
     size.append(out, range);
-    fig.append(rm, img, cap, size);
+    const crop = document.createElement("button");
+    crop.type = "button"; crop.className = "btn btn-text pw-crop"; crop.textContent = "자르기";
+    crop.setAttribute("aria-label", `${img.alt} 자르기`);
+    crop.addEventListener("click", () => cropImage(im));
+    fig.append(rm, img, cap, size, crop);
     return fig;
   }));
   $("add-image").disabled = images.length >= MAX_IMAGES;
   renderLive();
 }
 function changed() { dirty = true; setState("저장 안 된 변경 있음"); }
+// 자르기: 창에서 영역을 정하면 잘린 이미지를 새로 저장하고 바꿔 끼워요 (원본은 이 화면에서 '원본으로'로 되돌릴 수 있어요)
+async function cropImage(im) {
+  if (!im.data) return;
+  const canvas = await openCrop(im.data);
+  if (!canvas) return;
+  setState("자른 이미지 저장하는 중…");
+  try {
+    const up = await uploadCanvas(canvas, user.uid, "cropped");
+    if (!im.orig) im.orig = { id: im.id, data: im.data };
+    im.id = up.id; im.data = up.data;
+    selImg = images.indexOf(im); changed(); renderImages();
+    say("이미지를 잘랐어요. '원본으로'로 되돌릴 수 있어요. 저장해야 반영돼요.");
+  } catch (err) { setState("자르기 실패"); say(`이미지를 자르지 못했어요. ${friendlyError(err)}`, true); }
+}
 // 닫기(X) 선 아이콘 — innerHTML 없이 만들어요
 function xIcon() {
   const NS = "http://www.w3.org/2000/svg";
@@ -398,7 +417,9 @@ function imageToolbar(im, i) {
   bar.append(sel,
     tbButton("위로", "같은 칸에서 위로", false, () => { swapInSpot(i, -1); }),
     tbButton("아래로", "같은 칸에서 아래로", false, () => { swapInSpot(i, 1); }),
-    tbButton("완료", "편집 끝내기", false, () => { selImg = -1; renderLive(); }));
+    tbButton("자르기", "이미지 자르기", false, () => cropImage(im)));
+  if (im.orig) bar.append(tbButton("원본으로", "자르기 전 원본으로", false, () => { im.id = im.orig.id; im.data = im.orig.data; delete im.orig; changed(); renderImages(); }));
+  bar.append(tbButton("완료", "편집 끝내기", false, () => { selImg = -1; renderLive(); }));
   return bar;
 }
 function moveSelected(im) { reorderImages(); selImg = images.indexOf(im); changed(); renderImages(); }

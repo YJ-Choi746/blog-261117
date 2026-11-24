@@ -360,3 +360,24 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pv-ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: .75; margin: 0; max-width: 240px; }
 .pv-ghost img { width: 100%; display: block; }
 .pv-ghost .pv-tools, .pv-ghost .pv-handle { display: none; }
+
+/* 이미지 자르기 창 (js/crop.js) */
+.crop-dlg { width: min(960px, calc(100% - 24px)); max-height: calc(100dvh - 24px); padding: 20px; border: 0; background: var(--white); color: var(--black); display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; }
+.crop-dlg:not([open]) { display: none; }
+.crop-dlg::backdrop { background: rgba(17, 17, 17, .6); }
+.crop-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.crop-ratios { display: flex; flex-wrap: wrap; gap: 6px; }
+.crop-ratio { min-height: 44px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--white); color: var(--black); font: inherit; font-size: 14px; cursor: pointer; }
+.crop-ratio[aria-pressed="true"] { background: var(--black); border-color: var(--black); color: var(--white); font-weight: 600; }
+.crop-stage { position: relative; display: flex; justify-content: center; background: var(--surface); padding: 12px; user-select: none; touch-action: none; }
+.crop-stage img { display: block; max-width: 100%; max-height: 62dvh; }
+.crop-box { position: absolute; box-sizing: border-box; border: 2px solid #FFFFFF; outline: 1px solid rgba(17, 17, 17, .6); box-shadow: 0 0 0 9999px rgba(17, 17, 17, .5); cursor: move; touch-action: none; }
+.crop-box:focus-visible { outline: 2px solid var(--blue); }
+.crop-h { position: absolute; width: 16px; height: 16px; background: #FFFFFF; border: 2px solid var(--blue); box-sizing: border-box; touch-action: none; }
+.crop-h::after { content: ""; position: absolute; inset: -14px; } /* 눌리는 영역 44px */
+.crop-nw { left: -9px; top: -9px; cursor: nwse-resize; } .crop-se { right: -9px; bottom: -9px; cursor: nwse-resize; }
+.crop-ne { right: -9px; top: -9px; cursor: nesw-resize; } .crop-sw { left: -9px; bottom: -9px; cursor: nesw-resize; }
+.crop-info { margin: 0; font-size: 13px; color: var(--gray-600); }
+.crop-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.crop-stage { overflow: hidden; }
+#editor .pw-thumbs .pw-crop { min-height: 44px; padding: 0; font-size: 12px; }
