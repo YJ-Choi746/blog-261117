@@ -57,3 +57,23 @@
 
 - Firebase Hosting에서도 로그인이 되려면 Authentication → 설정 → 승인된 도메인에 `blog---261117.web.app`이 있어야 해요 (보통 처음부터 들어 있어요).
 - `docs/`, `*.md`, `firestore.rules`, `firebase.json`은 Hosting에 올리지 않아요 (`firebase.json`의 ignore).
+
+## AI 의뢰 분석 함수(F1) 배포 — 처음 한 번
+
+서버 함수 `analyzeRequest`는 `functions/` 폴더에 있어요. GitHub Actions는 호스팅만 배포하므로, 함수는 아래 순서로 직접 한 번 배포해요.
+
+1. **Blaze 요금제로 전환**: Firebase 콘솔 → 왼쪽 아래 요금제 → **Blaze(종량제)**. 함수 · Secret Manager를 쓰려면 꼭 필요해요. 무료 사용량 안에서는 요금이 거의 없지만, 놀라지 않게 Google Cloud 콘솔 → 결제 → **예산 및 알림**에서 예: 월 1만 원 알림을 걸어 두세요.
+2. **Claude API 키 만들기**: https://platform.claude.com → API Keys → 새 키. 키는 어디에도 붙여넣거나 커밋하지 말고 다음 단계에서만 써요.
+3. 내 컴퓨터(또는 Google Cloud Shell) 터미널에서:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   cd blog-261117/functions && npm install && cd ..
+   firebase functions:secrets:set ANTHROPIC_API_KEY
+   firebase deploy --only functions
+   ```
+   `secrets:set`을 실행하면 키를 입력하라고 나와요. 화면에 안 보이게 입력돼요.
+4. 확인: Firebase 콘솔 → Functions에 `analyzeRequest`(asia-northeast3)가 보이면 끝.
+
+- 키를 바꾸려면 3의 `secrets:set`을 다시 하고 `firebase deploy --only functions`.
+- 함수 코드를 고쳤을 때도 `firebase deploy --only functions`를 다시 해요.

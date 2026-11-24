@@ -11,4 +11,6 @@
 | D5 | 2026-11-24 | 사용자·관리자 기능이 **AI 분석 함수 하나(F1)를 공유** | 기능별로 별도 프롬프트·함수 | 개발량 절감, 같은 기준으로 누락을 판단해 결과가 일관됨 | 채택 (PRD v0.2) |
 | D6 | 2026-11-24 | 답장은 **운영자 승인 후 수동 발송** | AI 초안 자동 발송 | AI 오판·부적절한 문구가 고객에게 그대로 나가는 리스크 차단 | 채택 (PRD v0.2) |
 | D7 | 2026-11-24 | LLM에는 **의뢰 내용만 전달**, 이름·이메일 미전달 | 폼 전체 전달 | 분석에 불필요한 개인정보 노출 최소화 | 채택 (PRD v0.2) |
-| D8 | 2026-11-24 | 서버 함수 배포 환경 | Firebase Functions / Vercel 서버리스 | Firebase Functions는 Blaze 요금제 필요 여부 확인 후 결정 | **미결** |
+| D8 | 2026-11-24 | 서버 함수는 **Firebase Functions**(2세대, 서울 `asia-northeast3`)로 배포 | Vercel 서버리스 | 호스팅·로그인·Firestore와 한 프로젝트에서 관리, 관리자 확인을 Firebase 로그인 토큰으로 바로 할 수 있음. Blaze 요금제 전환 필요 | 채택 (사용자 결정) |
+| D9 | 2026-11-24 | F1은 `claude-opus-5-5` + **JSON 스키마 강제 출력**(structured outputs), check는 effort `low`·4.5초 제한·재시도 없음, full은 `medium` | 더 빠른 `claude-haiku-5-5` / 프롬프트로만 JSON 요청 | 판단 품질 우선, 스키마 강제로 파싱 실패 감소(그래도 실패하면 F6). 5초를 넘기면 Haiku로 바꾸는 것을 run-log 측정 후 검토 | 채택 (측정 후 재검토) |
+| D10 | 2026-11-24 | `functions/` 폴더에만 npm 패키지 사용 (`firebase-functions`, `firebase-admin`, `@anthropic-ai/sdk`) | 사이트 전체에 빌드 도구 도입 | 서버 함수는 패키지 없이 만들 수 없음. 방문자 화면은 계속 빌드 없는 순수 JS | 채택 |

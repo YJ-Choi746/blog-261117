@@ -111,3 +111,7 @@
 ## 2026-11-19
 
 - **댓글 제거 (사용자 요청)**: 글 상세 댓글 칸 · 관리자 "댓글 관리" · `js/comments.js` · `js/admin-comments.js` · 댓글 보안 규칙을 모두 뺌. PRD D1은 "도입 안 함"으로. 공유 버튼 줄은 해시태그와 이전 · 다음 글 위 선의 가운데(위 · 아래 72px)로 다시 맞춤. **바뀐 `firestore.rules`를 콘솔에 다시 게시해야 댓글 쓰기가 서버에서도 막힘.**
+
+## 2026-11-24
+
+- **AI 의뢰 분석(F1) 서버 함수**: Firebase Functions `analyzeRequest`(서울)로. API 키는 Secret Manager `ANTHROPIC_API_KEY`에만. 누락 점검(check)은 누구나, 전체 분석(full)은 관리자 UID만. 자세한 결정은 `docs/decision-log.md` D8~D10.
