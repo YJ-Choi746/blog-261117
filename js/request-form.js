@@ -146,8 +146,67 @@ function addLink(f) {
   links.push(v.slice(0, 300)); inp.value = ""; renderLinks(f);
 }
 
+// ---- 사진 첨부 (최대 3장): FormSubmit 메일에 첨부로 가요. Firestore에는 저장하지 않아요 ----
+// 메일이 무겁지 않게 긴 변 1600px JPEG로 줄여서 붙여요 (줄이기 실패하면 원본, 원본이 10MB를 넘으면 빼요)
+const MAX_PHOTOS = 3;
+const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+let photos = []; // File[]
+function shrinkPhoto(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(img.naturalWidth * scale)); c.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      const ctx = c.getContext("2d"); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.imageSmoothingQuality = "high"; ctx.drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob((b) => resolve(b && b.size < file.size ? new File([b], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" }) : file), "image/jpeg", 0.85);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+function syncPhotoInput(f) {
+  const input = f.querySelector("#photo-in"); if (!input) return;
+  try { const dt = new DataTransfer(); photos.forEach((p) => dt.items.add(p)); input.files = dt.files; } catch { /* 오래된 브라우저: 고른 그대로 보내요 */ }
+}
+function renderPhotos(f) {
+  const ul = f.querySelector("#photo-list"); if (!ul) return;
+  ul.replaceChildren(...photos.map((p, i) => {
+    const li = document.createElement("li");
+    const img = document.createElement("img"); img.alt = `첨부 사진 ${i + 1}`;
+    const url = URL.createObjectURL(p); img.src = url; img.onload = () => URL.revokeObjectURL(url);
+    const b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", `첨부 사진 ${i + 1} 빼기`);
+    b.appendChild(xIcon());
+    b.addEventListener("click", () => { photos.splice(i, 1); syncPhotoInput(f); renderPhotos(f); setErr(f, "photo", ""); });
+    li.append(img, b); return li;
+  }));
+  const add = f.querySelector(".rq-photo-add"); if (add) add.hidden = photos.length >= MAX_PHOTOS;
+}
+async function addPhotos(f, fileList) {
+  const picked = [...fileList];
+  let err = "";
+  const imgs = picked.filter((x) => /^image\//.test(x.type));
+  if (imgs.length < picked.length) err = "사진 파일만 첨부할 수 있어요.";
+  const room = MAX_PHOTOS - photos.length;
+  if (imgs.length > room) err = `사진은 ${MAX_PHOTOS}장까지 첨부할 수 있어요.`;
+  for (const file of imgs.slice(0, Math.max(0, room))) {
+    const small = await shrinkPhoto(file);
+    if (small.size > MAX_PHOTO_BYTES) { err = "10MB가 넘는 사진은 뺐어요."; continue; }
+    photos.push(small);
+  }
+  syncPhotoInput(f); renderPhotos(f); setErr(f, "photo", err);
+}
+
 if (form) {
   preselectCategory(form, location.search);
+  form.querySelector("#photo-in")?.addEventListener("change", (e) => {
+    const files = [...e.target.files];
+    // 고른 파일은 목록(photos)으로 옮기고, 실제 보낼 파일은 syncPhotoInput이 다시 채워요
+    addPhotos(form, files.filter((x) => !photos.includes(x)));
+  });
   syncChips(form);
   form.addEventListener("change", () => syncChips(form));
   form.querySelector("#link-add")?.addEventListener("click", () => addLink(form));
