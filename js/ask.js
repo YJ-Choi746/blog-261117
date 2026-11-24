@@ -21,14 +21,17 @@ function renderRefWorks() {
   if (!refBox || !works.length) return;
   refBox.replaceChildren(...works.slice(0, 12).map((w) => {
     const label = document.createElement("label");
-    label.style.cssText = "min-height: 44px; padding: 0 14px; border: 1px solid #A9C3F7; border-radius: 999px; display: inline-flex; gap: 8px; align-items: center; color: #FFFFFF; font-size: 14px; cursor: pointer";
+    label.className = "rq-work";
     const box = document.createElement("input");
-    box.type = "checkbox"; box.name = "레퍼런스 작업"; box.value = (w.title || w.name || "").slice(0, 60);
+    box.type = "checkbox"; box.className = "rq-sr"; box.name = "레퍼런스 작업"; box.value = (w.title || w.name || "").slice(0, 60);
     box.addEventListener("change", () => {
-      const n = refBox.querySelectorAll("input:checked").length;
-      if (n > MAX_REF_WORKS) { box.checked = false; }
+      if (refBox.querySelectorAll("input:checked").length > MAX_REF_WORKS) box.checked = false;
+      label.classList.toggle("on", box.checked);
     });
-    label.append(box, document.createTextNode(w.title || w.name || ""));
+    const name = document.createElement("span"); name.textContent = w.title || w.name || "";
+    const cat = document.createElement("small"); cat.textContent = w.category || "";
+    box.addEventListener("change", () => { cat.textContent = box.checked ? "선택됨" : (w.category || ""); });
+    label.append(box, name, cat);
     return label;
   }));
 }
@@ -39,6 +42,7 @@ export function prefillRequest(form, q, cat) {
   const content = form.querySelector('[name="프로젝트 내용"]');
   if (content && !content.value.trim()) content.value = q;
   if (cat && CATEGORIES.includes(cat)) form.querySelectorAll('input[name="의뢰분야"]').forEach((x) => { x.checked = x.value === cat; });
+  form.querySelectorAll(".rq-chip").forEach((l) => l.classList.toggle("on", !!l.querySelector("input")?.checked));
 }
 
 async function handleAsk(q) {

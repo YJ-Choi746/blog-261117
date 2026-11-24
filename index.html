@@ -45,6 +45,44 @@ input,select,textarea{font:inherit}
 }</style>
 <link rel="stylesheet" href="css/fx.css">
 <script src="js/analytics.js"></script>
+<style id="rq-style">
+/* 의뢰서 (PRD v1.3 F2, 프로토타입 디자인) — 색은 디자인 시스템 토큰 값: white #FFFFFF · black #111111 · gray-700 #3A3A3A · gray-600 #5F5F5F · line #E5E5E5 · line-strong #D0D0D0 · blue #2F6BEA · danger #B42318 */
+#request-form { font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif; background: #FFFFFF; color: #111111; padding: 28px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; min-width: 0; }
+#request-form .rq-label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #3A3A3A; }
+#request-form .rq-input { min-height: 48px; padding: 11px 14px; border: 1px solid #D0D0D0; background: #FFFFFF; color: #111111; font: inherit; font-size: 15px; border-radius: 0; width: 100%; box-sizing: border-box; }
+#request-form textarea.rq-input { resize: vertical; line-height: 1.6; }
+#request-form .rq-input::placeholder { color: #6B6B6B; opacity: 1; } /* gray-500 */
+#request-form .rq-chip, #request-form .rq-input, #request-form button { font-family: inherit; }
+#request-form .rq-input[aria-invalid="true"] { border-color: #B42318; }
+#request-form .rq-err { color: #B42318; font-size: 13px; margin: 0; }
+#request-form .rq-err:empty { display: none; }
+#request-form .rq-alert { background: #FDECEA; color: #B42318; padding: 10px 14px; font-size: 14px; margin: 0; }
+#request-form .rq-alert:empty { display: none; }
+#request-form fieldset { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+#request-form legend { font-size: 14px; color: #3A3A3A; padding: 0 0 8px; }
+#request-form .rq-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+#request-form .rq-chip { min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #D0D0D0; background: #FFFFFF; display: inline-flex; align-items: center; font-size: 14px; cursor: pointer; }
+#request-form .rq-chip.on { background: #111111; border-color: #111111; color: #FFFFFF; font-weight: 600; }
+#request-form .rq-chip:focus-within, #request-form .rq-work:focus-within { outline: 2px solid #2F6BEA; outline-offset: 2px; }
+#request-form .rq-sr { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+#request-form .rq-ref { border: 1px solid #E5E5E5; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+#request-form .rq-ref h3 { margin: 0; font-size: 15px; font-weight: 600; }
+#request-form .rq-sub { margin: 4px 0 0; font-size: 13px; color: #5F5F5F; }
+#request-form .rq-works { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+#request-form .rq-work { position: relative; display: flex; flex-direction: column; gap: 4px; border: 1px solid #D0D0D0; padding: 8px; font-size: 13px; min-height: 44px; cursor: pointer; overflow-wrap: anywhere; }
+#request-form .rq-work.on { border: 2px solid #2F6BEA; padding: 7px; }
+#request-form .rq-work small { color: #5F5F5F; }
+#request-form .rq-work.on small { color: #1F4FB8; font-weight: 600; }
+#request-form .rq-linkrow { display: flex; flex-wrap: wrap; gap: 8px; }
+#request-form .rq-linkrow .rq-input { flex: 1 1 220px; width: auto; }
+#request-form .rq-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+#request-form .rq-links li { position: relative; border: 1px solid #E5E5E5; padding: 8px 52px 8px 12px; font-size: 14px; word-break: break-all; }
+#request-form .rq-links button { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 44px; height: 44px; border: 0; background: transparent; color: #5F5F5F; cursor: pointer; }
+#request-form .rq-btn-sm { min-height: 44px; padding: 0 16px; border: 1px solid #111111; border-radius: 999px; background: #FFFFFF; color: #111111; font: inherit; font-size: 14px; cursor: pointer; }
+#request-form .rq-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 14px; align-items: start; }
+@media (max-width: 640px) { #request-form .rq-two { grid-template-columns: 1fr; } #request-form { padding: 20px; } }
+#request-form .rq-submit { align-self: flex-start; min-height: 52px; padding: 0 32px; border: 1px solid #2F6BEA; border-radius: 999px; background: #2F6BEA; color: #FFFFFF; font: inherit; font-weight: 600; font-size: 16px; cursor: pointer; }
+</style>
 </head>
 <body>
 <div style="min-height: 100vh; display: flex; flex-direction: column; background: #FAFAFA; color: #111111; font-family: 'Noto Sans KR', sans-serif; font-size: 16px; line-height: 1.6">
@@ -160,38 +198,41 @@ input,select,textarea{font:inherit}
           <li style="padding: 16px 0; border-bottom: 1px solid #82A6F2; display: flex; gap: 20px"><span style="color: #FFFFFF">04</span>최종 납품 · 사후 수정</li>
         </ol>
       </div>
-      <form id="request-form" method="POST" action="https://formsubmit.co/jae.yeonjae.choi@gmail.com" style="flex: 1 1 440px; display: flex; flex-direction: column; gap: 20px">
+      <form id="request-form" novalidate method="POST" action="https://formsubmit.co/jae.yeonjae.choi@gmail.com" style="flex: 1 1 440px; display: flex; flex-direction: column; gap: 20px">
         <input type="hidden" name="_subject" value="[블로그] 새 프로젝트 의뢰가 도착했어요">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_next" value="https://yj-choi746.github.io/blog-261117/thanks.html">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px">
-          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">이름<input type="text" name="이름" required placeholder="홍길동" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px"></label>
-          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">이메일<input type="email" name="email" required placeholder="you@example.com" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px"></label>
-        </div>
-        <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
-          <legend style="font-size: 14px; color: #FFFFFF; margin-bottom: 10px">의뢰 분야</legend>
-          <div style="display: flex; flex-wrap: wrap; gap: 8px">
-            <label style="min-height: 44px; padding: 0 16px; border: 1px solid #FFFFFF; border-radius: 999px; display: inline-flex; gap: 8px; align-items: center"><input type="checkbox" name="의뢰분야" value="브랜딩" checked>브랜딩</label>
-            <label style="min-height: 44px; padding: 0 16px; border: 1px solid #A9C3F7; border-radius: 999px; display: inline-flex; gap: 8px; align-items: center"><input type="checkbox" name="의뢰분야" value="UI/UX 디자인">UI/UX 디자인</label>
-            <label style="min-height: 44px; padding: 0 16px; border: 1px solid #A9C3F7; border-radius: 999px; display: inline-flex; gap: 8px; align-items: center"><input type="checkbox" name="의뢰분야" value="콘텐츠 제작">콘텐츠 제작</label>
-            <label style="min-height: 44px; padding: 0 16px; border: 1px solid #A9C3F7; border-radius: 999px; display: inline-flex; gap: 8px; align-items: center"><input type="checkbox" name="의뢰분야" value="기타">기타</label>
+        <p id="rq-alert" class="rq-alert" role="alert"></p>
+        <label class="rq-label">필요한 것<textarea class="rq-input" name="프로젝트 내용" rows="3" maxlength="3000" placeholder="예: 동네 카페 로고를 새로 만들고 싶어요. 4월 오픈 전에 필요해요." aria-describedby="err-content"></textarea></label>
+        <p id="err-content" class="rq-err" role="alert"></p>
+        <fieldset>
+          <legend>분야</legend>
+          <div class="rq-chips">
+            <label class="rq-chip"><input class="rq-sr" type="checkbox" name="의뢰분야" value="브랜딩">브랜딩</label>
+            <label class="rq-chip"><input class="rq-sr" type="checkbox" name="의뢰분야" value="UI/UX 디자인">UI/UX 디자인</label>
+            <label class="rq-chip"><input class="rq-sr" type="checkbox" name="의뢰분야" value="콘텐츠 제작">콘텐츠 제작</label>
+            <label class="rq-chip"><input class="rq-sr" type="checkbox" name="의뢰분야" value="기타">기타</label>
           </div>
         </fieldset>
-        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">예산 범위<select name="예산" style="min-height: 48px; padding: 0 12px; background: #2F6BEA; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px"><option value="">선택해주세요</option><option>[예산 구간 1]</option><option>[예산 구간 2]</option><option>협의</option></select></label>
-        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">희망 일정 <span style="opacity: .85">(선택)</span><input type="text" name="희망 일정" maxlength="50" placeholder="예: 다음 달 말까지, 오픈 전 3주" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px"></label>
-        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #FFFFFF">프로젝트 내용<textarea name="프로젝트 내용" required rows="5" maxlength="3000" placeholder="만들고 싶은 것, 참고 사이트, 희망 일정을 알려주세요." style="padding: 14px 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px; resize: vertical"></textarea></label>
-        <fieldset id="refs" style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
-          <legend style="font-size: 14px; color: #FFFFFF; margin-bottom: 4px">레퍼런스 <span style="opacity: .85">(선택) 원하는 느낌을 보여주시면 설명이 짧아져요</span></legend>
-          <p style="margin: 0; font-size: 13px; color: #FFFFFF">제 작업에서 고르기</p>
-          <div id="ref-works" style="display: flex; flex-wrap: wrap; gap: 8px"><span style="font-size: 13px; color: #FFFFFF; opacity: .85">게시된 작업이 아직 없어요.</span></div>
-          <p style="margin: 6px 0 0; font-size: 13px; color: #FFFFFF">링크 붙이기 (최대 3개, 사진은 링크로 보내 주세요)</p>
-          <input type="url" name="레퍼런스 링크 1" maxlength="300" pattern="https?://.+" placeholder="https://www.instagram.com/..." aria-label="레퍼런스 링크 1" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px">
-          <input type="url" name="레퍼런스 링크 2" maxlength="300" pattern="https?://.+" placeholder="https://" aria-label="레퍼런스 링크 2" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px">
-          <input type="url" name="레퍼런스 링크 3" maxlength="300" pattern="https?://.+" placeholder="https://" aria-label="레퍼런스 링크 3" style="min-height: 48px; padding: 0 16px; background: transparent; border: 1px solid #A9C3F7; color: #FFFFFF; border-radius: 8px">
-        </fieldset>
-        <button class="fx fx-wave fx-white" type="submit" style="min-height: 56px; border: 0; border-radius: 999px; background: #FFFFFF; color: #111111; font-weight: 600; font-size: 16px; cursor: pointer">의뢰 보내기</button>
+        <div id="refs" class="rq-ref">
+          <div><h3>레퍼런스 <span style="font-weight: 400; font-size: 13px; color: #5F5F5F">선택</span></h3><p class="rq-sub">원하는 느낌을 보여주시면 설명이 짧아져요.</p></div>
+          <fieldset><legend>제 작업에서 고르기</legend><div id="ref-works" class="rq-works"><p class="rq-sub" style="margin: 0">게시된 작업이 아직 없어요.</p></div></fieldset>
+          <fieldset><legend>링크 붙이기 <span style="font-size: 12px; color: #5F5F5F">최대 3개 · 사진은 링크로 보내 주세요</span></legend>
+            <ul id="link-list" class="rq-links"></ul>
+            <div class="rq-linkrow"><input id="link-in" class="rq-input" type="url" maxlength="300" placeholder="https://www.instagram.com/..." aria-label="레퍼런스 링크" aria-describedby="err-link"><button type="button" id="link-add" class="rq-btn-sm">추가</button></div>
+            <p id="err-link" class="rq-err" role="alert"></p>
+            <input type="hidden" name="레퍼런스 링크 1"><input type="hidden" name="레퍼런스 링크 2"><input type="hidden" name="레퍼런스 링크 3">
+          </fieldset>
+        </div>
+        <div class="rq-two">
+          <label class="rq-label">희망 일정<input class="rq-input" type="date" name="희망 일정"></label>
+          <label class="rq-label">예산 범위<select class="rq-input" name="예산"><option value="">선택 안 함</option><option>[예산 구간 1]</option><option>[예산 구간 2]</option><option>협의</option></select></label>
+          <div><label class="rq-label">이름<input class="rq-input" type="text" name="이름" maxlength="50" autocomplete="name" placeholder="홍길동 또는 Gildong Hong" aria-describedby="err-name"></label><p id="err-name" class="rq-err" role="alert"></p></div>
+          <div><label class="rq-label">이메일<input class="rq-input" type="email" name="email" maxlength="100" autocomplete="email" inputmode="email" placeholder="name@example.com" aria-describedby="err-email"></label><p id="err-email" class="rq-err" role="alert"></p></div>
+        </div>
+        <button class="rq-submit fx fx-wave fx-blue" type="submit">의뢰 보내기</button>
       </form>
     </div>
   </section>

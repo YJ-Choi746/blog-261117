@@ -64,12 +64,102 @@ export function preselectCategory(f, search) {
   return true;
 }
 
+// ---- 의뢰서 입력 확인 (프로토타입과 같은 규칙) ----
+export function checkName(v) {
+  v = String(v || "").trim();
+  if (!v) return "이름을 적어주세요.";
+  if (/[\u3131-\u3163\u1100-\u11FF]/.test(v)) return "자음이나 모음만으로는 이름을 확인할 수 없어요. 올바른 이름을 적어주세요.";
+  if (!/^[가-힣A-Za-z][가-힣A-Za-z .'-]*$/.test(v)) return "이름은 한글이나 영어로만 적어주세요. 숫자와 기호는 쓸 수 없어요.";
+  if (v.replace(/[^가-힣A-Za-z]/g, "").length < 2) return "이름을 두 글자 이상 적어주세요.";
+  return "";
+}
+export function checkEmail(v) {
+  v = String(v || "").trim();
+  if (!v) return "이메일을 적어주세요.";
+  if (!v.includes("@")) return "이메일에 @가 빠졌어요. name@example.com 형식으로 적어주세요.";
+  if (/\s/.test(v) || /\.\./.test(v) || !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v)) return "이메일 주소를 name@example.com 형식으로 적어주세요.";
+  return "";
+}
+export function checkLink(v) {
+  v = String(v || "").trim();
+  return /^https?:\/\/[^\s/$.?#][^\s.]*\.[^\s]{2,}$/i.test(v) ? "" : "링크는 https://로 시작하는 주소로 적어주세요.";
+}
+function setErr(f, key, msg, inputName) {
+  const p = f.querySelector(`#err-${key}`); if (p) p.textContent = msg;
+  const inp = inputName && f.querySelector(`[name="${inputName}"]`);
+  if (inp) { if (msg) inp.setAttribute("aria-invalid", "true"); else inp.removeAttribute("aria-invalid"); }
+}
+// 제출 전 확인: 틀린 칸이 있으면 안내하고 첫 칸으로 이동, 통과하면 true
+export function validateRequest(f) {
+  const errs = {
+    content: val2(f, "프로젝트 내용") ? "" : "필요한 것을 적어주세요.",
+    name: checkName(val2(f, "이름")),
+    email: checkEmail(val2(f, "email")),
+  };
+  setErr(f, "content", errs.content, "프로젝트 내용");
+  setErr(f, "name", errs.name, "이름");
+  setErr(f, "email", errs.email, "email");
+  const bad = Object.entries(errs).filter(([, m]) => m);
+  const alert = f.querySelector("#rq-alert");
+  if (alert) alert.textContent = bad.length ? `확인이 필요한 칸이 ${bad.length}개 있어요.` : "";
+  if (bad.length) {
+    const first = { content: "프로젝트 내용", name: "이름", email: "email" }[bad[0][0]];
+    f.querySelector(`[name="${first}"]`)?.focus();
+  }
+  return !bad.length;
+}
+const val2 = (f, name) => (f.querySelector(`[name="${name}"]`)?.value || "").trim();
+
+// 분야 칩 · 작업 카드: 체크 상태를 모양(.on)에 반영
+export function syncChips(f) {
+  f.querySelectorAll(".rq-chip, .rq-work").forEach((l) => { const i = l.querySelector("input"); l.classList.toggle("on", !!(i && i.checked)); });
+}
+
+// 링크 붙이기: 목록으로 보여 주고, 숨은 칸(레퍼런스 링크 1~3)에 담아 메일 · 저장에 함께 보내요
+const MAX_LINKS = 3;
+let links = [];
+// 닫기(X) 선 아이콘 — innerHTML 없이 만들어요
+function xIcon() {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  for (const [k, v] of Object.entries({ width: 14, height: 14, viewBox: "0 0 14 14", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "aria-hidden": "true" })) svg.setAttribute(k, v);
+  const path = document.createElementNS(NS, "path"); path.setAttribute("d", "M3 3l8 8M11 3l-8 8");
+  svg.appendChild(path); return svg;
+}
+function renderLinks(f) {
+  const ul = f.querySelector("#link-list"); if (!ul) return;
+  ul.replaceChildren(...links.map((u, i) => {
+    const li = document.createElement("li"); li.textContent = u;
+    const b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "링크 삭제");
+    b.appendChild(xIcon());
+    b.addEventListener("click", () => { links.splice(i, 1); renderLinks(f); });
+    li.appendChild(b); return li;
+  }));
+  [1, 2, 3].forEach((n) => { const h = f.querySelector(`[name="레퍼런스 링크 ${n}"]`); if (h) h.value = links[n - 1] || ""; });
+}
+function addLink(f) {
+  const inp = f.querySelector("#link-in"); const v = (inp?.value || "").trim();
+  let err = v ? checkLink(v) : "링크를 붙여넣어 주세요.";
+  if (!err && links.length >= MAX_LINKS) err = `링크는 ${MAX_LINKS}개까지 붙일 수 있어요.`;
+  setErr(f, "link", err);
+  if (err) { inp?.focus(); return; }
+  links.push(v.slice(0, 300)); inp.value = ""; renderLinks(f);
+}
+
 if (form) {
   preselectCategory(form, location.search);
+  syncChips(form);
+  form.addEventListener("change", () => syncChips(form));
+  form.querySelector("#link-add")?.addEventListener("click", () => addLink(form));
+  form.querySelector("#link-in")?.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addLink(form); } });
+  // 칸을 떠날 때 바로 확인
+  form.querySelector('[name="이름"]')?.addEventListener("blur", (e) => { if (e.target.value.trim()) setErr(form, "name", checkName(e.target.value), "이름"); });
+  form.querySelector('[name="email"]')?.addEventListener("blur", (e) => { if (e.target.value.trim()) setErr(form, "email", checkEmail(e.target.value), "email"); });
   let sending = false;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (sending) return; // 두 번 눌러도 한 번만
+    if (!validateRequest(form)) return;
     sending = true;
     const btn = form.querySelector('button[type="submit"]');
     if (btn) { btn.disabled = true; btn.setAttribute("aria-busy", "true"); btn.dataset.label = btn.textContent; btn.textContent = "보내는 중…"; }
