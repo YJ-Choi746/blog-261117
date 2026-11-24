@@ -150,6 +150,35 @@
       <p class="hint">게시는 직접 해주세요.</p>
     </section>
   </main>
+  <!-- 게시 화면 전체 미리보기: 방문자 작업 상세(work.html)와 같은 모양 · 같은 스타일(css/site.css .case-*) -->
+  <dialog id="full-pv" class="pw-fullpv" aria-label="게시 화면 미리보기">
+    <div class="pw-fullpv-bar">
+      <span><strong>게시 화면 미리보기</strong> · 방문자에게 이렇게 보여요 (아직 게시 전)</span>
+      <button type="button" id="full-pv-close" class="btn btn-dark">편집으로 돌아가기</button>
+    </div>
+    <article class="case-article">
+      <span class="case-back">← 선택한 작업</span>
+      <div class="case-body">
+        <div class="case-head">
+          <span id="fp-cat" class="case-cat"></span>
+          <h1 id="fp-title"></h1>
+          <p id="fp-summary" class="case-lead"></p>
+        </div>
+        <dl id="fp-meta" class="case-meta"></dl>
+        <div id="fp-cover" class="case-cover"></div>
+        <section class="case-step"><span class="case-no">01</span><div><h2>요청</h2><div id="fp-problem"></div></div></section>
+        <section class="case-step"><span class="case-no">02</span><div><h2>과정</h2><div id="fp-process"></div><div id="fp-images" class="case-images"></div></div></section>
+        <section class="case-step"><span class="case-no">03</span><div><h2>결과</h2><div id="fp-result"></div></div></section>
+        <div id="fp-tags" class="tags" style="padding-bottom: 0"></div>
+      </div>
+    </article>
+    <section class="case-band" aria-label="의뢰 띠 (미리보기)">
+      <div class="wrap">
+        <div><h2>함께 만들어요.</h2><p>영업일 기준 3일 안에 답장드립니다.</p></div>
+        <span class="btn case-band-btn">의뢰 문의하기</span>
+      </div>
+    </section>
+  </dialog>
 </div>
 <script type="module" src="../js/work-edit.js"></script>
 </body>

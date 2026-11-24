@@ -292,7 +292,39 @@ $("c-manual").addEventListener("click", () => {
   dirty = true; setState("저장 안 된 변경 있음"); $("c-title").focus();
 });
 $("regen").addEventListener("click", () => $("generate").click());
-$("preview-toggle").addEventListener("click", () => setPreview(!previewing));
+// 게시 화면 미리보기: 전체 화면으로 방문자 작업 상세와 똑같이 보여 줘요 (모두 textContent)
+function paragraphsInto(box, text) {
+  box.replaceChildren(...String(text || "").split(/\n{2,}/).map((t) => t.trim()).filter(Boolean).map((t) => {
+    const p = document.createElement("p");
+    t.split("\n").forEach((line, i) => { if (i) p.appendChild(document.createElement("br")); p.appendChild(document.createTextNode(line)); });
+    return p;
+  }));
+}
+function pvImage(im, alt) { const img = document.createElement("img"); img.className = `sz-${sizeOf(im)}`; img.alt = alt; img.src = im.data || ""; return img; }
+function renderFullPreview() {
+  const title = val("c-title") || val("f-name") || "제목 없음";
+  $("fp-cat").textContent = $("f-category").value;
+  $("fp-title").textContent = title;
+  $("fp-summary").textContent = val("c-summary");
+  const meta = [["업종", val("f-industry") || "-"], ["기간", val("f-period") || "-"], ["맡은 일", val("f-role") || "-"]];
+  if ($("f-client-public").checked && val("f-client")) meta.push(["클라이언트", val("f-client")]);
+  $("fp-meta").replaceChildren(...meta.map(([k, v]) => { const d = document.createElement("div"); const dt = document.createElement("dt"); dt.textContent = k; const dd = document.createElement("dd"); dd.textContent = v; d.append(dt, dd); return d; }));
+  $("fp-cover").replaceChildren(...(images[0] && images[0].data ? [pvImage(images[0], `${title} 커버 이미지`)] : []));
+  $("fp-cover").hidden = !(images[0] && images[0].data);
+  paragraphsInto($("fp-problem"), val("c-problem") || "-");
+  paragraphsInto($("fp-process"), val("c-process") || "-");
+  paragraphsInto($("fp-result"), val("c-result") || "-");
+  $("fp-images").replaceChildren(...images.slice(1).filter((im) => im.data).map((im, i) => pvImage(im, `${title} 이미지 ${i + 2}`)));
+  $("fp-images").hidden = images.length < 2;
+  $("fp-tags").replaceChildren(...tagsFromInput().map((t) => { const sp = document.createElement("span"); sp.className = "tag"; sp.textContent = `#${t}`; return sp; }));
+}
+$("preview-toggle").addEventListener("click", () => {
+  renderFullPreview();
+  const d = $("full-pv");
+  if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+  d.scrollTop = 0; $("full-pv-close").focus();
+});
+$("full-pv-close").addEventListener("click", () => { const d = $("full-pv"); if (d.close) d.close(); else d.removeAttribute("open"); });
 
 // ---- 저장 · 게시 (F6) ----
 function tagsFromInput() {

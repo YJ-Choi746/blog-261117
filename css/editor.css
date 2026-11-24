@@ -316,3 +316,10 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 #editor .pw-key-row input { flex: 1 1 200px; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); font: inherit; font-size: 14px; } /* line-strong */
 #editor .pw-key .check { margin-top: 8px; display: flex; flex-direction: row; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; color: var(--gray-700); }
 #editor .pw-key .check input { width: 18px; height: 18px; min-height: 0; margin: 0; flex: none; }
+
+/* 게시 화면 전체 미리보기 (방문자 작업 상세와 같은 스타일) */
+.pw-fullpv { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: 0 0 48px; border: 0; background: var(--bg); color: var(--black); overflow: auto; box-sizing: border-box; }
+.pw-fullpv::backdrop { background: rgba(17, 17, 17, .55); }
+.pw-fullpv-bar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 10px 24px; background: var(--white); border-bottom: 1px solid var(--line); font-size: 14px; color: var(--gray-700); } /* white · line */
+.pw-fullpv-bar strong { color: var(--black); font-weight: 600; }
+.pw-fullpv .case-band { margin-top: 56px; }
