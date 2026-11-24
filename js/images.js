@@ -4,7 +4,7 @@
 // (Firestore 문서 한 개는 1MB까지라서, 그보다 작아질 때까지 줄여요.)
 import { db, collection, addDoc, doc, getDoc, deleteDoc, serverTimestamp } from "./firebase.js";
 
-const MAX_SIDE = 1600;          // 긴 변 최대 px
+const MAX_SIDE = 2000;          // 긴 변 최대 px (화질 우선, 크면 아래에서 단계적으로 줄여요)
 const MAX_CHARS = 900000;       // 저장 문자열 최대 길이 (1MB 제한보다 여유 있게)
 const cache = new Map();        // id → data URL
 
@@ -18,24 +18,42 @@ function loadImage(file) {
   });
 }
 
-// 파일 → 줄인 JPEG data URL
+// 큰 이미지를 한 번에 줄이면 흐려져서, 절반씩 여러 번 줄여요 (선명하게)
+function drawScaled(img, w, h) {
+  let src = img, sw = img.naturalWidth, sh = img.naturalHeight;
+  while (sw / 2 >= w && sh / 2 >= h) {
+    const c = document.createElement("canvas");
+    c.width = Math.round(sw / 2); c.height = Math.round(sh / 2);
+    const cx = c.getContext("2d"); cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = "high";
+    cx.drawImage(src, 0, 0, c.width, c.height);
+    src = c; sw = c.width; sh = c.height;
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#FFFFFF"; // 투명 배경은 흰색으로
+  ctx.fillRect(0, 0, w, h);
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(src, 0, 0, w, h);
+  return canvas;
+}
+
+// 파일 → 줄인 data URL. 같은 용량에서 더 선명한 WebP를 먼저 쓰고, 안 되는 브라우저는 JPEG.
+// 화질(0.92 → 0.86 → 0.8)을 먼저 낮춰 보고, 그래도 크면 크기를 15%씩 줄여요.
 export async function compressImage(file) {
   if (!file || !/^image\//.test(file.type)) throw new Error("이미지 파일만 올릴 수 있어요.");
   const img = await loadImage(file);
   let scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
-  let quality = 0.85;
-  for (let tries = 0; tries < 8; tries++) {
+  for (let round = 0; round < 10; round++) {
     const w = Math.max(1, Math.round(img.naturalWidth * scale));
     const h = Math.max(1, Math.round(img.naturalHeight * scale));
-    const canvas = document.createElement("canvas");
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#FFFFFF"; // 투명 배경은 흰색으로
-    ctx.fillRect(0, 0, w, h);
-    ctx.drawImage(img, 0, 0, w, h);
-    const data = canvas.toDataURL("image/jpeg", quality);
-    if (data.length <= MAX_CHARS) return { data, width: w, height: h };
-    if (quality > 0.6) quality -= 0.1; else scale *= 0.8;
+    const canvas = drawScaled(img, w, h);
+    for (const q of [0.92, 0.86, 0.8]) {
+      let data = canvas.toDataURL("image/webp", q);
+      if (!data.startsWith("data:image/webp")) data = canvas.toDataURL("image/jpeg", q);
+      if (data.length <= MAX_CHARS) return { data, width: w, height: h };
+    }
+    scale *= 0.85;
   }
   throw new Error("이미지가 너무 커서 줄일 수 없어요.");
 }

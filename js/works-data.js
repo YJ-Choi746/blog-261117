@@ -23,7 +23,7 @@ export function workCard(w, base = "") {
   if (w.coverImageId) {
     const img = document.createElement("img");
     img.alt = ""; img.loading = "lazy";
-    img.style.cssText = "width: 100%; height: 100%; object-fit: cover; display: block";
+    img.style.cssText = "width: 100%; height: 100%; object-fit: contain; display: block"; // 자르지 않고 전체를 보여줘요 (남는 곳은 surface 배경)
     getImageData(w.coverImageId).then((d) => { if (d) img.src = d; });
     cover.appendChild(img);
   }
