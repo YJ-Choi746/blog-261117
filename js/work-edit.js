@@ -7,6 +7,7 @@ import {
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
 } from "./firebase.js";
 import { uploadImage, getImageData } from "./images.js";
+import { templateDraft, templateSns } from "./templates.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_IMAGES = 4;
@@ -104,11 +105,11 @@ $("generate").addEventListener("click", async () => {
       dirty = true; setState("저장 안 된 변경 있음");
     } else {
       gs.className = "notice notice-error";
-      gs.textContent = `AI 초안을 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). 오른쪽 칸에 직접 써서 저장할 수 있어요.`;
+      gs.textContent = `AI 초안을 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '문장 틀로 채우기'를 누르거나 오른쪽 칸에 직접 써 주세요.`;
     }
   } catch (err) {
     gs.className = "notice notice-error";
-    gs.textContent = `AI 초안을 만들지 못했어요. ${friendlyError(err)} 오른쪽 칸에 직접 써서 저장할 수 있어요.`;
+    gs.textContent = `AI 초안을 만들지 못했어요. ${friendlyError(err)} '문장 틀로 채우기'를 누르거나 오른쪽 칸에 직접 써 주세요.`;
   } finally {
     btn.disabled = false; btn.textContent = "AI 초안 만들기";
   }
@@ -152,11 +153,11 @@ $("sns-generate").addEventListener("click", async () => {
       dirty = true; setState("저장 안 된 변경 있음");
     } else {
       st.className = "notice notice-error";
-      st.textContent = `문구를 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). 직접 써서 복사할 수 있어요.`;
+      st.textContent = `문구를 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '문장 틀 문구'를 누르거나 직접 써서 복사할 수 있어요.`;
     }
   } catch (err) {
     st.className = "notice notice-error";
-    st.textContent = `문구를 만들지 못했어요. ${friendlyError(err)} 직접 써서 복사할 수 있어요.`;
+    st.textContent = `문구를 만들지 못했어요. ${friendlyError(err)} '문장 틀 문구'를 누르거나 직접 써서 복사할 수 있어요.`;
   } finally { btn.disabled = false; btn.textContent = "인스타그램 문구 만들기"; }
 });
 
@@ -192,6 +193,32 @@ $("sns-copy").addEventListener("click", async () => {
     try { await setDoc(doc(db, "workNotes", workId), { sns: { caption: val("s-caption"), captions: snsCaptions, hashtags: hashtagsFromInput(), copiedAt: snsCopiedAt, ...(snsMeta ? { ai: snsMeta } : {}) } }, { merge: true }); }
     catch { /* 기록 실패는 복사를 막지 않아요 */ }
   }
+});
+
+// ---- 문장 틀 (AI 없이 0원, D27) ----
+$("c-template").addEventListener("click", () => {
+  const input = memoInput();
+  if (!input.title) { say("작업명을 먼저 써 주세요.", true); $("f-name").focus(); return; }
+  if (!input.memo.request && !input.memo.work && !input.memo.result) { say("메모를 한 칸 이상 써 주세요.", true); $("m-request").focus(); return; }
+  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !confirm("오른쪽에 쓴 내용을 문장 틀 초안으로 바꿀까요?")) return;
+  fillDraft(templateDraft(input));
+  $("ai-badge").hidden = true; $("warn").hidden = true;
+  const gs = $("gen-status"); gs.hidden = false; gs.className = "notice notice-info";
+  gs.textContent = "문장 틀로 채웠어요. 메모를 그대로 옮긴 초안이라 문장을 다듬어 주세요.";
+  aiMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
+  dirty = true; setState("저장 안 된 변경 있음");
+});
+$("sns-template").addEventListener("click", () => {
+  const miss = REQUIRED_TO_PUBLISH.filter(([id]) => id !== "c-summary" && !val(id)).map(([, n]) => n);
+  if (miss.length) { say(`인스타그램 문구는 케이스 스터디로 만들어요. 먼저 채워 주세요: ${miss.join(" · ")}`, true); return; }
+  if (val("s-caption") && !confirm("지금 쓴 인스타그램 문구를 문장 틀 문구로 바꿀까요?")) return;
+  const out = templateSns({ title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"), category: $("f-category").value, industry: val("f-industry") });
+  snsCaptions = out.captions; snsIndex = 0; showSnsVariant();
+  $("s-hashtags").value = out.hashtags.join(", ");
+  $("sns-badge").hidden = true; $("sns-warn").hidden = true;
+  const st = $("sns-status"); st.hidden = false; st.className = "notice notice-info"; st.textContent = "문장 틀 문구 3안이에요. 다듬어서 복사해 주세요.";
+  snsMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
+  dirty = true; setState("저장 안 된 변경 있음");
 });
 
 // ---- 저장 · 게시 (F6) ----
