@@ -160,30 +160,35 @@
   let uid = 0;
   function flag(which) {
     const id = `flag-clip-${++uid}`;
-    const svg = svgEl("svg", { width: 28, height: 28, viewBox: "0 0 36 36", "aria-hidden": "true" });
+    const svg = svgEl("svg", { width: 24, height: 24, viewBox: "0 0 36 36", "aria-hidden": "true" }); // 눌리는 영역은 버튼 44px 그대로
     const defs = svgEl("defs", {}); const cp = svgEl("clipPath", { id }); cp.appendChild(svgEl("circle", { cx: 18, cy: 18, r: 18 })); defs.appendChild(cp); svg.appendChild(defs);
     const g = svgEl("g", { "clip-path": `url(#${id})` });
     if (which === "ko") {
       // 태극기 (국기 색: 빨강 #CD2E3A · 파랑 #0047A0 · 검정)
       g.appendChild(svgEl("rect", { width: 36, height: 36, fill: "#FFFFFF" }));
-      const t = svgEl("g", { transform: "rotate(33.69 18 18)" });
+      // 태극기 전체가 동그라미 안에 들어오게 줄였어요 (태극 반지름 7.2, 괘까지 중심에서 16 안쪽)
+      const t = svgEl("g", { transform: "translate(18 18) scale(0.8) translate(-18 -18) rotate(33.69 18 18)" });
       t.appendChild(svgEl("path", { d: "M9 18a9 9 0 0 1 18 0a4.5 4.5 0 0 0 -9 0a4.5 4.5 0 0 1 -9 0z", fill: "#CD2E3A" }));
       t.appendChild(svgEl("path", { d: "M9 18a4.5 4.5 0 0 0 9 0a4.5 4.5 0 0 1 9 0a9 9 0 0 1 -18 0z", fill: "#0047A0" }));
       g.appendChild(t);
-      // 네 귀퉁이 괘 (작게, 동그라미 안에 들어오게)
-      const bars = (cx, cy, rot, pattern) => {
-        const b = svgEl("g", { transform: `rotate(${rot} ${cx} ${cy})` });
+      // 네 괘: 국기 비율대로 (막대 길이 = 태극 반지름, 두께 = 지름/12, 간격 = 지름/24, 태극에서 지름/4 떨어짐), 대각선 방향
+      const R = 7.2, L = R, TH = R / 6, GAP = R / 12, START = R + R / 2;
+      const trigram = (deg, pattern) => {
+        const b = svgEl("g", { transform: `translate(18 18) rotate(${deg - 90})` });
         pattern.forEach((broken, i) => {
-          const y = cy - 2.6 + i * 2.6;
-          if (broken) { b.appendChild(svgEl("rect", { x: cx - 3.2, y, width: 2.8, height: 1.5, fill: "#111111" })); b.appendChild(svgEl("rect", { x: cx + 0.4, y, width: 2.8, height: 1.5, fill: "#111111" })); }
-          else b.appendChild(svgEl("rect", { x: cx - 3.2, y, width: 6.4, height: 1.5, fill: "#111111" }));
+          const y = START + i * (TH + GAP);
+          if (broken) {
+            const half = (L - GAP) / 2;
+            b.appendChild(svgEl("rect", { x: -L / 2, y, width: half, height: TH, fill: "#111111" }));
+            b.appendChild(svgEl("rect", { x: GAP / 2, y, width: half, height: TH, fill: "#111111" }));
+          } else b.appendChild(svgEl("rect", { x: -L / 2, y, width: L, height: TH, fill: "#111111" }));
         });
         g.appendChild(b);
       };
-      bars(7.5, 9, -56.31, [0, 0, 0]);   // 건
-      bars(28.5, 27, -56.31, [1, 1, 1]); // 곤
-      bars(28.5, 9, 56.31, [1, 0, 1]);   // 감
-      bars(7.5, 27, 56.31, [0, 1, 0]);   // 리
+      trigram(-146.31, [0, 0, 0]); // 건 (왼쪽 위)
+      trigram(-33.69, [1, 0, 1]);  // 감 (오른쪽 위)
+      trigram(146.31, [0, 1, 0]);  // 리 (왼쪽 아래)
+      trigram(33.69, [1, 1, 1]);   // 곤 (오른쪽 아래)
     } else {
       // 미국 국기 (빨강 #B22234 · 남색 #3C3B6E)
       g.appendChild(svgEl("rect", { width: 36, height: 36, fill: "#FFFFFF" }));
