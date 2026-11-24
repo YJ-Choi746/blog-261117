@@ -49,8 +49,8 @@ functions/prompt.js AI 분석 프롬프트 (바꾸면 docs/SUCCESS_FAILURE_LOG.m
 .nojekyll           GitHub Pages가 파일을 가공하지 않게 하는 빈 파일
 CLAUDE.md           이 문서
 README.md           저장소 소개 · 제출물 링크 모음 (배포 URL · PRD · 테스트 보고서 · 로그)
-docs/design-system.md   색 · 글꼴 · 간격 · 컴포넌트 규칙
-docs/decisions.md       정한 것들 (날짜순)
+docs/DESIGN_SYSTEM.md   색 · 글꼴 · 간격 · 컴포넌트 규칙
+docs/DECISIONS.md       정한 것들 (날짜순)
 docs/PRD.md             미니 프로젝트 PRD (범위 기준, 2쪽 이하, 버전은 커밋 기록으로 관리)
 docs/AGENT_GUIDE.md     에이전트용 작업 지침 (AI 기능 규격 · 보안 · 커밋 규칙)
 docs/DECISION_LOG.md    의사결정 로그 (D1~, 날짜 · 결정 · 대안 · 이유 · 상태)
@@ -58,11 +58,11 @@ docs/SUCCESS_FAILURE_LOG.md  성공 · 실패 로그 (테스트 실행 · 프롬
 docs/TEST_REPORT.md     테스트 보고서 (유저플로우 스크린샷 + 기능별 단위 테스트, 2쪽 이하)
 docs/WORKLOG.md         작업 일지 (날짜 · 시간순)
 docs/screenshots/       유저플로우 스크린샷 (플로우 순서대로 번호)
-docs/user-stories.md    사용자 스토리와 완료 기준
-docs/firebase-setup.md  Firebase 연결 순서 (처음 한 번)
-docs/analytics.md       방문자 통계(GA4) 보는 법
-docs/analytics-events.md  이벤트 택소노미 (이벤트 이름 · 매개변수 · 보내는 순간)
-docs/dashboard.md       인기 글 대시보드(Looker Studio) 만드는 법
+docs/USER_STORIES.md    사용자 스토리와 완료 기준
+docs/FIREBASE_SETUP.md  Firebase 연결 순서 (처음 한 번)
+docs/ANALYTICS.md       방문자 통계(GA4) 보는 법
+docs/ANALYTICS_EVENTS.md  이벤트 택소노미 (이벤트 이름 · 매개변수 · 보내는 순간)
+docs/DASHBOARD.md       인기 글 대시보드(Looker Studio) 만드는 법
 docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포, 의뢰폼-이메일, 캔버스-레이아웃, 로그인, 에디터, 공유-미리보기)
 ```
 
@@ -70,7 +70,7 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 - 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요. 예외: 서버 함수 `functions/` 폴더 (DECISION_LOG D10).
 - AI API 키는 Firebase Secret Manager(`ANTHROPIC_API_KEY`)에만 둬요. 방문자 화면 코드에서 AI API를 직접 부르지 않고 `analyzeRequest` 함수를 거쳐요.
 - 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`), **PokéAPI**(`pokeapi.co` 데이터 + `raw.githubusercontent.com/PokeAPI/sprites` 그림, `js/widgets.js`의 포켓몬 위젯만)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요.
-- GA 이벤트를 새로 만들거나 바꾸면 **먼저 `docs/analytics-events.md`에 적고** 이름 규칙(`동사_대상`, snake_case)을 지켜요. 이름 · 이메일 · 의뢰 내용 같은 개인 정보는 GA로 보내지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
+- GA 이벤트를 새로 만들거나 바꾸면 **먼저 `docs/ANALYTICS_EVENTS.md`에 적고** 이름 규칙(`동사_대상`, snake_case)을 지켜요. 이름 · 이메일 · 의뢰 내용 같은 개인 정보는 GA로 보내지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.
 - 사용자가 쓴 글의 제목·태그는 **`textContent`로만** 넣어요. 서식 있는 본문은 **반드시 `js/sanitize.js`를 거친 요소만** 넣어요. HTML 문자열을 `innerHTML`/`insertAdjacentHTML`에 넣지 않아요 (XSS).
 - 본문에 새 태그·스타일·글꼴을 허용하려면 `js/sanitize.js`의 허용 목록에만 추가해요.
 - 사진은 `js/images.js`로만 올리고 불러와요 (Firestore `images`, 900KB 이하로 줄여서).
@@ -80,8 +80,8 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 - 모든 화면은 휴대폰 폭(360px)에서도 가로 스크롤 없이 보여야 해요. 고정 px 너비 대신 `max-width`, `auto-fit` 그리드, `clamp()`를 써요.
 
 ## 디자인 규칙
-- 색 · 글꼴 · 버튼 모양은 **반드시 `docs/design-system.md`를 따라요.** 새 색이나 새 글꼴을 만들지 마세요. 예외: 글 본문 꾸미기용 글꼴·색 (디자인 시스템 문서의 "글 본문 꾸미기" 목록만).
-- 디자인 시스템은 **두 곳에 같은 내용**으로 있어요: `docs/design-system.md`(코드용)와 디자인 시스템 아티팩트(시안·덱용). 하나를 바꾸면 다른 하나도 같이 고쳐요.
+- 색 · 글꼴 · 버튼 모양은 **반드시 `docs/DESIGN_SYSTEM.md`를 따라요.** 새 색이나 새 글꼴을 만들지 마세요. 예외: 글 본문 꾸미기용 글꼴·색 (디자인 시스템 문서의 "글 본문 꾸미기" 목록만).
+- 디자인 시스템은 **두 곳에 같은 내용**으로 있어요: `docs/DESIGN_SYSTEM.md`(코드용)와 디자인 시스템 아티팩트(시안·덱용). 하나를 바꾸면 다른 하나도 같이 고쳐요.
 - 색 값을 코드에 쓸 때는 디자인 시스템의 토큰 이름(`blue`, `gray-600`, `line` …)을 주석이나 CSS 변수 이름으로 남겨요.
 - 푸터는 고정 `height`를 주지 않아요. 페이지 루트를 세로 flex로 두고 푸터에 `flex: 1 0 auto; min-height: 72px; align-items: center`.
 - 눌리는 요소(버튼, 링크 버튼, 체크박스 라벨)는 높이 44px 이상.
@@ -104,7 +104,8 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 - 비밀번호, 토큰, API 키는 절대 커밋하지 않아요.
 
 ## 문서 규칙
-- 무언가를 **정하면** `docs/decisions.md`에 날짜와 함께 한 줄 추가해요.
+- **파일 이름 규칙**: `docs/` 안 문서(.md)는 대문자와 밑줄(`USER_STORIES.md`), 폴더와 이미지·스크립트·화면 파일은 소문자와 하이픈(`docs/screenshots/01-home.png`, `js/work-edit.js`). 루트의 `README.md` · `CLAUDE.md`는 관례대로 대문자.
+- 무언가를 **정하면** `docs/DECISIONS.md`에 날짜와 함께 한 줄 추가해요.
 - 무언가에 **막혔다 풀면** `docs/failures/<주제>.md`에 증상 · 원인 · 해결을 적어요. 같은 주제 파일이 있으면 거기에 이어 써요.
-- 기능은 `docs/user-stories.md`에 스토리와 완료 기준을 먼저 적고, 기준마다 테스트 결과를 남겨요.
+- 기능은 `docs/USER_STORIES.md`에 스토리와 완료 기준을 먼저 적고, 기준마다 테스트 결과를 남겨요.
 - 사용자에게는 한국어로, 쉬운 말로 설명해요.

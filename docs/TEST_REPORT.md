@@ -38,6 +38,6 @@
 |---|---|---|
 | 함수 테스트가 0건 실행 | `node --test test/` 경로 지정 오류 | `test/*.test.js`로 수정 |
 | 폼 화면 테스트 멈춤 | 외부 글꼴·분석 스크립트 로딩 대기 | 테스트에서 외부 요청 차단, DOM 로드까지만 대기 |
-| 실제 AI 분석 불가 | Blaze 요금제 · API 키 미등록 | 배포 안내를 `docs/firebase-setup.md`에 작성, 등록 후 재측정 예정 |
+| 실제 AI 분석 불가 | Blaze 요금제 · API 키 미등록 | 배포 안내를 `docs/FIREBASE_SETUP.md`에 작성, 등록 후 재측정 예정 |
 
-자세한 실행 기록: [SUCCESS_FAILURE_LOG.md](SUCCESS_FAILURE_LOG.md) · 완료 기준별 결과: [user-stories.md](user-stories.md) US-15 · US-16
+자세한 실행 기록: [SUCCESS_FAILURE_LOG.md](SUCCESS_FAILURE_LOG.md) · 완료 기준별 결과: [USER_STORIES.md](USER_STORIES.md) US-15 · US-16

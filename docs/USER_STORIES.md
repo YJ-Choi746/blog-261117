@@ -165,12 +165,12 @@ flowchart TD
 | 3 | 의뢰 완료 시 `generate_lead`가 기록된다 | 통과 |
 | 4 | 관리자 화면은 기록하지 않는다 | 통과 |
 | 5 | GA가 막혀도(광고 차단 등) 페이지는 정상 동작한다 | 통과 |
-| 6 | 지역 · 기기 · OS는 GA 기본 보고서에서 본다 (보는 곳: `docs/analytics.md`) | 실제 GA 확인 (2026-11-17): 실시간에 글 제목이 보임 |
+| 6 | 지역 · 기기 · OS는 GA 기본 보고서에서 본다 (보는 곳: `docs/ANALYTICS.md`) | 실제 GA 확인 (2026-11-17): 실시간에 글 제목이 보임 |
 | 7 | 관리자로 로그인한 브라우저는 방문자 화면을 봐도 집계되지 않는다 (`?ga=on`/`?ga=off`로 바꿀 수 있음) | 통과 |
 
 ## US-06 · 관리자는 방문자가 글을 어떻게 찾고 · 읽고 · 의뢰로 이어지는지 본다 (이벤트 택소노미)
 
-설계: `docs/analytics-events.md`
+설계: `docs/ANALYTICS_EVENTS.md`
 
 | # | 완료 기준 | 테스트 |
 |---|---|---|
@@ -214,7 +214,7 @@ flowchart TD
 
 > **운영자로서,** 실제로 읽은 방문만 완독으로 집계하고, 글을 게시 후 같은 기간 기준으로 비교하고 싶다. **그래야** 짧은 글의 완독률이 부풀려지지 않고, 오래된 글이 유리하지 않다.
 
-기준: PRD "블로그 인기 글 분석 체계" v2.0 · 설계: `docs/analytics-events.md` ("완독 보정", `post_published_at`)
+기준: PRD "블로그 인기 글 분석 체계" v2.0 · 설계: `docs/ANALYTICS_EVENTS.md` ("완독 보정", `post_published_at`)
 
 | # | 완료 기준 (PRD 인수조건) | 테스트 |
 |---|---|---|
@@ -253,7 +253,7 @@ flowchart TD
 
 > **관리자로서,** 글을 스크롤하며 얼마나 머물고 어느 지점에서 이탈하는지 알고 싶다. **그래야** 글의 어느 부분에서 독자를 잃는지 보고 고칠 수 있기 때문이다.
 
-설계: `docs/analytics-events.md` (`scroll_post`, `leave_post`)
+설계: `docs/ANALYTICS_EVENTS.md` (`scroll_post`, `leave_post`)
 
 | # | 완료 기준 | 테스트 |
 |---|---|---|

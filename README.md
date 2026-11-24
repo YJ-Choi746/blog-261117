@@ -38,4 +38,4 @@
 ```bash
 cd functions && npm install && npm test
 ```
-함수 배포 순서: [docs/firebase-setup.md](docs/firebase-setup.md)
+함수 배포 순서: [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md)

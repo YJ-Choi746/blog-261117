@@ -23,7 +23,7 @@ function trackView(p) {
   if (p) window.trackEvent("view_post", postParams(p));
 }
 
-// GA: 글마다 같이 보내는 매개변수 (docs/analytics-events.md)
+// GA: 글마다 같이 보내는 매개변수 (docs/ANALYTICS_EVENTS.md)
 function postParams(p) {
   return { post_id: id, post_title: p.title, post_category: p.category || "", post_published_at: publishedDate(p) };
 }
@@ -36,7 +36,7 @@ function publishedDate(p) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 }
 
-// GA: 글 상세에서 읽기 · 스크롤 · 떠남을 기록해요 (docs/analytics-events.md)
+// GA: 글 상세에서 읽기 · 스크롤 · 떠남을 기록해요 (docs/ANALYTICS_EVENTS.md)
 // - read_post 50 · 90  = 읽었다 (위치 + 최소 읽기 시간) — PRD FR-02 완독 보정
 // - scroll_post 30 · 50 · 90 = 거기까지 내려갔다 (위치만)
 // - leave_post = 떠날 때 한 번 (가장 많이 내려간 깊이 · 머문 시간 · 완독 여부)
@@ -134,7 +134,7 @@ function navItem(p, dir, wrapped) {
   const a = document.createElement("a");
   a.className = `post-nav-item ${dir}`;
   a.href = `post.html?id=${encodeURIComponent(p.id)}`;
-  // GA: 이전 · 다음 글 클릭도 select_post로 (docs/analytics-events.md)
+  // GA: 이전 · 다음 글 클릭도 select_post로 (docs/ANALYTICS_EVENTS.md)
   a.setAttribute("data-ga-event", "select_post");
   a.setAttribute("data-ga-post_id", p.id);
   a.setAttribute("data-ga-post_title", p.title || "");
@@ -174,7 +174,7 @@ const SHARE_BASE = "https://blog---261117.web.app/p/";
 function setupShare(p) {
   const btn = $("share-btn"), msg = $("share-msg");
   const url = SHARE_BASE + encodeURIComponent(id) + ".html";
-  // GA: share_post (docs/analytics-events.md)
+  // GA: share_post (docs/ANALYTICS_EVENTS.md)
   btn.setAttribute("data-ga-event", "share_post");
   btn.setAttribute("data-ga-post_id", id);
   btn.setAttribute("data-ga-post_title", p.title || "");

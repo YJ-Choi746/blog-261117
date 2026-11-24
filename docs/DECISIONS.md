@@ -18,11 +18,11 @@
 - **의뢰 폼 전송**: 무료 서비스 FormSubmit으로 Gmail에 받기로 정함. 전송 후 `thanks.html`로 이동.
 - **블로그 화면 5종**: 첫 화면 · 글 목록 · 글 상세 · 글쓰기 · 관리자 로그인을 Claude 아티팩트 캔버스에 클릭 가능한 시안으로 만듦. 실제 로그인·글 저장 기능은 아직 없음.
 - **첫 화면 헤딩 위 문구**: "WEB · APP · CONTENT DESIGN" → "BRANDING · UI/UX · CONTENT DESIGN"으로 변경 (서비스 이름과 맞춤).
-- **문서 체계**: `CLAUDE.md`(개발 지침), `docs/decisions.md`(결정), `docs/failures/`(실패 로그), `docs/design-system.md`(디자인 시스템) 4가지로 정함.
+- **문서 체계**: `CLAUDE.md`(개발 지침), `docs/DECISIONS.md`(결정), `docs/failures/`(실패 로그), `docs/DESIGN_SYSTEM.md`(디자인 시스템) 4가지로 정함.
 - **푸터**: 고정 높이 대신 페이지 아래 남는 흰 공간을 채우고(최소 72px), © 문구와 링크를 세로 가운데 정렬. 첫 화면 · 글 목록 · 글 상세 · 배포 사이트에 적용.
 - **화면 2 · 3 높이**: 글 목록 2200 → 2016px, 글 상세 2900 → 2501px. 내용 길이에 맞춰서 푸터 여백이 첫 화면과 같게(약 80px).
 - **디자인 시스템 아티팩트**: 공통 요소를 claude.ai 디자인 시스템 아티팩트 "your.name 디자인 시스템"으로 저장 (https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN). 색 15 · 글자 스타일 15 · 간격 11 · 모서리 6 · 크기 5개 토큰과 컴포넌트 7종(Button, FilterChip, ServiceColumn, WorkCard, PostRow, RequestForm, Footer). 테마는 라이트 하나.
-- **디자인 시스템 관리 방식**: `docs/design-system.md`와 아티팩트를 같은 내용으로 유지. 하나를 바꾸면 둘 다 고침.
+- **디자인 시스템 관리 방식**: `docs/DESIGN_SYSTEM.md`와 아티팩트를 같은 내용으로 유지. 하나를 바꾸면 둘 다 고침.
 - **US-01 "관리자는 로그인 후 글을 직접 쓸 수 있다" 시작.**
 - **로그인·글 저장 서비스**: Firebase로 정함 (Authentication 이메일/비밀번호 + Firestore). Supabase, GitHub만 쓰는 방법과 비교해 GitHub Pages에서 그대로 동작하고 무료라서.
 - **기술 규칙 변경**: "HTML + CSS만" → "HTML + CSS + 순수 JavaScript(ES 모듈) + Firebase SDK 10.12.2" 허용.
@@ -57,9 +57,9 @@
 - **집계 범위**: 방문자 페이지(홈 · 글 목록 · 글 상세 · 의뢰 완료)만. 관리자 화면은 집계하지 않음.
 - **가장 많이 읽은 글**: 글 상세는 자동 기록을 끄고 글 제목을 불러온 뒤 page_view(제목 = 글 제목)를 보냄 → "페이지 및 화면" 보고서에서 글 제목으로 바로 보임. 추가로 `view_post`(post_id · post_title · post_category), 의뢰 완료는 `generate_lead`.
 - **내 방문 빼기**: IP 등록 대신, 관리자로 로그인한 브라우저에 표시를 남겨 GA를 아예 켜지 않음 (장소가 바뀌어도 빠짐). `?ga=on` / `?ga=off`로 직접 켜고 끌 수 있음.
-- **GA 맞춤 측정기준**: GA 계정 안의 설정이라 Claude가 대신 할 수 없음 → 사용자가 GA 화면에서 등록 (`docs/analytics.md`).
+- **GA 맞춤 측정기준**: GA 계정 안의 설정이라 Claude가 대신 할 수 없음 → 사용자가 GA 화면에서 등록 (`docs/ANALYTICS.md`).
 - **맞춤 측정기준 3개 등록 (사용자)**: post_title · post_category · post_id. GA 계정은 Claude가 볼 수 없어서, 사이트가 같은 이름으로 보내는지만 테스트로 확인.
-- **이벤트 택소노미 (US-06)**: `docs/analytics-events.md`. 이름은 `동사_대상` snake_case, GA 추천 이름 우선(`page_view`, `generate_lead`). ASIS 3개(page_view · view_post · generate_lead) → TOBE 9개 (+ select_post · filter_posts · read_post · click_cta · form_start · form_submit).
+- **이벤트 택소노미 (US-06)**: `docs/ANALYTICS_EVENTS.md`. 이름은 `동사_대상` snake_case, GA 추천 이름 우선(`page_view`, `generate_lead`). ASIS 3개(page_view · view_post · generate_lead) → TOBE 9개 (+ select_post · filter_posts · read_post · click_cta · form_start · form_submit).
 - **클릭 이벤트 방식**: HTML에 `data-ga-event` · `data-ga-<매개변수>`를 적으면 `js/analytics.js`가 클릭 때 보냄 (코드 없이 버튼에 이벤트 추가 가능).
 - **읽기 깊이**: 본문 기준 50% · 90% (GA 기본 scroll은 페이지 전체 90%만이라 글 본문 기준으로 따로 둠).
 - **의뢰 폼 이벤트**: 분야 · 예산 구간만 보내고 이름 · 이메일 · 내용은 보내지 않음.
@@ -103,7 +103,7 @@
 - **스크롤 · 이탈 이벤트 (US-11)**: `read_post`(읽음, PRD 완독률용)는 그대로 두고, 위치만 보는 `scroll_post` 30 · 50 · 90과 떠날 때 `leave_post`(가장 깊이 내려간 곳 · 머문 초 · 완독 여부)를 추가. GA 자동 스크롤(90%만 · 페이지 전체 기준)이나 GTM 대신 사이트 코드로 본문 기준 측정. 떠남은 `pagehide` 기준(다른 탭으로 잠깐 가는 건 떠남 아님). 
 - **좋아요 (FR-04, US-12)**: Firestore `postStats/{글ID}.likeCount`. 보안 규칙으로 ±1만, 0 미만 불가, 처음 만들 땐 1 · 발행된 글만, 삭제는 관리자만. 누른 상태는 브라우저 저장소 `jae-liked-글ID`. 버튼은 공유 버튼 앞, 기존 `.btn-outline`(새 색 없음), 누르면 하트 채움.
 - **저장 (FR-05, US-13)**: 브라우저 저장소 `jae-bookmarks`(최대 100개), Firestore 저장 없음. 글 목록에 "저장한 글" 필터(최근 저장 순, 발행 글만 보여서 삭제 · 비공개 글은 자동 제외). GA `filter_posts`의 값은 `저장한 글`.
-- **FR-07 대시보드**: Looker Studio는 사용자 구글 계정에서 만들어야 해서 단계별 안내(`docs/dashboard.md`)로 준비.
+- **FR-07 대시보드**: Looker Studio는 사용자 구글 계정에서 만들어야 해서 단계별 안내(`docs/DASHBOARD.md`)로 준비.
 - **댓글 도입 (FR-06, US-14, PRD D1 결정: 사용자 요청으로 지금 도입)**: `posts/{글ID}/comments`, 관리자 승인제(pending → approved/hidden). 보안 규칙이 pending · 칸 · 길이(닉네임 2~20, 내용 1~500) · 서버 시간 · 미끼 칸(`website` = "") · 링크 금지 · 발행 글만 검사. 5초 · 30초 제한은 화면에서. 관리자 화면 `admin/comments.html`(글마다 불러옴, 색인 추가 불필요). 글 삭제 시 댓글은 남지만 화면에 안 보임.
 - **보안 규칙 자동 게시**: GitHub Actions로 규칙을 배포 키로 자동 게시하려 했으나 이 작업 환경의 안전장치가 막음 → 규칙 게시는 사용자가 콘솔에서.
 - **공유 버튼 간격**: 좋아요 · 저장 · 공유 줄을 해시태그와 댓글 위 선의 가운데로 (위 · 아래 72px). 댓글 아래와 이전 · 다음 글 선 사이도 56px 띄움 (전에는 붙어 있었음). 테스트 보고서는 `docs/reports/test-report-2026-11-18.html` (A4 3장).
@@ -119,3 +119,4 @@
 - **의뢰 저장(F3)**: 의뢰 폼을 낼 때 브라우저가 Firestore `requests`에 먼저 저장(최대 3초)하고, 성공 여부와 상관없이 FormSubmit 메일을 보냄. 서버 함수 없이 보안 규칙으로 지켜서 Blaze 전환 전에도 동작. 방문자는 만들기만, 읽기·수정·삭제는 관리자만. 저장되면 메일에 `의뢰번호`를 함께 실음.
 - **PRD v0.3로 전환**: AI 케이스 스터디 작성기(작업 입력 → AI 초안 → 게시 → SNS 문구, 상세에서 의뢰 연결). v0.2 의뢰 기능(AI 분석 함수 · 의뢰 저장 · 의뢰 카드)은 유지. DECISION_LOG D11 · D12.
 - **PRD v0.4**: 문제 검증은 데스크 리서치(신뢰 출처만, 원문 대조), 승인은 J가 역할별 확인사항으로. 문서는 `docs/` 대문자 파일 + `README.md`로 정리 (D13 · D14).
+- **파일 이름 통일**: `docs/` 문서 7개를 대문자로 바꿈(ANALYTICS · ANALYTICS_EVENTS · DASHBOARD · DECISIONS · DESIGN_SYSTEM · FIREBASE_SETUP · USER_STORIES), 참조 15곳 함께 수정 (D21).

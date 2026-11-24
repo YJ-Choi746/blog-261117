@@ -1,6 +1,6 @@
 # main 브랜치에 올리면 Firebase Hosting(https://blog---261117.web.app)에도 자동 배포해요.
 # 필요한 것: GitHub 저장소 Settings → Secrets and variables → Actions 에
-#   FIREBASE_SERVICE_ACCOUNT 라는 이름으로 서비스 계정 키(JSON)를 넣어야 해요. (docs/firebase-setup.md 참고)
+#   FIREBASE_SERVICE_ACCOUNT 라는 이름으로 서비스 계정 키(JSON)를 넣어야 해요. (docs/FIREBASE_SETUP.md 참고)
 name: Deploy to Firebase Hosting
 
 # 글마다 카카오톡 · SNS 공유 미리보기 페이지(p/글ID.html)도 여기서 만들어요.
