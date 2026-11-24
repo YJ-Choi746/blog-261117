@@ -9,7 +9,7 @@
 | 결과물 | 위치 |
 |---|---|
 | 배포된 블로그 | https://blog---261117.web.app (GitHub Pages: https://yj-choi746.github.io/blog-261117/) |
-| PRD 기획서 | [docs/PRD.md](docs/PRD.md) v0.6, A4 2쪽 (v0.2 → v0.6 변화는 커밋 기록 `docs: PRD ...`) |
+| PRD 기획서 | [docs/PRD.md](docs/PRD.md) v0.7, A4 2쪽 (v0.2 → v0.6 변화는 커밋 기록 `docs: PRD ...`) |
 | 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) · 스크린샷 [docs/screenshots/](docs/screenshots/) |
 | 에이전트용 지침 | [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) · [CLAUDE.md](CLAUDE.md) |
 | 의사결정 로그 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) |
@@ -22,7 +22,7 @@
 | F2 AI 케이스 스터디 생성 (`functions/casestudy.js`) | 완료 · 단위 테스트 7/7 |
 | F1 작업 입력 · F3 편집·게시 · F7 실패 대체 (`admin/work.html`) | 완료 · 화면 7/7 · 규칙 18/18 |
 | F4 작업 목록·상세 · F5 의뢰 연결 (`works.html` · `work.html`) | 완료 · 화면 6/6 |
-| F6 SNS 문구 (인스타그램) | 진행 예정 |
+| F6 인스타그램 문구 (`generateSnsCopy`, 작업 편집 화면) | 완료 · 서버 5/5 · 화면 5/5 |
 | 이전 단계(v0.2) 의뢰 기능: AI 분석 · 의뢰 저장 · 관리자 의뢰 카드 | 완료 · 유지 |
 
 ## 구조

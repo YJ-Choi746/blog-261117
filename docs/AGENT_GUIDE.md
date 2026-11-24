@@ -70,3 +70,11 @@
 - 메모에 없는 숫자가 초안에 있으면 `warnings.unsupportedNumbers`로 표시해 운영자가 게시 전에 확인 (H2)
 - 실패(타임아웃 25초 · 파싱 · 거절 · API 오류)는 `{ ok: false, reason }` → 화면은 빈 템플릿으로 직접 작성 (F7)
 - 프롬프트: `functions/casestudy-prompt.js` (메모에 있는 사실만, 수치·성과 생성 금지, 과장 수식어 금지)
+
+## PRD v0.7 F6 인스타그램 문구 규격 (`generateSnsCopy`, 관리자 전용)
+
+- 입력: 운영자가 검토한 케이스 스터디(제목 · 요약 · 문제 · 과정 · 결과 · 분야 · 업종 · 태그, 클라이언트는 공개 동의 시만). 메모는 쓰지 않는다
+- 출력: `{ caption, hashtags[] }` (본문 350자 이내, 마지막 줄 "자세한 과정은 프로필 링크에서 볼 수 있어요.", 해시태그 6~12개, 이모지·과장 금지)
+- 케이스 스터디에 없는 숫자는 `warnings.unsupportedNumbers`로 경고
+- 문구는 관리자 문서 `workNotes.sns`에만 저장, 복사 시각 `copiedAt`은 H4(SNS 공유 비율) 측정에 쓴다
+- 채널은 인스타그램만 (DECISION_LOG D18)

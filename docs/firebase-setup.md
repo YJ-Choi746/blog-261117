@@ -78,7 +78,7 @@
    firebase functions:secrets:set ANTHROPIC_API_KEY
    firebase deploy --only functions
    ```
-   `secrets:set`에서 키를 붙여넣으면 화면에 안 보이게 입력돼요. 끝나면 Functions에 `analyzeRequest` · `generateCaseStudy`(asia-northeast3)가 보여요.
+   `secrets:set`에서 키를 붙여넣으면 화면에 안 보이게 입력돼요. 끝나면 Functions에 `analyzeRequest` · `generateCaseStudy` · `generateSnsCopy`(asia-northeast3)가 보여요.
 4. 확인: 작업 편집 화면에서 메모를 쓰고 **AI 초안 만들기** → 20초 안에 오른쪽이 채워지면 성공
 
 함수를 고친 뒤에는 Cloud Shell에서 `git pull && firebase deploy --only functions`만 다시 하면 돼요.
