@@ -6,7 +6,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { MODEL, classifyError } from "./analyze.js";
-import { CASE_SYSTEM_PROMPT, CASE_PROMPT_VERSION, buildCaseMessage } from "./casestudy-prompt.js";
+import { CASE_SYSTEM_PROMPT, CASE_PROMPT_VERSION, buildCaseMessage, SNS_SYSTEM_PROMPT, SNS_PROMPT_VERSION, buildSnsMessage } from "./casestudy-prompt.js";
 
 export const CASE_CONFIG = { effort: "medium", maxTokens: 8000, timeoutMs: 25000, maxRetries: 0 }; // PRD: 20초 이내 목표
 export const LIMITS = { title: 60, category: 30, industry: 30, period: 30, client: 50, memo: 1500 };
@@ -101,5 +101,77 @@ export async function generateCase(input, { client, apiKey } = {}) {
   const draft = parseCaseResult(text);
   if (!draft) return { ok: false, reason: "parse_error", ...meta() };
   const unsupported = findUnsupportedNumbers(draft, input);
+  return { ok: true, result: draft, warnings: unsupported.length ? { unsupportedNumbers: unsupported } : null, ...meta() };
+}
+
+// ---- F6 인스타그램 문구 (generateSnsCopy) ----
+// 입력은 운영자가 검토한 케이스 스터디(공개될 내용)만. 메모는 쓰지 않아요.
+export const SNS_LIMITS = { title: 100, summary: 200, problem: 3000, process: 5000, result: 3000, category: 30, industry: 30, client: 50 };
+const SNS_SCHEMA = {
+  type: "object",
+  properties: { caption: { type: "string" }, hashtags: { type: "array", items: { type: "string" } } },
+  required: ["caption", "hashtags"],
+  additionalProperties: false,
+};
+
+export function validateSnsInput(data) {
+  if (!data || typeof data !== "object") throw new CaseInputError("요청 형식이 올바르지 않아요.");
+  const out = {
+    title: str(data.title, SNS_LIMITS.title, "제목", true),
+    summary: str(data.summary, SNS_LIMITS.summary, "한 줄 요약"),
+    problem: str(data.problem, SNS_LIMITS.problem, "문제", true),
+    process: str(data.process, SNS_LIMITS.process, "과정", true),
+    result: str(data.result, SNS_LIMITS.result, "결과", true),
+    category: str(data.category, SNS_LIMITS.category, "분야"),
+    industry: str(data.industry, SNS_LIMITS.industry, "업종"),
+    client: str(data.client, SNS_LIMITS.client, "클라이언트"), // 공개 동의된 이름만 화면에서 보내요
+    tags: Array.isArray(data.tags) ? data.tags.filter((t) => typeof t === "string").map((t) => t.slice(0, 20)).slice(0, 8) : [],
+  };
+  return out;
+}
+
+export function parseSnsResult(text) {
+  if (typeof text !== "string") return null;
+  let raw = text.trim();
+  const fence = raw.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
+  if (fence) raw = fence[1];
+  let o;
+  try { o = JSON.parse(raw); } catch { return null; }
+  if (!o || typeof o.caption !== "string" || !o.caption.trim() || !Array.isArray(o.hashtags)) return null;
+  const hashtags = [...new Set(o.hashtags.filter((t) => typeof t === "string").map((t) => t.replace(/^#+/, "").replace(/\s+/g, "")).filter(Boolean))].slice(0, 15);
+  return { caption: o.caption.trim(), hashtags };
+}
+
+export function findUnsupportedNumbersIn(text, sources) {
+  const nums = (x) => (String(x).match(/\d+(?:[.,]\d+)*/g) || []).map((n) => n.replace(/,/g, ""));
+  const src = new Set(nums(sources.join(" ")));
+  return [...new Set(nums(text))].filter((n) => !src.has(n));
+}
+
+export async function generateSns(input, { client, apiKey } = {}) {
+  const started = Date.now();
+  const c = client ?? new Anthropic({ apiKey, timeout: CASE_CONFIG.timeoutMs, maxRetries: CASE_CONFIG.maxRetries });
+  const meta = () => ({ ms: Date.now() - started, promptVersion: SNS_PROMPT_VERSION });
+  let response;
+  try {
+    response = await c.beta.messages.create({
+      model: MODEL,
+      max_tokens: 4000,
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+      output_config: { effort: "low", format: { type: "json_schema", schema: SNS_SCHEMA } },
+      system: SNS_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: buildSnsMessage(input) }],
+    });
+  } catch (err) {
+    return { ok: false, reason: classifyError(err), ...meta() };
+  }
+  if (response.stop_reason === "refusal") return { ok: false, reason: "refusal", ...meta() };
+  if (response.stop_reason === "max_tokens") return { ok: false, reason: "max_tokens", ...meta() };
+  const text = (response.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("");
+  const draft = parseSnsResult(text);
+  if (!draft) return { ok: false, reason: "parse_error", ...meta() };
+  const unsupported = findUnsupportedNumbersIn([draft.caption, ...draft.hashtags].join(" "),
+    [input.title, input.summary, input.problem, input.process, input.result, input.category, input.industry, input.client, ...input.tags]);
   return { ok: true, result: draft, warnings: unsupported.length ? { unsupportedNumbers: unsupported } : null, ...meta() };
 }

@@ -8,7 +8,7 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { logger } from "firebase-functions";
 import { analyze, validateInput, InputError } from "./analyze.js";
-import { generateCase, validateCaseInput, CaseInputError } from "./casestudy.js";
+import { generateCase, validateCaseInput, CaseInputError, generateSns, validateSnsInput } from "./casestudy.js";
 
 const ANTHROPIC_API_KEY = defineSecret("ANTHROPIC_API_KEY");
 
@@ -76,5 +76,23 @@ export const generateCaseStudy = onCall(
     const out = await generateCase(input, { apiKey: ANTHROPIC_API_KEY.value() });
     logger.info("generateCaseStudy", { ok: out.ok, reason: out.reason ?? null, ms: out.ms, warnings: out.warnings ? out.warnings.unsupportedNumbers.length : 0 });
     return out; // 실패해도 throw 안 함 → 화면은 빈 템플릿(F7)
+  }
+);
+
+// generateSnsCopy: PRD v0.7 F6 인스타그램 문구 · 해시태그 (관리자 전용)
+export const generateSnsCopy = onCall(
+  { region: "asia-northeast3", secrets: [ANTHROPIC_API_KEY], cors: ALLOWED_ORIGINS, timeoutSeconds: 60, memory: "256MiB", maxInstances: 2 },
+  async (request) => {
+    if (request.auth?.uid !== ADMIN_UID) throw new HttpsError("permission-denied", "관리자만 사용할 수 있어요.");
+    let input;
+    try {
+      input = validateSnsInput(request.data);
+    } catch (err) {
+      if (err instanceof CaseInputError) throw new HttpsError("invalid-argument", err.message);
+      throw err;
+    }
+    const out = await generateSns(input, { apiKey: ANTHROPIC_API_KEY.value() });
+    logger.info("generateSnsCopy", { ok: out.ok, reason: out.reason ?? null, ms: out.ms });
+    return out; // 실패해도 throw 안 함 → 화면에서 직접 작성 (F7)
   }
 );
