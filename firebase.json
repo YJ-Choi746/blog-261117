@@ -7,14 +7,32 @@
       "**/.*",
       "**/node_modules/**",
       "docs/**",
-      "**/*.md"
+      "**/*.md",
+      "functions/**"
     ],
     "cleanUrls": false,
     "headers": [
       {
         "source": "**/*.@(js|css)",
-        "headers": [{ "key": "Cache-Control", "value": "max-age=300" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=300"
+          }
+        ]
       }
     ]
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "test",
+        "*.log"
+      ]
+    }
+  ]
 }
