@@ -1,8 +1,8 @@
-// PRD v0.5 F2 AI 케이스 스터디 생성 — 핵심 로직 (Firebase와 분리해 테스트)
+// PRD v1.1 F5 AI 케이스 스터디 초안 — 핵심 로직 (Firebase와 분리해 테스트)
 // - 입력: 작업명 · 분야 · 업종 · 기간 · 메모(요청 / 한 일 / 결과), 클라이언트 실명은 공개 동의 시에만 전달
 // - 출력: { title, summary, problem, process, result, tags[] } JSON
 // - 메모에 없는 숫자가 초안에 나오면 warnings로 알려줘요 (H2 "메모에 없는 사실 0건" 점검)
-// - 실패(타임아웃 · 파싱 · API 오류)는 throw 하지 않고 { ok: false, reason } → 화면은 빈 템플릿(F7)으로
+// - 실패(타임아웃 · 파싱 · API 오류)는 throw 하지 않고 { ok: false, reason } → 화면은 직접 쓰기(F6)로
 
 import Anthropic from "@anthropic-ai/sdk";
 import { MODEL, classifyError } from "./analyze.js";
@@ -104,13 +104,13 @@ export async function generateCase(input, { client, apiKey } = {}) {
   return { ok: true, result: draft, warnings: unsupported.length ? { unsupportedNumbers: unsupported } : null, ...meta() };
 }
 
-// ---- F6 인스타그램 문구 (generateSnsCopy) ----
+// ---- F7 인스타그램 문구 3안 (generateSnsCopy) ----
 // 입력은 운영자가 검토한 케이스 스터디(공개될 내용)만. 메모는 쓰지 않아요.
 export const SNS_LIMITS = { title: 100, summary: 200, problem: 3000, process: 5000, result: 3000, category: 30, industry: 30, client: 50 };
 const SNS_SCHEMA = {
   type: "object",
-  properties: { caption: { type: "string" }, hashtags: { type: "array", items: { type: "string" } } },
-  required: ["caption", "hashtags"],
+  properties: { captions: { type: "array", items: { type: "string" } }, hashtags: { type: "array", items: { type: "string" } } },
+  required: ["captions", "hashtags"],
   additionalProperties: false,
 };
 
@@ -137,9 +137,13 @@ export function parseSnsResult(text) {
   if (fence) raw = fence[1];
   let o;
   try { o = JSON.parse(raw); } catch { return null; }
-  if (!o || typeof o.caption !== "string" || !o.caption.trim() || !Array.isArray(o.hashtags)) return null;
-  const hashtags = [...new Set(o.hashtags.filter((t) => typeof t === "string").map((t) => t.replace(/^#+/, "").replace(/\s+/g, "")).filter(Boolean))].slice(0, 15);
-  return { caption: o.caption.trim(), hashtags };
+  if (!o || !Array.isArray(o.captions) || !Array.isArray(o.hashtags)) return null;
+  // 문구 안에 섞여 들어온 해시태그 단어는 빼요 (해시태그는 따로 붙여요)
+  const captions = o.captions.filter((c) => typeof c === "string")
+    .map((c) => c.replace(/(^|\s)#[^\s#]+/g, "").replace(/[ \t]+\n/g, "\n").trim()).filter(Boolean).slice(0, 3);
+  if (!captions.length) return null;
+  const hashtags = [...new Set(o.hashtags.filter((t) => typeof t === "string").map((t) => t.replace(/^#+/, "").replace(/\s+/g, "")).filter(Boolean))].slice(0, 5);
+  return { captions, hashtags };
 }
 
 export function findUnsupportedNumbersIn(text, sources) {
@@ -171,7 +175,7 @@ export async function generateSns(input, { client, apiKey } = {}) {
   const text = (response.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("");
   const draft = parseSnsResult(text);
   if (!draft) return { ok: false, reason: "parse_error", ...meta() };
-  const unsupported = findUnsupportedNumbersIn([draft.caption, ...draft.hashtags].join(" "),
+  const unsupported = findUnsupportedNumbersIn([...draft.captions, ...draft.hashtags].join(" "),
     [input.title, input.summary, input.problem, input.process, input.result, input.category, input.industry, input.client, ...input.tags]);
   return { ok: true, result: draft, warnings: unsupported.length ? { unsupportedNumbers: unsupported } : null, ...meta() };
 }
