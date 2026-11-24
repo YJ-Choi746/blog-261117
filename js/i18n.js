@@ -190,11 +190,12 @@
       trigram(146.31, [0, 1, 0]);  // 리 (왼쪽 아래)
       trigram(33.69, [1, 1, 1]);   // 곤 (오른쪽 아래)
     } else {
-      // 미국 국기 (빨강 #B22234 · 남색 #3C3B6E)
+      // 미국 국기 (빨강 #B22234 · 남색 #3C3B6E) — 태극기처럼 국기 전체(19:10)를 동그라미 안에 줄여 넣어요
       g.appendChild(svgEl("rect", { width: 36, height: 36, fill: "#FFFFFF" }));
-      for (let i = 0; i < 7; i++) g.appendChild(svgEl("rect", { y: i * 5.54, width: 36, height: 2.77, fill: "#B22234" }));
-      g.appendChild(svgEl("rect", { width: 17, height: 16.6, fill: "#3C3B6E" }));
-      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) g.appendChild(svgEl("circle", { cx: 2.4 + c * 4 + (r % 2) * 1.6, cy: 2.4 + r * 3.9, r: 0.8, fill: "#FFFFFF" }));
+      const W = 29, H = (W * 10) / 19, X = (36 - W) / 2, Y = (36 - H) / 2, h = H / 13;
+      for (let i = 0; i < 13; i += 2) g.appendChild(svgEl("rect", { x: X, y: Y + i * h, width: W, height: h, fill: "#B22234" }));
+      g.appendChild(svgEl("rect", { x: X, y: Y, width: W * 0.4, height: h * 7, fill: "#3C3B6E" }));
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) g.appendChild(svgEl("circle", { cx: X + 1.3 + c * 2.25 + (r % 2) * 1.1, cy: Y + 1.1 + r * 1.85, r: 0.42, fill: "#FFFFFF" }));
     }
     svg.appendChild(g);
     svg.appendChild(svgEl("circle", { cx: 18, cy: 18, r: 17.5, fill: "none", stroke: "#D0D0D0", "stroke-width": 1 })); // line-strong
