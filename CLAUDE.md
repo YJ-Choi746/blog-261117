@@ -45,6 +45,7 @@ js/home.js          첫 화면 최근 기록
 js/ask.js           첫 화면 한 줄 의뢰(F1) · 의뢰서 레퍼런스 작업 칩(F2)
 js/templates.js     문장 틀 초안 · 인스타그램 문장 틀 · 분야 추정 (AI 없이 0원)
 js/request-form.js  의뢰 폼 → Firestore requests 저장 후 FormSubmit 메일 (저장 실패해도 메일은 감)
+js/i18n.js          방문자 페이지 한국어 ⇄ English (헤더 '작업' 왼쪽 국기 동그라미 버튼, 고정 문구만 사전으로 바꿈)
 js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화면 제외)
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
 firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
