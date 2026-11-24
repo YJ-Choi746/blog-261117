@@ -147,8 +147,13 @@ $("generate").addEventListener("click", async () => {
       gs.textContent = `AI 초안을 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). '문장 틀로 채우기'를 누르거나 오른쪽 칸에 직접 써 주세요.`;
     }
   } catch (err) {
-    gs.className = "notice notice-error";
-    gs.textContent = `AI 초안을 만들지 못했어요. ${friendlyError(err)} '문장 틀로 채우기'를 누르거나 오른쪽 칸에 직접 써 주세요.`;
+    // AI 서버 함수(generateCaseStudy)가 배포되지 않았거나 꺼져 있으면, 기다리게 하지 않고 문장 틀로 바로 채워요 (0원, D27)
+    fillDraft(templateDraft(input));
+    showDraft("template"); $("warn").hidden = true;
+    aiMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
+    dirty = true; setState("저장 안 된 변경 있음");
+    gs.className = "notice notice-info";
+    gs.textContent = `AI 서버가 아직 꺼져 있어 문장 틀로 먼저 채웠어요 (${(err && err.code) || "연결 안 됨"}). 문장을 다듬거나, 아래 'AI 작성기'에서 만든 글을 붙여 넣어 주세요.`;
   } finally {
     btn.disabled = false; btn.textContent = "AI 초안 만들기";
   }
@@ -276,7 +281,8 @@ function tagsFromInput() {
   return [...new Set(val("c-tags").split(",").map((t) => t.replace(/^#/, "").trim()).filter(Boolean))].slice(0, 8);
 }
 
-async function save(status) {
+// showDone: '게시하기'만 게시 완료 화면으로 넘어가요. '초안 저장'은 서버에 저장만 하고 화면은 그대로예요.
+async function save(status, showDone = false) {
   say("");
   const name = val("f-name");
   if (!name) { say("작업명을 써 주세요.", true); $("f-name").focus(); return false; }
@@ -305,19 +311,21 @@ async function save(status) {
   try {
     await setDoc(doc(db, "workNotes", workId), notes, { merge: true });
     await setDoc(doc(db, "works", workId), work);
-    existing = { ...work, createdAt: existing && existing.createdAt ? existing.createdAt : { toMillis: () => Date.now() },
-      publishedAt: work.publishedAt ? (existing && existing.publishedAt) || { toMillis: () => Date.now() } : null };
+    // 서버에 저장된 진짜 시간값(Timestamp)으로 다시 읽어 둬요.
+    // 가짜 객체를 넣어 두면 다음 저장 때 Firestore가 invalid-argument로 거절해요.
+    try { const fresh = await getDoc(doc(db, "works", workId)); existing = fresh.exists() ? fresh.data() : { ...work, createdAt: null, publishedAt: null }; }
+    catch { existing = { ...work, createdAt: null, publishedAt: null }; }
     dirty = false;
     if (isNew) { isNew = false; history.replaceState(null, "", `work.html?id=${encodeURIComponent(workId)}`); }
     applyStatus(status);
     setState(status === "published" ? "게시됨" : "초안 저장됨");
-    say(status === "published" ? "" : "초안으로 저장했어요.");
-    if (status === "published") {
+    say(showDone ? "" : (status === "published" ? "저장했어요. 게시된 페이지에도 바로 반영돼요." : "초안으로 저장했어요."));
+    if (showDone && status === "published") {
       $("done-title").textContent = `${val("c-title") || name} 게시됨`;
       $("done-view").href = `../work.html?id=${encodeURIComponent(workId)}`;
       $("published-panel").hidden = false; $("sns-panel").hidden = false;
       $("published-panel").scrollIntoView({ block: "start" });
-    } else { $("published-panel").hidden = true; }
+    } else if (status !== "published") { $("published-panel").hidden = true; }
     return true;
   } catch (err) {
     setState("저장 실패"); say(friendlyError(err), true); return false;
@@ -332,7 +340,7 @@ function applyStatus(status) {
   $("sns-panel").hidden = status !== "published";
 }
 $("save").addEventListener("click", () => save(existing && existing.status === "published" ? "published" : "draft"));
-$("publish").addEventListener("click", () => save("published"));
+$("publish").addEventListener("click", () => save("published", true));
 $("unpublish").addEventListener("click", () => { if (confirm("게시를 취소하고 초안으로 돌릴까요? 방문자에게 더 이상 보이지 않아요.")) save("draft"); });
 document.querySelectorAll("#editor input, #editor textarea, #editor select").forEach((el) => el.addEventListener("input", () => { dirty = true; setState("저장 안 된 변경 있음"); }));
 window.addEventListener("beforeunload", (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
