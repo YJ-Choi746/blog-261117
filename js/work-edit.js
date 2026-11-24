@@ -11,7 +11,7 @@ import { templateDraft, templateSns } from "./templates.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_IMAGES = 4;
-const REQUIRED_TO_PUBLISH = [["c-title", "제목"], ["c-summary", "한 줄 요약"], ["c-problem", "문제"], ["c-process", "과정"], ["c-result", "결과"]];
+const REQUIRED_TO_PUBLISH = [["c-title", "제목"], ["c-summary", "한 줄 요약"], ["c-problem", "요청"], ["c-process", "과정"], ["c-result", "결과"]];
 
 const params = new URLSearchParams(location.search);
 const paramId = params.get("id");
@@ -31,6 +31,45 @@ function say(msg, isError) {
 }
 function setState(t) { $("save-state").textContent = t; }
 const val = (id) => $(id).value.trim();
+
+// ---- 초안 영역 (프로토타입 디자인): 비어 있으면 안내, 만들거나 직접 쓰면 편집칸을 보여줘요 ----
+const BADGE = { ai: "AI 초안 · 검토 필요", template: "문장 틀 초안 · AI 연결 안 됨", manual: "직접 작성", saved: "저장된 초안" };
+function showDraft(kind) {
+  $("draft-empty").hidden = true; $("draft").hidden = false;
+  if (kind) $("ai-badge").textContent = BADGE[kind] || BADGE.saved;
+  $("draft-check").hidden = kind === "manual";
+  setPreview(false);
+}
+function syncMeta() {
+  $("ms-industry").textContent = val("f-industry") || "-";
+  $("ms-period").textContent = val("f-period") || "-";
+  $("ms-role").textContent = val("f-role") || "-";
+}
+["f-industry", "f-period", "f-role"].forEach((id) => $(id).addEventListener("input", syncMeta));
+
+// 게시 화면 미리보기: 방문자 상세와 같은 순서로 그려요 (모두 textContent)
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+function renderPreview() {
+  const box = $("draft-preview");
+  const parts = [el("span", "pv-cat", $("f-category").value), el("h3", "pv-t", val("c-title") || "제목 없음"), el("p", "pv-l", val("c-summary"))];
+  const meta = el("div", "pw-meta-s");
+  [["업종", val("f-industry")], ["기간", val("f-period")], ["맡은 일", val("f-role")]].forEach(([k, v]) => { const d = el("div"); d.append(el("span", "", k), el("span", "", v || "-")); meta.appendChild(d); });
+  parts.push(meta);
+  if (images[0] && images[0].data) { const img = el("img", "pv-cover"); img.alt = "커버 이미지"; img.src = images[0].data; parts.push(img); }
+  [["01", "요청", val("c-problem")], ["02", "과정", val("c-process")], ["03", "결과", val("c-result")]].forEach(([n, h, t]) => {
+    const sec = el("div", "pv-s"); const body = el("div"); body.append(el("h4", "", h), el("p", "", t || "-")); sec.append(el("span", "pv-no", n), body); parts.push(sec);
+  });
+  const tags = tagsFromInput(); if (tags.length) parts.push(el("p", "pv-tags", tags.map((t) => `#${t}`).join(" ")));
+  box.replaceChildren(...parts);
+}
+let previewing = false;
+function setPreview(on) {
+  previewing = on;
+  if (on) renderPreview();
+  $("draft-preview").hidden = !on; $("draft-edit").hidden = on;
+  $("preview-toggle").textContent = on ? "편집으로 돌아가기" : "게시 화면 미리보기";
+  $("draft-hint").textContent = on ? "방문자에게 이렇게 보여요" : "고칠 곳이 있으면 바로 수정하세요";
+}
 
 // ---- 이미지 ----
 function renderImages() {
@@ -82,7 +121,7 @@ function showWarnings(w) {
   const box = $("warn");
   const nums = w && w.unsupportedNumbers;
   box.hidden = !(nums && nums.length);
-  if (nums && nums.length) box.textContent = `메모에 없는 숫자가 들어 있어요: ${nums.join(", ")} — 사실인지 확인하고 고치거나 지워 주세요.`;
+  if (nums && nums.length) box.textContent = `게시 전에 보충하면 좋아요 · 메모에 없는 숫자가 들어 있어요: ${nums.join(", ")} — 사실인지 확인하고 고치거나 지워 주세요.`;
 }
 
 $("generate").addEventListener("click", async () => {
@@ -98,9 +137,9 @@ $("generate").addEventListener("click", async () => {
     const out = await callFunction("generateCaseStudy", input, 60000);
     if (out && out.ok) {
       fillDraft(out.result);
+      showDraft("ai");
       showWarnings(out.warnings);
       aiMeta = { promptVersion: out.promptVersion || "", ms: out.ms || 0, warnings: out.warnings || null, generatedAt: serverTimestamp() };
-      $("ai-badge").hidden = false;
       gs.textContent = "AI 초안이에요. 사실과 다른 곳을 고친 뒤 게시해 주세요.";
       dirty = true; setState("저장 안 된 변경 있음");
     } else {
@@ -202,7 +241,7 @@ $("c-template").addEventListener("click", () => {
   if (!input.memo.request && !input.memo.work && !input.memo.result) { say("메모를 한 칸 이상 써 주세요.", true); $("m-request").focus(); return; }
   if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !confirm("오른쪽에 쓴 내용을 문장 틀 초안으로 바꿀까요?")) return;
   fillDraft(templateDraft(input));
-  $("ai-badge").hidden = true; $("warn").hidden = true;
+  showDraft("template"); $("warn").hidden = true;
   const gs = $("gen-status"); gs.hidden = false; gs.className = "notice notice-info";
   gs.textContent = "문장 틀로 채웠어요. 메모를 그대로 옮긴 초안이라 문장을 다듬어 주세요.";
   aiMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
@@ -221,6 +260,17 @@ $("sns-template").addEventListener("click", () => {
   dirty = true; setState("저장 안 된 변경 있음");
 });
 
+// 직접 쓰기: 메모를 그대로 옮긴 편집칸을 열어요 (AI 없이)
+$("c-manual").addEventListener("click", () => {
+  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id)) && !$("draft").hidden) { showDraft("manual"); $("c-title").focus(); return; }
+  fillDraft({ title: val("f-name"), summary: "", problem: val("m-request"), process: val("m-work"), result: val("m-result"), tags: [] });
+  showDraft("manual"); $("warn").hidden = true; $("gen-status").hidden = true;
+  aiMeta = { promptVersion: "manual", ms: 0, warnings: null, generatedAt: serverTimestamp() };
+  dirty = true; setState("저장 안 된 변경 있음"); $("c-title").focus();
+});
+$("regen").addEventListener("click", () => $("generate").click());
+$("preview-toggle").addEventListener("click", () => setPreview(!previewing));
+
 // ---- 저장 · 게시 (F6) ----
 function tagsFromInput() {
   return [...new Set(val("c-tags").split(",").map((t) => t.replace(/^#/, "").trim()).filter(Boolean))].slice(0, 8);
@@ -237,7 +287,7 @@ async function save(status) {
   const clientPublic = $("f-client-public").checked;
   const work = {
     name, title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
-    tags: tagsFromInput(), category: $("f-category").value, industry: val("f-industry"), period: val("f-period"),
+    tags: tagsFromInput(), category: $("f-category").value, industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
     client: clientPublic ? val("f-client") : "",
     coverImageId: images[0] ? images[0].id : "", imageIds: images.map((im) => im.id),
     status, createdAt: existing && existing.createdAt ? existing.createdAt : serverTimestamp(), updatedAt: serverTimestamp(),
@@ -250,7 +300,7 @@ async function save(status) {
   };
   if (aiMeta) notes.ai = aiMeta;
   notes.sns = { caption: val("s-caption"), captions: snsCaptions, hashtags: hashtagsFromInput(), ...(snsMeta ? { ai: snsMeta } : {}), ...(snsCopiedAt ? { copiedAt: snsCopiedAt } : {}) };
-  ["save", "publish", "unpublish"].forEach((id) => { $(id).disabled = true; });
+  ["save", "publish", "unpublish", "regen", "preview-toggle"].forEach((id) => { $(id).disabled = true; });
   setState("저장하는 중…");
   try {
     await setDoc(doc(db, "workNotes", workId), notes, { merge: true });
@@ -261,18 +311,25 @@ async function save(status) {
     if (isNew) { isNew = false; history.replaceState(null, "", `work.html?id=${encodeURIComponent(workId)}`); }
     applyStatus(status);
     setState(status === "published" ? "게시됨" : "초안 저장됨");
-    say(status === "published" ? "게시했어요. 방문자에게 보여요." : "초안으로 저장했어요.");
+    say(status === "published" ? "" : "초안으로 저장했어요.");
+    if (status === "published") {
+      $("done-title").textContent = `${val("c-title") || name} 게시됨`;
+      $("done-view").href = `../work.html?id=${encodeURIComponent(workId)}`;
+      $("published-panel").hidden = false; $("sns-panel").hidden = false;
+      $("published-panel").scrollIntoView({ block: "start" });
+    } else { $("published-panel").hidden = true; }
     return true;
   } catch (err) {
     setState("저장 실패"); say(friendlyError(err), true); return false;
   } finally {
-    ["save", "publish", "unpublish"].forEach((id) => { $(id).disabled = false; });
+    ["save", "publish", "unpublish", "regen", "preview-toggle"].forEach((id) => { $(id).disabled = false; });
   }
 }
 function applyStatus(status) {
   $("unpublish").hidden = status !== "published";
-  $("publish").textContent = status === "published" ? "다시 게시" : "게시";
-  $("page-title").textContent = val("f-name") || "새 작업";
+  $("publish").textContent = status === "published" ? "다시 게시" : "게시하기";
+  $("page-title").textContent = val("f-name") || "새 케이스 스터디";
+  $("sns-panel").hidden = status !== "published";
 }
 $("save").addEventListener("click", () => save(existing && existing.status === "published" ? "published" : "draft"));
 $("publish").addEventListener("click", () => save("published"));
@@ -288,11 +345,13 @@ async function load() {
   existing = ws.data();
   const n = ns.exists() ? ns.data() : {};
   $("f-name").value = existing.name || ""; $("f-category").value = existing.category || "브랜딩";
-  $("f-industry").value = existing.industry || ""; $("f-period").value = existing.period || "";
+  $("f-industry").value = existing.industry || ""; $("f-period").value = existing.period || ""; $("f-role").value = existing.role || "";
   $("f-client").value = n.client || existing.client || ""; $("f-client-public").checked = !!n.clientPublic;
   $("m-request").value = (n.memo && n.memo.request) || ""; $("m-work").value = (n.memo && n.memo.work) || ""; $("m-result").value = (n.memo && n.memo.result) || "";
   fillDraft(existing);
-  if (n.ai) { $("ai-badge").hidden = false; showWarnings(n.ai.warnings); }
+  syncMeta();
+  if (REQUIRED_TO_PUBLISH.some(([id]) => val(id))) showDraft(n.ai && n.ai.promptVersion === "template" ? "template" : n.ai && n.ai.promptVersion === "manual" ? "manual" : n.ai ? "ai" : "saved");
+  if (n.ai) showWarnings(n.ai.warnings);
   if (n.sns) { snsCaptions = Array.isArray(n.sns.captions) ? n.sns.captions : []; snsIndex = Math.max(0, snsCaptions.indexOf(n.sns.caption)); if (snsCaptions.length) showSnsVariant(); $("s-caption").value = n.sns.caption || ""; $("s-hashtags").value = (n.sns.hashtags || []).join(", "); if (n.sns.ai) $("sns-badge").hidden = false; if (n.sns.copiedAt) $("sns-copied").textContent = "이전에 복사한 적 있어요."; }
   images = await Promise.all((existing.imageIds || []).map(async (id) => ({ id, data: await getImageData(id) })));
   renderImages();

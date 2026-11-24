@@ -245,3 +245,62 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .hint { margin: 0; font-size: 13px; color: var(--gray-600); }
 .work-row { grid-template-columns: minmax(0, 1fr) auto; }
 .sns-box { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 4px; display: flex; flex-direction: column; gap: 12px; }
+
+/* 작업 편집 — 프로토타입 디자인 (PRD v1.3). 색은 디자인 시스템 토큰 */
+.pw-admin { max-width: 1320px; margin: 0 auto; padding: 32px 24px 64px; display: flex; flex-direction: column; gap: 24px; width: 100%; box-sizing: border-box; }
+.pw-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; }
+.pw-back { font-size: 14px; color: var(--gray-600); }
+.pw-top h1 { margin: 6px 0 0; font-family: var(--font-serif); font-weight: 600; font-size: 30px; }
+.pw-sub { margin: 6px 0 0; font-size: 15px; color: var(--gray-600); }
+.pw-cols { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.pw-panel { flex: 1 1 460px; min-width: 0; background: var(--white); border: 1px solid var(--line); padding: 28px; display: flex; flex-direction: column; gap: 18px; box-sizing: border-box; }
+.pw-panel h2, .pw-h { margin: 0; font-size: 18px; font-weight: 600; }
+.pw-panel h2 span, .pw-h span { font-size: 13px; font-weight: 400; color: var(--gray-600); }
+.pw-panel label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--gray-700); }
+.pw-panel input:not([type="checkbox"]):not([type="file"]), .pw-panel select, .pw-panel textarea { min-height: 46px; padding: 10px 14px; border: 1px solid var(--line-strong); background: var(--white); color: var(--black); font: inherit; font-size: 15px; border-radius: 0; width: 100%; box-sizing: border-box; }
+.pw-panel textarea { resize: vertical; line-height: 1.7; }
+.pw-cap { font-size: 12px; color: var(--gray-600); margin: 0; }
+.pw-req::after { content: " *"; color: var(--danger); }
+#editor .pw-title-in { font-family: var(--font-serif); font-weight: 600; font-size: 24px; border: 0; border-bottom: 1px solid var(--line-strong); padding: 6px 0; background: transparent; }
+.pw-meta-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--black); border-bottom: 1px solid var(--line); }
+.pw-panel .pw-meta-in label { gap: 2px; font-size: 12px; padding: 8px 8px 8px 0; color: var(--gray-600); }
+#editor .pw-meta-in input, #editor .pw-meta-in select { min-height: 44px; padding: 4px 8px; font-size: 13px; }
+@media (max-width: 640px) { .pw-meta-in { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pw-client { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px 12px; align-items: end; }
+.pw-thumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pw-thumbs .work-images { display: flex; flex-wrap: wrap; gap: 8px; }
+.pw-thumbs .work-image { width: 96px; }
+.pw-add { width: 44px; height: 44px; border: 1px dashed var(--line-strong); background: var(--white); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.pw-memo { display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--line); padding-top: 18px; }
+.pw-memo textarea { font-size: 16px; }
+.pw-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pw-empty { border: 1px dashed var(--line-strong); padding: 40px 20px; text-align: center; color: var(--gray-600); font-size: 15px; }
+.pw-draft { display: flex; flex-direction: column; gap: 18px; }
+.pw-tabs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; font-size: 14px; color: var(--gray-600); }
+#editor .pw-d-title { font-family: var(--font-serif); font-weight: 600; font-size: 26px; border: 0; border-bottom: 1px solid var(--line); padding: 4px 0; background: transparent; }
+.pw-meta-s { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--black); border-bottom: 1px solid var(--line); font-size: 12px; }
+.pw-meta-s div { padding: 8px 8px 8px 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pw-meta-s span:first-child { color: var(--gray-600); }
+.pw-meta-s span:last-child { font-size: 13px; color: var(--black); overflow-wrap: anywhere; }
+.pw-note { background: var(--surface-admin); border: 1px solid var(--line); padding: 14px 16px; font-size: 14px; display: flex; flex-direction: column; gap: 6px; color: var(--gray-700); }
+.pw-note strong { font-weight: 600; color: var(--black); }
+.pw-note-warn { border-color: var(--danger); color: var(--danger); background: var(--danger-tint); }
+.pw-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pw-actions .btn { min-height: 44px; padding: 0 14px; font-size: 14px; white-space: nowrap; }
+.pw-pv { border: 1px solid var(--line); padding: 24px; display: flex; flex-direction: column; gap: 16px; background: var(--bg); }
+.pw-pv .pv-cat { font-size: 13px; color: var(--blue); font-weight: 600; }
+.pw-pv .pv-t { margin: 0; font-family: var(--font-serif); font-weight: 600; font-size: 30px; line-height: 1.3; overflow-wrap: anywhere; }
+.pw-pv .pv-l { margin: 0; font-size: 16px; color: var(--gray-700); }
+.pw-pv .pv-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--surface); display: block; }
+.pw-pv .pv-s { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
+.pw-pv .pv-no { font-family: var(--font-serif); font-weight: 600; font-size: 20px; color: var(--blue); }
+.pw-pv h4 { margin: 0 0 6px; font-family: var(--font-serif); font-weight: 600; font-size: 18px; }
+.pw-pv p { margin: 0; font-size: 15px; line-height: 1.8; color: var(--gray-700); white-space: pre-line; overflow-wrap: anywhere; }
+.pw-pv .pv-tags { color: var(--blue); font-size: 15px; }
+.pw-done { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.pw-done-text h2 { font-size: 26px; font-family: var(--font-serif); }
+.pw-done-text p { margin: 4px 0 0; font-size: 15px; color: var(--gray-600); }
+.pw-ok { width: 44px; height: 44px; border-radius: 50%; background: var(--blue-tint); color: var(--blue-tint-ink); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+#editor .pw-copybox { border: 1px solid var(--line-strong); padding: 18px; font-size: 16px; line-height: 1.8; min-height: 160px; }
+.pw-tags-in input { color: var(--blue) !important; }
+#editor .pw-client .check { flex-direction: row; align-items: flex-start; gap: 8px; }
