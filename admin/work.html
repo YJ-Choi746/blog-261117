@@ -99,6 +99,24 @@
           <p id="act-msg" class="notice" role="status" aria-live="polite" style="margin: 0" hidden></p>
         </div>
 
+        <!-- 인스타그램 홍보 문구 (F7): 작업 글 바로 밑 -->
+        <section id="sns-panel" class="pw-sns" aria-label="인스타그램 홍보 문구">
+          <div class="pw-tabs"><h2 class="pw-h" style="margin: 0">인스타그램 홍보 문구 <span id="sns-badge" class="ai-badge" hidden>AI 초안</span></h2><span id="sns-variant" class="badge"></span></div>
+          <p id="sns-status" class="notice notice-info" role="status" hidden></p>
+          <div id="sns-warn" class="notice notice-error" role="alert" hidden></div>
+          <label class="sr-only" for="s-caption">소개 문구</label>
+          <textarea id="s-caption" class="pw-copybox" rows="6" maxlength="2200" placeholder="'AI 문구 만들기'나 '직접 쓰기'를 누르거나 바로 써 주세요."></textarea>
+          <label class="pw-tags-in">해시태그 (쉼표로 구분, # 없이)<input id="s-hashtags" placeholder="브랜딩, 카페로고, 성수카페"></label>
+          <div class="pw-row">
+            <button type="button" id="sns-copy" class="btn btn-primary">문구 복사</button>
+            <button type="button" id="sns-next" class="btn btn-outline" hidden>다른 문구 보기</button>
+            <button type="button" id="sns-generate" class="btn btn-outline">AI 문구 만들기</button>
+            <button type="button" id="sns-template" class="btn btn-outline">직접 쓰기</button>
+            <span id="sns-copied" class="save-state" role="status" aria-live="polite"></span>
+          </div>
+          <p class="hint">작업 글을 다 쓴 뒤 만들어요. 인스타그램 게시는 직접 해 주세요.</p>
+        </section>
+
         <details class="pw-key">
           <summary>메모로 초안 만들기 (선택)</summary>
           <div class="pw-memo">
@@ -156,23 +174,6 @@
       </section>
     </div>
 
-    <!-- 게시 뒤: 인스타그램 홍보 문구 (F7) -->
-    <section id="sns-panel" class="pw-panel" aria-label="인스타그램 홍보 문구" hidden>
-      <div class="pw-tabs"><h2 class="pw-h" style="margin: 0">인스타그램 홍보 문구 <span id="sns-badge" class="ai-badge" hidden>AI 초안</span></h2><span id="sns-variant" class="badge"></span></div>
-      <p id="sns-status" class="notice notice-info" role="status" hidden></p>
-      <div id="sns-warn" class="notice notice-error" role="alert" hidden></div>
-      <label class="sr-only" for="s-caption">소개 문구</label>
-      <textarea id="s-caption" class="pw-copybox" rows="6" maxlength="2200" placeholder="'AI 문구 만들기'나 '직접 쓰기'를 누르거나 바로 써 주세요."></textarea>
-      <label class="pw-tags-in">해시태그 (쉼표로 구분, # 없이)<input id="s-hashtags" placeholder="브랜딩, 카페로고, 성수카페"></label>
-      <div class="pw-row">
-        <button type="button" id="sns-copy" class="btn btn-primary">문구 복사</button>
-        <button type="button" id="sns-next" class="btn btn-outline" hidden>다른 문구 보기</button>
-        <button type="button" id="sns-generate" class="btn btn-outline">AI 문구 만들기</button>
-        <button type="button" id="sns-template" class="btn btn-outline">직접 쓰기</button>
-        <span id="sns-copied" class="save-state" role="status" aria-live="polite"></span>
-      </div>
-      <p class="hint">게시는 직접 해주세요.</p>
-    </section>
   </main>
   <!-- 게시 화면 전체 미리보기: 방문자 작업 상세(work.html)와 같은 모양 · 같은 스타일(css/site.css .case-*) -->
   <dialog id="full-pv" class="pw-fullpv" aria-label="게시 화면 미리보기">

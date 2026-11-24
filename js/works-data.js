@@ -21,16 +21,12 @@ export function workCard(w, base = "") {
   const cover = document.createElement("div");
   cover.style.cssText = "aspect-ratio: 16 / 11; background: #F2F2F0; overflow: hidden; border-radius: 4px"; // surface
   if (w.coverImageId) {
-    // 사진은 자르지 않고 전체를 보여주고, 비율이 달라 남는 칸은 같은 사진을 흐리게 크게 깔아 채워요 (빈 회색이 안 보이게)
-    cover.style.position = "relative";
-    const bg = document.createElement("img");
-    bg.alt = ""; bg.setAttribute("aria-hidden", "true"); bg.loading = "lazy";
-    bg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(18px) saturate(1.1); transform: scale(1.15); opacity: .85";
+    // 대표 이미지는 16:11 틀을 빈 공간 없이 꽉 채워요. 보이는 부분은 관리자가 자르기(카드 16:11)로 정해요
     const img = document.createElement("img");
     img.alt = ""; img.loading = "lazy";
-    img.style.cssText = "position: relative; width: 100%; height: 100%; object-fit: contain; display: block";
-    getImageData(w.coverImageId).then((d) => { if (d) { img.src = d; bg.src = d; } });
-    cover.append(bg, img);
+    img.style.cssText = "width: 100%; height: 100%; object-fit: cover; display: block";
+    getImageData(w.coverImageId).then((d) => { if (d) img.src = d; });
+    cover.appendChild(img);
   }
   const row = document.createElement("div");
   row.style.cssText = "display: flex; justify-content: space-between; gap: 12px; align-items: baseline";

@@ -155,7 +155,7 @@ fileDropZone(document.querySelector(".pw-live"), (e) => {
 // 자르기: 창에서 영역을 정하면 잘린 이미지를 새로 저장하고 바꿔 끼워요 (원본은 이 화면에서 '원본으로'로 되돌릴 수 있어요)
 async function cropImage(im) {
   if (!im.data) return;
-  const canvas = await openCrop(im.data);
+  const canvas = await openCrop(im.data, { ratio: images.indexOf(im) === 0 ? 16 / 11 : 0 }); // 대표 이미지는 카드 16:11로 시작
   if (!canvas) return;
   setState("자른 이미지 저장하는 중…");
   try {
@@ -404,7 +404,8 @@ function renderFullPreview(px = "fp") {
     if (!im.data) return;
     const l = layoutOf(im);
     const img = document.createElement("img"); img.alt = `${title} 이미지 ${i + 1}`; img.src = im.data; img.draggable = false;
-    if (!live) { applyLayout(img, l); boxes[l.at].appendChild(img); return; }
+    const hero = i === 0 && l.at === "cover"; // 대표 이미지: 16:11 꽉 차게 (방문자 화면과 같게)
+    if (!live) { applyLayout(img, l); if (hero) img.classList.add("is-hero"); boxes[l.at].appendChild(img); return; }
     boxes[l.at].appendChild(editableFigure(im, i, img, l));
   });
   Object.values(boxes).forEach((b) => { b.hidden = !b.children.length && !(live && dragging); });
@@ -416,7 +417,7 @@ const spotBoxes = (px) => ({ cover: $(`${px}-cover`), problem: $(`${px}-imgs-pro
 let dragging = false;
 function editableFigure(im, i, img, l) {
   const fig = document.createElement("figure");
-  fig.className = "pv-fig" + (i === selImg ? " on" : "");
+  fig.className = "pv-fig" + (i === selImg ? " on" : "") + (i === 0 && l.at === "cover" ? " is-hero" : "");
   fig.dataset.i = String(i);
   applyLayout(fig, l);
   fig.tabIndex = 0;
@@ -591,7 +592,7 @@ async function save(status, showDone = false) {
     if (showDone && status === "published") {
       $("done-title").textContent = "게시됐어요.";
       $("done-view").href = `../work.html?id=${encodeURIComponent(workId)}`;
-      $("published-panel").hidden = false; $("sns-panel").hidden = false;
+      $("published-panel").hidden = false;
       $("published-panel").scrollIntoView({ block: "start" });
     } else if (status !== "published") { $("published-panel").hidden = true; }
     return true;
@@ -605,7 +606,6 @@ function applyStatus(status) {
   $("unpublish").hidden = status !== "published";
   $("publish").textContent = status === "published" ? "다시 게시" : "게시하기";
   $("page-title").textContent = val("f-name") || "새 케이스 스터디";
-  $("sns-panel").hidden = status !== "published";
 }
 $("save").addEventListener("click", () => save(existing && existing.status === "published" ? "published" : "draft"));
 $("publish").addEventListener("click", () => save("published", true));

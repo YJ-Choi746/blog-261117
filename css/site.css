@@ -143,3 +143,6 @@ input, select, textarea, button { font: inherit; }
 
 /* 제목은 단어(어절) 중간에서 끊지 않아요. 영어 긴 단어는 하이픈으로 나눠요 */
 h1, h2, h3, .case-head h1 { word-break: keep-all; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
+
+/* 대표 이미지(첫 장 · 맨 위): 카드와 같은 16:11 틀을 빈 공간 없이 꽉 채워요. 보이는 부분은 관리자 자르기(카드 16:11)로 정해요 */
+.case-cover img.is-hero { aspect-ratio: 16 / 11; height: auto; max-height: none; object-fit: cover; }

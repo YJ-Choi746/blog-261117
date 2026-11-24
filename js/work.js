@@ -63,6 +63,7 @@ async function load() {
     const l = normLayout((w.imageSizes || [])[i], i);
     const img = image(im, `${w.title || w.name} 이미지 ${i + 1}`);
     applyLayout(img, l);
+    if (i === 0 && l.at === "cover") img.classList.add("is-hero"); // 대표 이미지: 16:11 꽉 차게
     boxes[l.at].appendChild(img);
   });
   Object.values(boxes).forEach((b) => { b.hidden = !b.children.length; });

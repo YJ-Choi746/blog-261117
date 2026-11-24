@@ -393,3 +393,10 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pw-thumbs .work-image.pw-drop-here { outline: 2px solid var(--blue); outline-offset: 2px; } /* blue */
 .pw-thumbs.pw-file-over, .pw-live.pw-file-over { outline: 2px dashed var(--blue); outline-offset: 4px; background: var(--blue-tint); } /* blue · blue-tint */
 .pw-summary { margin-top: 4px; }
+
+/* 인스타그램 홍보 문구: 작업 글 밑, 왼쪽 칸 안에서 눈에 띄게 */
+.pw-sns { display: flex; flex-direction: column; gap: 12px; padding: 18px; border: 1px solid var(--blue); background: var(--blue-tint); } /* blue · blue-tint */
+.pw-sns .pw-copybox { background: var(--white); }
+/* 대표 이미지(첫 장 · 맨 위): 카드와 같은 16:11 틀을 빈 공간 없이 꽉 채워요 */
+.pv-fig.is-hero .pv-imgwrap { aspect-ratio: 16 / 11; overflow: hidden; }
+.pv-fig.is-hero img { height: 100%; object-fit: cover; }

@@ -1,12 +1,12 @@
 // 관리자 이미지 자르기 (작업 편집). 창을 띄워 자를 영역을 끌어서 정하고, 잘린 canvas를 돌려줘요.
-// openCrop(dataUrl) → Promise<HTMLCanvasElement | null> (취소하면 null). innerHTML 없이 요소를 만들어요.
+// openCrop(dataUrl, { ratio }) → Promise<HTMLCanvasElement | null> (취소하면 null). innerHTML 없이 요소를 만들어요.
 const RATIOS = [["자유", 0], ["카드 16:11", 16 / 11], ["1:1", 1], ["4:3", 4 / 3], ["3:4", 3 / 4], ["16:9", 16 / 9]]; // 카드: 홈 · 작업 목록 카드 틀과 같은 비율
 const MIN = 0.05; // 최소 크기 (이미지 대비 5%)
 
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-export function openCrop(dataUrl) {
+export function openCrop(dataUrl, { ratio: startRatio = 0 } = {}) {
   return new Promise((resolve) => {
     const dlg = el("dialog", "crop-dlg"); dlg.setAttribute("aria-label", "이미지 자르기");
     const top = el("div", "crop-top");
@@ -28,7 +28,7 @@ export function openCrop(dataUrl) {
     document.body.appendChild(dlg);
 
     let r = { x: 0, y: 0, w: 1, h: 1 }; // 이미지 대비 비율 (0~1)
-    let ratio = 0;
+    let ratio = startRatio;
     const W = () => img.naturalWidth, H = () => img.naturalHeight;
     function draw() {
       const iw = img.clientWidth, ih = img.clientHeight;
@@ -44,7 +44,7 @@ export function openCrop(dataUrl) {
       r = { x: (1 - w) / 2, y: (1 - h) / 2, w, h };
     }
     RATIOS.forEach(([t, v]) => {
-      const b = el("button", "crop-ratio", t); b.type = "button"; b.setAttribute("aria-pressed", String(v === 0));
+      const b = el("button", "crop-ratio", t); b.type = "button"; b.setAttribute("aria-pressed", String(Math.abs(v - startRatio) < 1e-6));
       b.addEventListener("click", () => { ratio = v; ratios.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); if (v) fitRatio(); else r = { x: 0, y: 0, w: 1, h: 1 }; draw(); });
       ratios.appendChild(b);
     });
@@ -99,7 +99,7 @@ export function openCrop(dataUrl) {
       ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
       done(c);
     });
-    img.onload = () => { draw(); };
+    img.onload = () => { if (ratio) fitRatio(); draw(); };
     window.addEventListener("resize", onResize);
     img.src = dataUrl;
     dlg.showModal();
