@@ -32,6 +32,7 @@ js/images.js        사진 줄이기 · Firestore images 저장 · 불러오기
 js/post-actions.js  관리자 수정·삭제 버튼, 글+사진 삭제
 js/reactions.js     좋아요(Firestore postStats) · 저장(브라우저 저장소) 버튼
 js/home.js          첫 화면 최근 기록
+js/request-form.js  의뢰 폼 → Firestore requests 저장 후 FormSubmit 메일 (저장 실패해도 메일은 감)
 js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화면 제외)
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
 firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
