@@ -8,6 +8,7 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { logger } from "firebase-functions";
 import { analyze, validateInput, InputError } from "./analyze.js";
+import { generateCase, validateCaseInput, CaseInputError } from "./casestudy.js";
 
 const ANTHROPIC_API_KEY = defineSecret("ANTHROPIC_API_KEY");
 
@@ -50,5 +51,30 @@ export const analyzeRequest = onCall(
 
     // ok:false여도 오류로 던지지 않아요 → 화면은 F6(점검 생략 후 제출) 경로로
     return out;
+  }
+);
+
+// generateCaseStudy: PRD v0.5 F2 AI 케이스 스터디 생성 (관리자 전용)
+export const generateCaseStudy = onCall(
+  {
+    region: "asia-northeast3",
+    secrets: [ANTHROPIC_API_KEY],
+    cors: ALLOWED_ORIGINS,
+    timeoutSeconds: 60,
+    memory: "256MiB",
+    maxInstances: 2,
+  },
+  async (request) => {
+    if (request.auth?.uid !== ADMIN_UID) throw new HttpsError("permission-denied", "관리자만 사용할 수 있어요.");
+    let input;
+    try {
+      input = validateCaseInput(request.data);
+    } catch (err) {
+      if (err instanceof CaseInputError) throw new HttpsError("invalid-argument", err.message);
+      throw err;
+    }
+    const out = await generateCase(input, { apiKey: ANTHROPIC_API_KEY.value() });
+    logger.info("generateCaseStudy", { ok: out.ok, reason: out.reason ?? null, ms: out.ms, warnings: out.warnings ? out.warnings.unsupportedNumbers.length : 0 });
+    return out; // 실패해도 throw 안 함 → 화면은 빈 템플릿(F7)
   }
 );
