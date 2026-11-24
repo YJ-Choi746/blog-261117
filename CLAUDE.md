@@ -59,7 +59,8 @@ docs/DECISION_LOG.md    의사결정 로그 (1부 AI 기능 D1~ 표, 2부 블로
 docs/SUCCESS_FAILURE_LOG.md  성공 · 실패 로그 (테스트 실행 · 프롬프트 변경 · 막힌 일)
 docs/TEST_REPORT.md     테스트 보고서 (유저플로우 스크린샷 + 기능별 단위 테스트, 2쪽 이하)
 docs/WORKLOG.md         작업 일지 (날짜 · 시간순)
-docs/screenshots/       유저플로우 스크린샷 (플로우 순서대로 번호)
+docs/screenshots/       사이트 화면 스크린샷 · prototype/ 아래는 프로토타입 유저플로우 11장과 test-results.json
+tests/e2e_prototype.py  프로토타입 유저플로우 자동 테스트 24건 (Playwright Python, 실행: python3 tests/e2e_prototype.py) · tests/fixtures/ 첨부 테스트 파일
 docs/USER_STORIES.md    사용자 스토리와 완료 기준
 docs/FIREBASE_SETUP.md  Firebase 연결 순서 (처음 한 번)
 docs/ANALYTICS.md       방문자 통계(GA4) 보는 법
