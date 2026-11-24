@@ -115,3 +115,4 @@
 ## 2026-11-24
 
 - **AI 의뢰 분석(F1) 서버 함수**: Firebase Functions `analyzeRequest`(서울)로. API 키는 Secret Manager `ANTHROPIC_API_KEY`에만. 누락 점검(check)은 누구나, 전체 분석(full)은 관리자 UID만. 자세한 결정은 `docs/decision-log.md` D8~D10.
+- **커밋 ≠ 배포**: 업데이트마다 작업 브랜치에 커밋·푸시만. `main`·`gh-pages`(사이트 배포)는 "배포해줘"라고 할 때만.
