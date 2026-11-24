@@ -2,6 +2,7 @@
 // - 왼쪽 입력 → "AI 초안 만들기" → 오른쪽 칸 채움 → 고쳐서 저장 · 게시
 // - 공개 문서 works/{id}: 방문자가 볼 내용만 / 관리자 문서 workNotes/{id}: 메모 · 클라이언트 실명 · AI 기록
 // - AI가 실패해도 오른쪽 칸에 직접 써서 저장 · 게시할 수 있어요 (F6)
+import { getKey, setKey, clearKey, isRemembered, looksLikeKey, generateCaseDirect, generateSnsDirect } from "./ai-direct.js";
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
@@ -23,9 +24,16 @@ let images = [];          // [{ id, data }]
 let aiMeta = null;        // 마지막 AI 생성 기록
 let dirty = false;
 
+// 안내 문구: 초안 칸이 보이면 '게시하기 · 미리보기 · 초안 저장' 버튼 바로 밑에, 아니면 화면 위에 보여요
 function say(msg, isError) {
   $("msg-error").hidden = true; $("msg-ok").hidden = true;
+  const act = $("act-msg"); act.hidden = true; act.textContent = "";
   if (!msg) return;
+  if (!$("draft").hidden) {
+    act.textContent = msg; act.className = `notice ${isError ? "notice-error" : "notice-ok"}`;
+    act.setAttribute("role", isError ? "alert" : "status"); act.hidden = false;
+    return;
+  }
   const el = $(isError ? "msg-error" : "msg-ok");
   el.textContent = msg; el.hidden = false;
 }
@@ -55,9 +63,11 @@ function renderPreview() {
   const meta = el("div", "pw-meta-s");
   [["업종", val("f-industry")], ["기간", val("f-period")], ["맡은 일", val("f-role")]].forEach(([k, v]) => { const d = el("div"); d.append(el("span", "", k), el("span", "", v || "-")); meta.appendChild(d); });
   parts.push(meta);
-  if (images[0] && images[0].data) { const img = el("img", "pv-cover"); img.alt = "커버 이미지"; img.src = images[0].data; parts.push(img); }
+  if (images[0] && images[0].data) { const img = el("img", `pv-cover sz-${sizeOf(images[0])}`); img.alt = "커버 이미지"; img.src = images[0].data; parts.push(img); }
   [["01", "요청", val("c-problem")], ["02", "과정", val("c-process")], ["03", "결과", val("c-result")]].forEach(([n, h, t]) => {
-    const sec = el("div", "pv-s"); const body = el("div"); body.append(el("h4", "", h), el("p", "", t || "-")); sec.append(el("span", "pv-no", n), body); parts.push(sec);
+    const sec = el("div", "pv-s"); const body = el("div"); body.append(el("h4", "", h), el("p", "", t || "-"));
+    if (n === "02") images.slice(1).forEach((im, i) => { if (!im.data) return; const img = el("img", `pv-img sz-${sizeOf(im)}`); img.alt = `이미지 ${i + 2}`; img.src = im.data; body.appendChild(img); });
+    sec.append(el("span", "pv-no", n), body); parts.push(sec);
   });
   const tags = tagsFromInput(); if (tags.length) parts.push(el("p", "pv-tags", tags.map((t) => `#${t}`).join(" ")));
   box.replaceChildren(...parts);
@@ -72,6 +82,8 @@ function setPreview(on) {
 }
 
 // ---- 이미지 ----
+const SIZES = ["l", "m", "s"];
+const sizeOf = (im) => (SIZES.includes(im && im.size) ? im.size : "l");
 function renderImages() {
   const box = $("images");
   box.replaceChildren(...images.map((im, i) => {
@@ -86,7 +98,13 @@ function renderImages() {
     rm.type = "button"; rm.className = "btn btn-text"; rm.textContent = "빼기";
     rm.setAttribute("aria-label", `${img.alt} 빼기`);
     rm.addEventListener("click", () => { images.splice(i, 1); dirty = true; renderImages(); });
-    fig.append(img, cap, rm);
+    // 이미지 크기 (게시 화면에서 보이는 폭): 크게 100% · 보통 70% · 작게 45%. 자르지 않고 원래 비율로 보여요
+    const size = document.createElement("select");
+    size.className = "pw-size"; size.setAttribute("aria-label", `${img.alt} 크기`);
+    [["l", "크게"], ["m", "보통"], ["s", "작게"]].forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; size.appendChild(o); });
+    size.value = SIZES.includes(im.size) ? im.size : "l";
+    size.addEventListener("change", () => { im.size = size.value; dirty = true; setState("저장 안 된 변경 있음"); if (previewing) renderPreview(); });
+    fig.append(img, cap, size, rm);
     return fig;
   }));
   $("add-image").disabled = images.length >= MAX_IMAGES;
@@ -134,7 +152,7 @@ $("generate").addEventListener("click", async () => {
   const btn = $("generate"); btn.disabled = true; btn.textContent = "AI가 쓰는 중… (20초 안팎)";
   const gs = $("gen-status"); gs.hidden = false; gs.className = "notice notice-info"; gs.textContent = "AI가 메모로 초안을 쓰고 있어요.";
   try {
-    const out = await callFunction("generateCaseStudy", input, 60000);
+    const out = await (getKey() ? generateCaseDirect(input) : callFunction("generateCaseStudy", input, 60000));
     if (out && out.ok) {
       fillDraft(out.result);
       showDraft("ai");
@@ -153,7 +171,7 @@ $("generate").addEventListener("click", async () => {
     aiMeta = { promptVersion: "template", ms: 0, warnings: null, generatedAt: serverTimestamp() };
     dirty = true; setState("저장 안 된 변경 있음");
     gs.className = "notice notice-info";
-    gs.textContent = `AI 서버가 아직 꺼져 있어 문장 틀로 먼저 채웠어요 (${(err && err.code) || "연결 안 됨"}). 문장을 다듬거나, 아래 'AI 작성기'에서 만든 글을 붙여 넣어 주세요.`;
+    gs.textContent = `AI 서버가 아직 꺼져 있어 문장 틀로 먼저 채웠어요 (${(err && err.code) || "연결 안 됨"}). 아래 '내 API 키로 AI 쓰기'에 키를 넣으면 AI가 바로 써요.`;
   } finally {
     btn.disabled = false; btn.textContent = "AI 초안 만들기";
   }
@@ -183,7 +201,7 @@ $("sns-generate").addEventListener("click", async () => {
     tags: tagsFromInput(),
   };
   try {
-    const out = await callFunction("generateSnsCopy", input, 60000);
+    const out = await (getKey() ? generateSnsDirect(input) : callFunction("generateSnsCopy", input, 60000));
     if (out && out.ok) {
       snsCaptions = out.result.captions.slice(0, 3); snsIndex = 0;
       showSnsVariant();
@@ -295,7 +313,7 @@ async function save(status, showDone = false) {
     name, title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
     tags: tagsFromInput(), category: $("f-category").value, industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
     client: clientPublic ? val("f-client") : "",
-    coverImageId: images[0] ? images[0].id : "", imageIds: images.map((im) => im.id),
+    coverImageId: images[0] ? images[0].id : "", imageIds: images.map((im) => im.id), imageSizes: images.map(sizeOf),
     status, createdAt: existing && existing.createdAt ? existing.createdAt : serverTimestamp(), updatedAt: serverTimestamp(),
     publishedAt: existing && existing.publishedAt ? existing.publishedAt : (status === "published" ? serverTimestamp() : null),
     authorUid: user.uid,
@@ -361,7 +379,7 @@ async function load() {
   if (REQUIRED_TO_PUBLISH.some(([id]) => val(id))) showDraft(n.ai && n.ai.promptVersion === "template" ? "template" : n.ai && n.ai.promptVersion === "manual" ? "manual" : n.ai ? "ai" : "saved");
   if (n.ai) showWarnings(n.ai.warnings);
   if (n.sns) { snsCaptions = Array.isArray(n.sns.captions) ? n.sns.captions : []; snsIndex = Math.max(0, snsCaptions.indexOf(n.sns.caption)); if (snsCaptions.length) showSnsVariant(); $("s-caption").value = n.sns.caption || ""; $("s-hashtags").value = (n.sns.hashtags || []).join(", "); if (n.sns.ai) $("sns-badge").hidden = false; if (n.sns.copiedAt) $("sns-copied").textContent = "이전에 복사한 적 있어요."; }
-  images = await Promise.all((existing.imageIds || []).map(async (id) => ({ id, data: await getImageData(id) })));
+  images = await Promise.all((existing.imageIds || []).map(async (id, i) => ({ id, size: (existing.imageSizes || [])[i] || "l", data: await getImageData(id) })));
   renderImages();
   applyStatus(existing.status);
   setState(existing.status === "published" ? "게시됨" : "초안");
@@ -379,3 +397,20 @@ if (!isConfigured) {
   });
   $("logout").addEventListener("click", async () => { await signOut(auth); location.replace("login.html"); });
 }
+
+// ---- 내 API 키로 AI 쓰기 (D30): 키는 이 브라우저에만, 서버 · Firestore로 보내지 않아요 ----
+function showKeyState() {
+  const has = !!getKey();
+  $("ai-key-state").textContent = has ? `키 연결됨${isRemembered() ? " · 이 브라우저에 기억" : " · 탭을 닫으면 지워져요"}` : "키 없음 · 서버 함수나 문장 틀을 써요";
+  $("ai-key-clear").hidden = !has;
+  $("ai-key").value = "";
+  $("ai-key").placeholder = has ? "새 키로 바꾸려면 붙여넣기" : "sk-ant-...";
+}
+$("ai-key-save").addEventListener("click", () => {
+  const k = $("ai-key").value.trim();
+  if (!looksLikeKey(k)) { $("ai-key-state").textContent = "키 모양이 아니에요. sk-ant-로 시작하는 키를 붙여넣어 주세요."; $("ai-key").focus(); return; }
+  setKey(k, $("ai-key-remember").checked); showKeyState();
+});
+$("ai-key-clear").addEventListener("click", () => { clearKey(); showKeyState(); });
+$("ai-key-remember").checked = isRemembered();
+showKeyState();

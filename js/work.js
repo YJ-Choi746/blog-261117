@@ -16,8 +16,10 @@ function paragraphs(el, text) {
     return p;
   }));
 }
-function image(id, alt) {
+function image(id, alt, size) {
   const img = document.createElement("img");
+  // 크기: 관리자가 고른 폭 (크게 · 보통 · 작게), 자르지 않고 원래 비율
+  img.className = `sz-${["l", "m", "s"].includes(size) ? size : "l"}`;
   img.alt = alt; img.loading = "lazy";
   getImageData(id).then((d) => { if (d) img.src = d; });
   return img;
@@ -40,7 +42,7 @@ async function load() {
   const desc = document.querySelector('meta[name="description"]');
   if (desc && w.summary) desc.setAttribute("content", w.summary);
 
-  if (w.coverImageId) $("work-cover").appendChild(image(w.coverImageId, `${w.title || w.name} 커버 이미지`));
+  if (w.coverImageId) $("work-cover").appendChild(image(w.coverImageId, `${w.title || w.name} 커버 이미지`, (w.imageSizes || [])[0]));
   else $("work-cover").hidden = true;
   $("work-cat").textContent = w.category || "";
   $("work-title").textContent = w.title || w.name || "";
@@ -57,7 +59,7 @@ async function load() {
   paragraphs($("work-problem"), w.problem);
   paragraphs($("work-process"), w.process);
   paragraphs($("work-result"), w.result);
-  $("work-images").replaceChildren(...(w.imageIds || []).slice(1).map((im, i) => image(im, `${w.title || w.name} 이미지 ${i + 2}`)));
+  $("work-images").replaceChildren(...(w.imageIds || []).slice(1).map((im, i) => image(im, `${w.title || w.name} 이미지 ${i + 2}`, (w.imageSizes || [])[i + 1])));
   $("work-images").hidden = (w.imageIds || []).length < 2;
   pager(w);
   $("work-tags").replaceChildren(...(w.tags || []).map((t) => { const s = document.createElement("span"); s.className = "tag"; s.textContent = `#${t}`; return s; }));

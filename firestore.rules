@@ -68,7 +68,8 @@ service cloud.firestore {
 
     function validWork() {
       let w = request.resource.data;
-      return w.keys().hasOnly(["name", "title", "summary", "problem", "process", "result", "tags", "category", "industry", "period", "client", "coverImageId", "imageIds", "status", "createdAt", "updatedAt", "publishedAt", "authorUid", "role"])
+      return w.keys().hasOnly(["name", "title", "summary", "problem", "process", "result", "tags", "category", "industry", "period", "client", "coverImageId", "imageIds", "status", "createdAt", "updatedAt", "publishedAt", "authorUid", "role", "imageSizes"])
+        && (!("imageSizes" in w) || (w.imageSizes is list && w.imageSizes.size() <= 4))
         && (!("role" in w) || (w.role is string && w.role.size() <= 60))
         && w.name is string && w.name.size() > 0 && w.name.size() <= 60
         && w.title is string && w.title.size() <= 100

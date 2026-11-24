@@ -118,13 +118,17 @@ input, select, textarea, button { font: inherit; }
 .case-meta div { padding: 12px 8px 12px 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .case-meta dt { font-size: 12px; color: var(--gray-600); }
 .case-meta dd { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
-.case-cover img { width: 100%; aspect-ratio: 16 / 11; object-fit: cover; background: var(--surface); display: block; }
+/* 커버 · 과정 이미지는 자르지 않고 원래 비율 그대로 (관리자가 크기만 고름: sz-l 100% · sz-m 70% · sz-s 45%) */
+.case-cover img { width: 100%; height: auto; max-height: 85vh; object-fit: contain; background: var(--surface); display: block; margin: 0 auto; }
+.case-cover img.sz-m, .case-images img.sz-m { width: 70%; }
+.case-cover img.sz-s, .case-images img.sz-s { width: 45%; }
+@media (max-width: 640px) { .case-cover img.sz-m, .case-images img.sz-m { width: 100%; } .case-cover img.sz-s, .case-images img.sz-s { width: 70%; } }
 .case-step { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; border-top: 1px solid var(--line); padding-top: 26px; }
 .case-no { font-family: var(--font-serif); font-weight: 600; font-size: 28px; color: var(--blue); }
 .case-step h2 { margin: 0 0 10px; font-family: var(--font-serif); font-weight: 600; font-size: 26px; }
 .case-step p { margin: 0 0 12px; font-size: 17px; line-height: 1.85; color: var(--gray-700); overflow-wrap: anywhere; }
 .case-images { display: grid; gap: 12px; margin-top: 16px; }
-.case-images img { width: 100%; display: block; background: var(--surface); }
+.case-images img { width: 100%; height: auto; display: block; margin: 0 auto; background: var(--surface); }
 .case-pager { max-width: var(--container-article); margin: 56px auto 0; padding: 0 24px; width: 100%; }
 .case-cap { margin: 0 0 10px; font-size: 12px; color: var(--gray-600); display: block; }
 .case-pg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--black); border-bottom: 1px solid var(--line); }
