@@ -92,7 +92,12 @@ service cloud.firestore {
     function validNewRequest() {
       let r = request.resource.data;
       let fields = ["name", "email", "categories", "budget", "content", "status", "createdAt"];
-      return r.keys().hasOnly(fields) && r.keys().hasAll(fields)
+      // F2 의뢰서 (PRD v1.2): 희망 일정 · 레퍼런스 작업 · 레퍼런스 링크는 선택
+      let optional = ["schedule", "refWorks", "refLinks"];
+      return r.keys().hasOnly(fields.concat(optional)) && r.keys().hasAll(fields)
+        && (!("schedule" in r) || (r.schedule is string && r.schedule.size() <= 50))
+        && (!("refWorks" in r) || (r.refWorks is list && r.refWorks.size() <= 5))
+        && (!("refLinks" in r) || (r.refLinks is list && r.refLinks.size() <= 3))
         && r.name is string && r.name.size() > 0 && r.name.size() <= 50
         && r.email is string && r.email.size() <= 100
         && r.email.matches("^[^@\\s]+@[^@\\s]+[.][^@\\s]+$")
