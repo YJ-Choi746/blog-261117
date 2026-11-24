@@ -36,7 +36,7 @@
     "사진 붙이기": "Add photos", "최대 3장": "up to 3", "링크 추가": "Add link", "사진 고르기": "Choose photos",
     "희망 일정": "Preferred date", "예산 범위": "Budget", "선택 안 함": "Not selected", "협의": "To discuss",
     "이름": "Name", "이메일": "Email", "의뢰 보내기": "Send request", "보내는 중…": "Sending…",
-    "예: 동네 카페 로고를 새로 만들고 싶어요. 4월 오픈 전에 필요해요. 원하는 느낌은 미니멀리스트 감성이고, 아래 레퍼런스에서 사진 보여드릴게요.": "e.g. I want a new logo for my neighborhood café before the April opening.\nI'm going for a retro feel — I'll show photos in the references below.", "(선택)": "(optional)",
+    "예: 동네 카페 로고를 새로 만들고 싶어요. 4월 오픈 전에 필요해요. 원하는 느낌은 미니멀리스트 감성이고, 아래 레퍼런스에서 사진 보여드릴게요.": "e.g. I want a new logo for my neighborhood café before the April opening.\nI'm going for a minimalist feel — I'll show photos in the references below.", "(선택)": "(optional)",
     "홍길동 또는 Gildong Hong": "Your name",
     "필요한 것을 적어주세요.": "Please describe what you need.",
     "이름을 적어주세요.": "Please enter your name.",
