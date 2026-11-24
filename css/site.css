@@ -105,3 +105,20 @@ input, select, textarea, button { font: inherit; }
 .prose pre { background: var(--black); color: #F2F2F2; padding: 20px 24px; border-radius: 12px; overflow-x: auto; font-size: 15px; line-height: 1.7; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; font-size: 14px; padding-bottom: 56px; }
 .tag { border: 1px solid var(--line-strong); border-radius: var(--radius-pill); padding: 6px 14px; }
+
+/* 작업 상세 (work.html, PRD v0.6 F4) — 커버 → 제목 · 요약 → 문제 → 과정 → 결과 → 의뢰 */
+.case-cover img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--surface); display: block; margin: 24px 0 32px; }
+.case-cat { display: block; font-size: 13px; color: var(--blue); font-weight: 600; margin: 24px 0 12px; }
+.case-summary { margin: 16px 0 0; font-size: 20px; line-height: 1.6; color: var(--gray-700); }
+.case-meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 20px; margin: 28px 0 0; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 15px; }
+.case-meta dt { color: var(--gray-600); }
+.case-meta dd { margin: 0; overflow-wrap: anywhere; }
+.case-section { padding-top: 40px; }
+.case-section h2 { margin: 0 0 12px; font-family: var(--font-serif); font-size: 26px; }
+.case-section p { margin: 0 0 16px; font-size: 18px; line-height: 1.85; color: #222222; overflow-wrap: anywhere; }
+.case-images { display: grid; gap: 16px; padding-top: 32px; }
+.case-images img { width: 100%; border-radius: 12px; background: var(--surface); display: block; }
+.case-cta { margin-top: 56px; padding: 32px; border-radius: var(--radius-card); background: var(--blue); color: var(--white); display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.case-cta h2 { margin: 0; font-family: var(--font-serif); font-size: 26px; }
+.case-cta p { margin: 0; }
+.case-cta .btn-primary { background: var(--white); color: var(--black); border-color: var(--white) !important; }

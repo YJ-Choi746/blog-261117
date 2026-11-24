@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>작업 — Jae</title>
+<meta name="description" content="Jae의 작업 — 문제를 푼 과정까지 보여드리는 케이스 스터디">
+<!-- 카카오톡 · SNS 링크 미리보기 (이미지는 두 주소 모두 Firebase 주소를 써요) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Jae">
+<meta property="og:title" content="작업 — Jae">
+<meta property="og:description" content="문제를 푼 과정까지 보여드리는 케이스 스터디">
+<meta property="og:image" content="https://blog---261117.web.app/images/og-home.png">
+<meta property="og:image:secure_url" content="https://blog---261117.web.app/images/og-home.png">
+<meta name="twitter:image" content="https://blog---261117.web.app/images/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/editor.css">
+<link rel="stylesheet" href="css/fx.css">
+<script src="js/analytics.js"></script>
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="index.html">Jae</a>
+      <nav class="nav" aria-label="주요 메뉴">
+        <a href="works.html" aria-current="page">작업</a>
+        <a href="posts.html">기록</a>
+        <a href="index.html#service">서비스</a>
+        <a data-ga-event="click_cta" data-ga-cta_name="header_request" data-ga-cta_location="header" class="btn btn-dark fx-wave" href="index.html#request">프로젝트 의뢰</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" style="padding-top: 96px; padding-bottom: 96px">
+    <p style="margin: 0 0 16px; font-size: 13px; letter-spacing: 0.16em; color: var(--gray-600)">WORK</p>
+    <h1 style="margin: 0 0 16px; font-family: var(--font-serif); font-size: clamp(44px, 6vw, 80px); line-height: 1.15">작업</h1>
+    <p style="margin: 0 0 48px; max-width: 560px; font-size: 18px; color: var(--gray-700)">결과물만이 아니라 문제를 푼 과정까지 보여드려요.</p>
+    <div class="chips" role="group" aria-label="분야" id="chips" style="margin-bottom: 8px">
+      <button type="button" class="chip" aria-pressed="true" data-cat="">전체</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat="브랜딩">브랜딩</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat="UI/UX 디자인">UI/UX 디자인</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat="콘텐츠 제작">콘텐츠 제작</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat="기타">기타</button>
+    </div>
+    <p id="list-status" role="status" style="color: var(--gray-600)">작업을 불러오는 중…</p>
+    <div id="work-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); column-gap: 48px" hidden></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© Jae</span>
+      <div class="links"><a href="#">Instagram</a><a href="admin/login.html?next=works.html">관리자</a></div>
+    </div>
+  </footer>
+</div>
+<script type="module" src="js/works.js"></script>
+</body>
+</html>

@@ -52,7 +52,16 @@ function setRequestId(f, id) {
   input.value = id;
 }
 
+// F5 (PRD v0.6): 작업 상세의 "이런 작업 의뢰하기"로 오면 ?category= 분야를 자동 선택해요 (허용된 분야만)
+export function preselectCategory(f, search) {
+  const cat = new URLSearchParams(search).get("category");
+  if (!cat || !CATEGORIES.includes(cat)) return false;
+  f.querySelectorAll('input[name="의뢰분야"]').forEach((x) => { x.checked = x.value === cat; });
+  return true;
+}
+
 if (form) {
+  preselectCategory(form, location.search);
   let sending = false;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
