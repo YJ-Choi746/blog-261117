@@ -50,10 +50,9 @@ functions/prompt.js AI 분석 프롬프트 (바꾸면 docs/SUCCESS_FAILURE_LOG.m
 CLAUDE.md           이 문서
 README.md           저장소 소개 · 제출물 링크 모음 (배포 URL · PRD · 테스트 보고서 · 로그)
 docs/DESIGN_SYSTEM.md   색 · 글꼴 · 간격 · 컴포넌트 규칙
-docs/DECISIONS.md       정한 것들 (날짜순)
 docs/PRD.md             미니 프로젝트 PRD (범위 기준, 2쪽 이하, 버전은 커밋 기록으로 관리)
 docs/AGENT_GUIDE.md     에이전트용 작업 지침 (AI 기능 규격 · 보안 · 커밋 규칙)
-docs/DECISION_LOG.md    의사결정 로그 (D1~, 날짜 · 결정 · 대안 · 이유 · 상태)
+docs/DECISION_LOG.md    의사결정 로그 (1부 AI 기능 D1~ 표, 2부 블로그 날짜별 결정 기록)
 docs/SUCCESS_FAILURE_LOG.md  성공 · 실패 로그 (테스트 실행 · 프롬프트 변경 · 막힌 일)
 docs/TEST_REPORT.md     테스트 보고서 (유저플로우 스크린샷 + 기능별 단위 테스트, 2쪽 이하)
 docs/WORKLOG.md         작업 일지 (날짜 · 시간순)
@@ -105,7 +104,7 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 
 ## 문서 규칙
 - **파일 이름 규칙**: `docs/` 안 문서(.md)는 대문자와 밑줄(`USER_STORIES.md`), 폴더와 이미지·스크립트·화면 파일은 소문자와 하이픈(`docs/screenshots/01-home.png`, `js/work-edit.js`). 루트의 `README.md` · `CLAUDE.md`는 관례대로 대문자.
-- 무언가를 **정하면** `docs/DECISIONS.md`에 날짜와 함께 한 줄 추가해요.
+- 무언가를 **정하면** `docs/DECISION_LOG.md`에 남겨요. 설계를 바꾸는 결정은 1부 표(D번호 · 대안 · 이유), 작은 결정은 2부 날짜별 기록에 한 줄.
 - 무언가에 **막혔다 풀면** `docs/failures/<주제>.md`에 증상 · 원인 · 해결을 적어요. 같은 주제 파일이 있으면 거기에 이어 써요.
 - 기능은 `docs/USER_STORIES.md`에 스토리와 완료 기준을 먼저 적고, 기준마다 테스트 결과를 남겨요.
 - 사용자에게는 한국어로, 쉬운 말로 설명해요.
