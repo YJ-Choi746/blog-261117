@@ -224,6 +224,12 @@ if (form) {
       if (typeof window.trackEvent === "function") window.trackEvent("form_error", { form_id: "request", reason: "validation", error_count: n });
       return;
     }
+    // GA: 입력 확인을 통과해 실제로 보낼 때만 (분야 · 예산 구간만, 개인 정보 없음)
+    if (typeof window.trackEvent === "function") {
+      const types = [...form.querySelectorAll('input[name="의뢰분야"]:checked')].map((x) => x.value).join(",");
+      const budget = form.querySelector('select[name="예산"]');
+      window.trackEvent("form_submit", { form_id: "request", request_types: types || "미선택", budget_range: (budget && budget.value) || "미선택" });
+    }
     sending = true;
     const btn = form.querySelector('button[type="submit"]');
     if (btn) { btn.disabled = true; btn.setAttribute("aria-busy", "true"); btn.dataset.label = btn.textContent; btn.textContent = "보내는 중…"; }

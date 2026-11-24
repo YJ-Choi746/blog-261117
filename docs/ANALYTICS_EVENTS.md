@@ -47,7 +47,7 @@
 | `click_cta` | 기록(블로그)으로 가는 버튼을 눌렀을 때 | `cta_name`, `cta_location` | 홈 | |
 | `case_view` | 작업 상세(케이스 스터디)가 열렸을 때 | `post_id`, `post_title`, `post_category` | 작업 상세 | |
 | `form_start` | 의뢰 폼에 처음 입력할 때 (1번) | `form_id` | 홈 | |
-| `form_submit` | 의뢰 폼 보내기를 눌렀을 때 | `form_id`, `request_types`, `budget_range` | 홈 | |
+| `form_submit` | 의뢰 폼 보내기를 눌러 **입력 확인을 통과했을 때** | `form_id`, `request_types`, `budget_range` | 홈 | |
 | `form_error` | 보내기를 눌렀는데 입력 확인에서 막혔을 때 | `form_id`, `reason`, `error_count` | 홈 | |
 | `generate_lead` | 의뢰가 접수되어 완료 페이지가 열렸을 때 (**전송 성공일 때만**) | `form_id` | 의뢰 완료 | **예** |
 | `refresh_quote` | 오늘의 명언 위젯에서 "다른 명언 보기"를 눌렀을 때 | `widget_name` | 글 상세 (위젯이 있는 글) | |
@@ -162,7 +162,8 @@
 | `request_click`, `click_cta` | HTML 링크 · 버튼의 `data-ga-event="request_click" data-ga-cta_location="…"` (기록 버튼은 `click_cta` + `cta_name`) |
 | `case_view` | `js/work.js` |
 | `form_error` | `js/request-form.js` |
-| `select_post`, `filter_posts`, `form_start`, `form_submit` | `js/home.js`, `js/posts.js` |
+| `select_post`, `filter_posts`, `form_start` | `js/home.js`, `js/posts.js` |
+| `form_submit` | `js/request-form.js` |
 | `view_post`, `read_post`, `scroll_post`, `leave_post`, 글 상세 `page_view` | `js/post.js` |
 | `like_post` · `unlike_post` · `bookmark_post` · `unbookmark_post` | `js/reactions.js` |
 | `generate_lead` | `thanks.html` |

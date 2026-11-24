@@ -105,7 +105,7 @@ async function load() {
 }
 load();
 
-// GA: 의뢰 폼 — 처음 입력할 때 form_start, 보낼 때 form_submit (이름 · 이메일 · 내용은 보내지 않아요)
+// GA: 의뢰 폼 — 처음 입력할 때 form_start (이름 · 이메일 · 내용은 보내지 않아요)
 const form = document.getElementById("request-form");
 if (form) {
   let started = false;
@@ -114,15 +114,5 @@ if (form) {
     started = true;
     if (typeof window.trackEvent === "function") window.trackEvent("form_start", { form_id: "request" });
   });
-  form.addEventListener("submit", () => {
-    const types = [...form.querySelectorAll('input[name="의뢰분야"]:checked')].map((x) => x.value).join(",");
-    const budget = form.querySelector('select[name="예산"]');
-    if (typeof window.trackEvent === "function") {
-      window.trackEvent("form_submit", {
-        form_id: "request",
-        request_types: types || "미선택",
-        budget_range: (budget && budget.value) || "미선택"
-      });
-    }
-  });
+  // form_submit은 입력 확인을 통과했을 때만 js/request-form.js에서 보내요
 }
