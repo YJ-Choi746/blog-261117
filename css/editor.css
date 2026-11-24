@@ -229,3 +229,18 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .req-dl dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .req-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 @media (max-width: 480px) { .req-dl { grid-template-columns: minmax(0, 1fr); } .req-dl dd { margin-bottom: 6px; } }
+
+/* 작업 편집 (admin/work.html, PRD v0.6 F1 · F3): 입력(좌) · 케이스 스터디 초안(우) */
+.work-bar { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+.work-bar-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.work-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 24px; align-items: start; margin-top: 12px; }
+.work-pane { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.pane-h { margin: 0; font-size: 18px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.work-row2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--gray-700); min-height: var(--touch-min); padding-top: 10px; }
+.check input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; }
+.work-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.work-image { margin: 0; display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--gray-600); }
+.work-image img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: var(--surface); }
+.hint { margin: 0; font-size: 13px; color: var(--gray-600); }
+.work-row { grid-template-columns: minmax(0, 1fr) auto; }

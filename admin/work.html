@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>작업 편집 — Jae 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/editor.css">
+<link rel="stylesheet" href="../css/fx.css">
+</head>
+<body class="write-body">
+<div class="page">
+  <header class="site-header">
+    <div class="wrap">
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center">
+        <a class="logo" href="../index.html">Jae</a>
+        <span class="badge">관리자</span>
+        <nav class="nav" aria-label="관리자 메뉴">
+          <a href="posts.html">글 관리</a>
+          <a href="write.html">글쓰기</a>
+          <a href="works.html" aria-current="page">작업 관리</a>
+          <a href="requests.html">의뢰 관리</a>
+        </nav>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 14px; color: var(--gray-600)">
+        <span id="who"></span>
+        <button type="button" id="logout" class="btn btn-text">로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <p id="checking" class="wrap" style="padding-top: 48px; color: var(--gray-600)">로그인 상태를 확인하는 중…</p>
+  <p id="config-notice" class="wrap notice notice-info" style="margin-top: 24px" hidden>Firebase 설정이 아직 없어요. <code>js/firebase-config.js</code>에 설정값을 넣어 주세요.</p>
+
+  <main id="editor" class="wrap" style="padding-top: 32px; padding-bottom: 80px" hidden>
+    <div class="work-bar">
+      <div>
+        <a href="works.html" style="font-size: 14px; color: var(--gray-600)">← 작업 관리</a>
+        <h1 style="margin: 4px 0 0; font-family: var(--font-serif); font-size: 32px" id="page-title">새 작업</h1>
+      </div>
+      <div class="work-bar-actions">
+        <span id="save-state" class="save-state" role="status" aria-live="polite">저장되지 않음</span>
+        <button type="button" id="save" class="btn btn-outline">초안 저장</button>
+        <button type="button" id="publish" class="btn btn-primary">게시</button>
+        <button type="button" id="unpublish" class="btn btn-outline" hidden>게시 취소</button>
+      </div>
+    </div>
+    <p id="msg-error" class="notice notice-error" role="alert" hidden></p>
+    <p id="msg-ok" class="notice notice-ok" role="status" hidden></p>
+
+    <div class="work-grid">
+      <!-- 왼쪽: 입력 (F1) -->
+      <section class="work-pane" aria-labelledby="in-title">
+        <h2 id="in-title" class="pane-h">작업 입력</h2>
+        <label class="field">작업명 *<input class="input" id="f-name" maxlength="60" required placeholder="예: 성수 카페 브랜딩"></label>
+        <div class="work-row2">
+          <label class="field">분야
+            <select class="input select" id="f-category">
+              <option value="브랜딩">브랜딩</option>
+              <option value="UI/UX 디자인">UI/UX 디자인</option>
+              <option value="콘텐츠 제작">콘텐츠 제작</option>
+              <option value="기타">기타</option>
+            </select>
+          </label>
+          <label class="field">업종<input class="input" id="f-industry" maxlength="30" placeholder="예: 카페"></label>
+        </div>
+        <div class="work-row2">
+          <label class="field">기간<input class="input" id="f-period" maxlength="30" placeholder="예: 2026.10 · 3주"></label>
+          <label class="field">클라이언트<input class="input" id="f-client" maxlength="50" placeholder="비워도 돼요"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="f-client-public"> 클라이언트가 이름 공개에 동의했어요 (체크 안 하면 이름은 AI · 방문자에게 보이지 않아요)</label>
+
+        <div class="field">이미지 (첫 장이 커버, 최대 4장)
+          <div id="images" class="work-images"></div>
+          <button type="button" id="add-image" class="btn btn-outline" style="align-self: flex-start">이미지 추가</button>
+          <input type="file" id="image-input" accept="image/*" multiple hidden>
+        </div>
+
+        <label class="field">요청 — 클라이언트가 원한 것<textarea class="textarea" id="m-request" rows="3" maxlength="1500" placeholder="예: 오픈 전 로고와 명함이 필요했다"></textarea></label>
+        <label class="field">한 일 — 내가 한 작업과 판단<textarea class="textarea" id="m-work" rows="4" maxlength="1500" placeholder="예: 무드보드 3안 제시, 손글씨 로고로 결정"></textarea></label>
+        <label class="field">결과 — 산출물 · 반응 · 수치(있을 때만)<textarea class="textarea" id="m-result" rows="3" maxlength="1500" placeholder="예: 오픈일에 맞춰 로고 · 명함 · 간판 시안 납품"></textarea></label>
+        <button type="button" id="generate" class="btn btn-dark">AI 초안 만들기</button>
+        <p class="hint">AI는 메모에 있는 사실만 써요. 메모에 없는 숫자가 나오면 오른쪽에 경고가 떠요.</p>
+      </section>
+
+      <!-- 오른쪽: AI 초안 · 편집 (F2 · F3 · F7) -->
+      <section class="work-pane" aria-labelledby="out-title">
+        <h2 id="out-title" class="pane-h">케이스 스터디 <span id="ai-badge" class="ai-badge" hidden>AI 초안</span></h2>
+        <p id="gen-status" class="notice notice-info" role="status" hidden></p>
+        <div id="warn" class="notice notice-error" role="alert" hidden></div>
+        <label class="field">제목<input class="input" id="c-title" maxlength="100"></label>
+        <label class="field">한 줄 요약<input class="input" id="c-summary" maxlength="200"></label>
+        <label class="field">문제<textarea class="textarea" id="c-problem" rows="4" maxlength="3000"></textarea></label>
+        <label class="field">과정<textarea class="textarea" id="c-process" rows="7" maxlength="5000"></textarea></label>
+        <label class="field">결과<textarea class="textarea" id="c-result" rows="4" maxlength="3000"></textarea></label>
+        <label class="field">태그 (쉼표로 구분)<input class="input" id="c-tags" placeholder="브랜딩, 카페, 로고"></label>
+      </section>
+    </div>
+  </main>
+</div>
+<script type="module" src="../js/work-edit.js"></script>
+</body>
+</html>
