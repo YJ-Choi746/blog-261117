@@ -97,6 +97,20 @@
         <label class="field">과정<textarea class="textarea" id="c-process" rows="7" maxlength="5000"></textarea></label>
         <label class="field">결과<textarea class="textarea" id="c-result" rows="4" maxlength="3000"></textarea></label>
         <label class="field">태그 (쉼표로 구분)<input class="input" id="c-tags" placeholder="브랜딩, 카페, 로고"></label>
+
+        <!-- F6 인스타그램 문구 -->
+        <div class="sns-box">
+          <h3 class="pane-h" style="font-size: 16px">인스타그램 문구 <span id="sns-badge" class="ai-badge" hidden>AI 초안</span></h3>
+          <p id="sns-status" class="notice notice-info" role="status" hidden></p>
+          <div id="sns-warn" class="notice notice-error" role="alert" hidden></div>
+          <label class="field">소개 문구<textarea class="textarea" id="s-caption" rows="6" maxlength="2200" placeholder="케이스 스터디를 채운 뒤 '문구 만들기'를 누르거나 직접 써 주세요."></textarea></label>
+          <label class="field">해시태그 (쉼표로 구분, # 없이)<input class="input" id="s-hashtags" placeholder="브랜딩, 카페로고, 성수카페"></label>
+          <div class="work-bar-actions">
+            <button type="button" id="sns-generate" class="btn btn-dark">인스타그램 문구 만들기</button>
+            <button type="button" id="sns-copy" class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>복사</button>
+            <span id="sns-copied" class="save-state" role="status" aria-live="polite"></span>
+          </div>
+        </div>
       </section>
     </div>
   </main>

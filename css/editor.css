@@ -244,3 +244,4 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .work-image img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: var(--surface); }
 .hint { margin: 0; font-size: 13px; color: var(--gray-600); }
 .work-row { grid-template-columns: minmax(0, 1fr) auto; }
+.sns-box { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 4px; display: flex; flex-direction: column; gap: 12px; }

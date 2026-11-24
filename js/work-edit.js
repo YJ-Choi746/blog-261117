@@ -114,6 +114,69 @@ $("generate").addEventListener("click", async () => {
   }
 });
 
+// ---- 인스타그램 문구 (F6) · 실패 시 직접 작성 (F7) ----
+let snsMeta = null;   // 마지막 AI 생성 기록
+let snsCopiedAt = null;
+const hashtagsFromInput = () => [...new Set(val("s-hashtags").split(/[,\s]+/).map((t) => t.replace(/^#+/, "")).filter(Boolean))].slice(0, 15);
+export function snsText(caption, tags) {
+  return [caption.trim(), tags.map((t) => `#${t}`).join(" ")].filter(Boolean).join("\n\n");
+}
+
+$("sns-generate").addEventListener("click", async () => {
+  const miss = REQUIRED_TO_PUBLISH.filter(([id]) => id !== "c-summary" && !val(id)).map(([, n]) => n);
+  if (miss.length) { say(`인스타그램 문구는 케이스 스터디로 만들어요. 먼저 채워 주세요: ${miss.join(" · ")}`, true); return; }
+  if (val("s-caption") && !confirm("지금 쓴 인스타그램 문구를 AI 초안으로 바꿀까요?")) return;
+  say("");
+  const btn = $("sns-generate"); btn.disabled = true; btn.textContent = "만드는 중…";
+  const st = $("sns-status"); st.hidden = false; st.className = "notice notice-info"; st.textContent = "AI가 케이스 스터디로 문구를 쓰고 있어요.";
+  const input = {
+    title: val("c-title"), summary: val("c-summary"), problem: val("c-problem"), process: val("c-process"), result: val("c-result"),
+    category: $("f-category").value, industry: val("f-industry"),
+    client: $("f-client-public").checked ? val("f-client") : "", // 공개 동의 없으면 이름은 보내지 않아요
+    tags: tagsFromInput(),
+  };
+  try {
+    const out = await callFunction("generateSnsCopy", input, 60000);
+    if (out && out.ok) {
+      $("s-caption").value = out.result.caption;
+      $("s-hashtags").value = out.result.hashtags.join(", ");
+      const nums = out.warnings && out.warnings.unsupportedNumbers;
+      $("sns-warn").hidden = !(nums && nums.length);
+      if (nums && nums.length) $("sns-warn").textContent = `케이스 스터디에 없는 숫자가 들어 있어요: ${nums.join(", ")} — 확인하고 고쳐 주세요.`;
+      $("sns-badge").hidden = false;
+      snsMeta = { promptVersion: out.promptVersion || "", ms: out.ms || 0, warnings: out.warnings || null, generatedAt: serverTimestamp() };
+      st.textContent = "AI 초안이에요. 고친 뒤 복사해서 인스타그램에 올려 주세요.";
+      dirty = true; setState("저장 안 된 변경 있음");
+    } else {
+      st.className = "notice notice-error";
+      st.textContent = `문구를 만들지 못했어요 (${(out && out.reason) || "알 수 없음"}). 직접 써서 복사할 수 있어요.`;
+    }
+  } catch (err) {
+    st.className = "notice notice-error";
+    st.textContent = `문구를 만들지 못했어요. ${friendlyError(err)} 직접 써서 복사할 수 있어요.`;
+  } finally { btn.disabled = false; btn.textContent = "인스타그램 문구 만들기"; }
+});
+
+$("sns-copy").addEventListener("click", async () => {
+  const text = snsText(val("s-caption"), hashtagsFromInput());
+  if (!text) { $("sns-copied").textContent = "복사할 문구가 없어요."; return; }
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    // 클립보드 권한이 없는 브라우저: 직접 선택해서 복사하도록 문구 칸을 선택해 둬요
+    $("s-caption").select();
+    $("sns-copied").textContent = "자동 복사가 막혔어요. 선택된 문구를 직접 복사해 주세요.";
+    return;
+  }
+  $("sns-copied").textContent = "복사했어요.";
+  // H4(SNS 공유 비율) 측정용 복사 시각 기록 — 이미 저장된 작업이면 바로 남겨요
+  snsCopiedAt = serverTimestamp();
+  if (!isNew) {
+    try { await setDoc(doc(db, "workNotes", workId), { sns: { caption: val("s-caption"), hashtags: hashtagsFromInput(), copiedAt: snsCopiedAt, ...(snsMeta ? { ai: snsMeta } : {}) } }, { merge: true }); }
+    catch { /* 기록 실패는 복사를 막지 않아요 */ }
+  }
+});
+
 // ---- 저장 · 게시 (F3) ----
 function tagsFromInput() {
   return [...new Set(val("c-tags").split(",").map((t) => t.replace(/^#/, "").trim()).filter(Boolean))].slice(0, 8);
@@ -142,6 +205,7 @@ async function save(status) {
     client: val("f-client"), clientPublic, updatedAt: serverTimestamp(),
   };
   if (aiMeta) notes.ai = aiMeta;
+  notes.sns = { caption: val("s-caption"), hashtags: hashtagsFromInput(), ...(snsMeta ? { ai: snsMeta } : {}), ...(snsCopiedAt ? { copiedAt: snsCopiedAt } : {}) };
   ["save", "publish", "unpublish"].forEach((id) => { $(id).disabled = true; });
   setState("저장하는 중…");
   try {
@@ -185,6 +249,7 @@ async function load() {
   $("m-request").value = (n.memo && n.memo.request) || ""; $("m-work").value = (n.memo && n.memo.work) || ""; $("m-result").value = (n.memo && n.memo.result) || "";
   fillDraft(existing);
   if (n.ai) { $("ai-badge").hidden = false; showWarnings(n.ai.warnings); }
+  if (n.sns) { $("s-caption").value = n.sns.caption || ""; $("s-hashtags").value = (n.sns.hashtags || []).join(", "); if (n.sns.ai) $("sns-badge").hidden = false; if (n.sns.copiedAt) $("sns-copied").textContent = "이전에 복사한 적 있어요."; }
   images = await Promise.all((existing.imageIds || []).map(async (id) => ({ id, data: await getImageData(id) })));
   renderImages();
   applyStatus(existing.status);
