@@ -1,1 +1,25 @@
+# 환경변수와 비밀 키 (절대 커밋 금지)
+.env
+.env.*
+*.key
+*.pem
+serviceAccount*.json
+*-firebase-adminsdk-*.json
+
+# 의존성과 빌드 결과
+node_modules/
+dist/
+build/
+
+# Firebase / Vercel 로컬 캐시
+.firebase/
+.vercel/
+firebase-debug.log*
+
+# OS·에디터
+.DS_Store
+.vscode/
+.idea/
+
+# 배포 때 생성되는 공유 미리보기 페이지
 /p/
