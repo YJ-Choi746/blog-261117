@@ -58,6 +58,31 @@
 - Firebase Hosting에서도 로그인이 되려면 Authentication → 설정 → 승인된 도메인에 `blog---261117.web.app`이 있어야 해요 (보통 처음부터 들어 있어요).
 - `docs/`, `*.md`, `firestore.rules`, `firebase.json`은 Hosting에 올리지 않아요 (`firebase.json`의 ignore).
 
+## 실제 사이트에서 AI 기능 쓰기 — 처음 한 번 (2026-11-24)
+
+### 1단계 · 보안 규칙 게시 (필수, 2분)
+작업(케이스 스터디) 저장 · 게시와 의뢰 저장이 되려면 새 규칙이 필요해요.
+1. Firebase 콘솔 → Firestore Database → **규칙** 탭
+2. 저장소의 `firestore.rules` 내용을 통째로 붙여넣기 → **게시**
+3. 확인: 관리자 로그인 → 작업 관리 → 새 작업 → 오른쪽 칸에 직접 쓰고 "초안 저장"이 되면 성공
+
+### 2단계 · AI 함수 배포 (AI 초안 · 의뢰 분석을 쓰려면)
+1. **Blaze 요금제로 전환**: Firebase 콘솔 왼쪽 아래 요금제 → Blaze. 놀라지 않게 Google Cloud 콘솔 → 결제 → **예산 및 알림**에서 예: 월 1만 원 알림을 걸어 두세요.
+2. **Claude API 키 만들기**: https://platform.claude.com → API Keys → 새 키 (어디에도 붙여넣거나 커밋하지 말고 아래 3에서만 입력)
+3. **Google Cloud Shell**(설치 필요 없음): https://shell.cloud.google.com 을 열고 한 줄씩 실행
+   ```bash
+   git clone https://github.com/YJ-Choi746/blog-261117.git && cd blog-261117
+   cd functions && npm install && cd ..
+   firebase login --no-localhost
+   firebase use blog---261117
+   firebase functions:secrets:set ANTHROPIC_API_KEY
+   firebase deploy --only functions
+   ```
+   `secrets:set`에서 키를 붙여넣으면 화면에 안 보이게 입력돼요. 끝나면 Functions에 `analyzeRequest` · `generateCaseStudy`(asia-northeast3)가 보여요.
+4. 확인: 작업 편집 화면에서 메모를 쓰고 **AI 초안 만들기** → 20초 안에 오른쪽이 채워지면 성공
+
+함수를 고친 뒤에는 Cloud Shell에서 `git pull && firebase deploy --only functions`만 다시 하면 돼요.
+
 ## AI 의뢰 분석 함수(F1) 배포 — 처음 한 번
 
 서버 함수 `analyzeRequest`는 `functions/` 폴더에 있어요. GitHub Actions는 호스팅만 배포하므로, 함수는 아래 순서로 직접 한 번 배포해요.
