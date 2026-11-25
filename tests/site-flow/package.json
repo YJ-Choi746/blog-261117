@@ -1,0 +1,8 @@
+{
+  "name": "site-flow",
+  "private": true,
+  "description": "실제 사이트(main 코드) 유저플로우 스크린샷과 기능 테스트 (테스트 보고서 v1.3)",
+  "scripts": { "test": "node flow.js" },
+  "dependencies": { "playwright-core": "1.49.1" },
+  "optionalDependencies": { "@sparticuz/chromium": "131.0.1" }
+}
