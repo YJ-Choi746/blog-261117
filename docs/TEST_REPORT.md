@@ -9,14 +9,13 @@
 
 ## 1. 유저플로우 스크린샷 (실제 사이트)
 
-화면의 작업 3건은 테스트용 예시 데이터임. 원본과 전체 화면은 [screenshots/site/](screenshots/site/), 이전 프로토타입 기준 24/24는 v1.2 커밋에 있음.
-**방문자: 홈 → 한 줄 의뢰 → 작업 상세 → 의뢰서 → 접수 / 관리자: 메모 → 초안 → 미리보기 → 게시 → 문구**
+**방문자: 홈 → 한 줄 의뢰 → 작업 상세 → 의뢰서 → 접수 / 관리자: 메모 → 초안 → 미리보기 → 게시 → 문구** (작업 3건은 예시 데이터, 원본 [screenshots/site/](screenshots/site/))
 
 | ① 홈 (V01) | ② 한 줄 의뢰 · 분야 추정 (F1 · V03) | ③ 작업 상세 (F3 · V04) | ④ 입력 오류 안내 (F2 · V07) | ⑤ 레퍼런스 · 사진 (F2 · V08) | ⑥ 접수 완료 (V09) |
 |---|---|---|---|---|---|
-| <img src="screenshots/site/v01-home.png" width="112"> | <img src="screenshots/site/v02-ask-result.png" width="112"> | <img src="screenshots/site/v03-work-detail.png" width="112"> | <img src="screenshots/site/v05-request-errors.png" width="112"> | <img src="screenshots/site/v06-request-filled.png" width="112"> | <img src="screenshots/site/v07-thanks.png" width="112"> |
+| <img src="screenshots/site/v01-home.png" width="80"> | <img src="screenshots/site/v02-ask-result.png" width="80"> | <img src="screenshots/site/v03-work-detail.png" width="80"> | <img src="screenshots/site/v05-request-errors.png" width="80"> | <img src="screenshots/site/v06-request-filled.png" width="80"> | <img src="screenshots/site/v07-thanks.png" width="80"> |
 | **⑦ English (V10)** | **⑧ 모바일 360px (N01 · N02 · N04)** | **⑨ 메모 입력 (F4 · A02 · A11)** | **⑩ AI 꺼짐 → 문장 틀 (F5 · A03)** | **⑪ 게시 미리보기 (F6 · A05)** | **⑫ 인스타그램 문구 (F7 · A07)** |
-| <img src="screenshots/site/v08-home-en.png" width="112"> | <img src="screenshots/site/v09-mobile-360.png" width="112"> | <img src="screenshots/site/a03-memo.png" width="112"> | <img src="screenshots/site/a04-ai-fail.png" width="112"> | <img src="screenshots/site/a06-preview.png" width="112"> | <img src="screenshots/site/a08-sns.png" width="112"> |
+| <img src="screenshots/site/v08-home-en.png" width="80"> | <img src="screenshots/site/v09-mobile-360.png" width="80"> | <img src="screenshots/site/a03-memo.png" width="80"> | <img src="screenshots/site/a04-ai-fail.png" width="80"> | <img src="screenshots/site/a06-preview.png" width="80"> | <img src="screenshots/site/a08-sns.png" width="80"> |
 
 ## 2. 기능별 단위 테스트 (자동 37건, 모두 통과)
 
@@ -42,26 +41,23 @@
 
 ## 3. 사용성 평가 (지인 테스트 대체, D35)
 
-**① 운영자 실측 (H3 · H4)**: 관리자 화면의 실제 사용자인 운영자가 실제 작업 4건을 게시하며 측정함(11/25).
+**① 운영자 실측 (H3 · H4)**: 관리자 화면의 실제 사용자인 운영자가 작업 4건을 게시하며 측정함(11/25).
 
 | 작업 | 메모 → 게시 (목표 20분) | 메모에 없는 사실 (목표 0건) | 그대로 쓴 문단 (목표 60%) |
 |---|---|---|---|
 | 1 · 2 · 3 · 4 | 24 · 18 · 15 · 15분 | 0 · 0 · 0 · 1건 | 65 · 80 · 50 · 60% |
 | 결과 | 평균 18분, 합계 72분 (목표 80분) **달성** | 합계 1건 **미달** | 평균 63.8% **달성** |
 
-1건째만 24분, 2건째부터 20분 안. 4건째 초안에서 순서가 바뀌어 말뜻이 달라진 곳 1건(KR2 미달). 고친 곳은 주로 '-했습니다' 체 긴 문장. → 다음 조치: 프롬프트에 '메모 순서 · 인과 유지', '짧은 해요체'를 넣고 다시 실측할 예정.
+1건째만 24분, 2건째부터 20분 안. 4건째에서 순서가 바뀌어 말뜻이 달라진 곳 1건(KR2 미달). → 프롬프트에 '메모 순서 · 인과 유지'를 넣고 다시 실측할 예정.
 
-**② 휴리스틱 평가 (Nielsen 10원칙) → 1 · 2차 조치**: 1차 조치 후 다시 재서 남은 문제를 2차에서 고침. 수치는 크롬 1280×860 · 360×780 실측.
+**② 휴리스틱 평가 (Nielsen 10원칙) → 1 · 2차 조치** (크롬 1280×860 · 360×780 실측)
 
 | 등급 · 원칙 | 문제 (조치 전) | 1차 조치 결과 | 2차 조치 결과 | 검증 |
 |---|---|---|---|---|
 | **높음** · 시스템과 실제의 일치 | 메모 3칸이 맨 아래 접힌 '(선택)' 칸, 2113px 중 1910px | 이미지 아래로 옮기고 펼침, '(선택)' 삭제 → 932px. 첫 화면(860px) 밖이라 미흡 | 작업 정보 바로 아래로 → 608px ✅. 단, 메모가 작업 정보와 섞여 보인다는 **운영자 피드백으로 되돌림**('(선택)' 칸, 클라이언트는 맡은 일 옆) | <sub>[A11](../tests/site-flow/flow.js#L106)</sub> |
 | **중간** · 미니멀 디자인 | 360px 헤더 3줄 208px(첫 화면 27%) | 600px 이하 한 줄 → **65px(8%)** | 1차 뒤 English 모드에서 'Start a project' 버튼이 넘쳐 가로 405px → 'Request' · 간격 8px로 **360px ✅** | <sub>[N04](../tests/site-flow/flow.js#L85) · [N06](../tests/site-flow/flow.js#L90)</sub> |
 | **낮음** · 가독성 | 홈 헤딩 한 글자만 넘어감. 원인: 홈은 `site.css`를 안 불러 `word-break: normal` | 홈 헤딩에 `keep-all` → **어절 단위 줄바꿈 ✅** | 추가 조치 없음 | <sub>[N05](../tests/site-flow/flow.js#L86)</sub> |
-| **정보** · 가시성 | AI 작성기 아티팩트는 소유자만 열림 | 관리자 편집 화면(메모 → 초안) 캡처와 전후 비교 이미지 첨부 | ⏳ 아티팩트 자체 화면 캡처는 운영자 계정에서 첨부 예정 | — |
 
-| 메모 칸 위치 (전 → 후) | 모바일 헤더 · 홈 헤딩 (전 → 후) | English 360px (후) |
-|---|---|---|
-| <img src="screenshots/heuristic/h1-memo-before-after.png" width="120"> | <img src="screenshots/heuristic/h2-h3-mobile-before-after.png" width="180"> | <img src="screenshots/heuristic/h2-mobile-en-after.png" width="88"> |
+**정보 · 가시성**: AI 작성기 아티팩트는 소유자만 열려 편집 화면 캡처로 대신함. 조치 전 → 후 화면: [메모 칸](screenshots/heuristic/h1-memo-before-after.png) · [모바일 헤더 · 홈 헤딩](screenshots/heuristic/h2-h3-mobile-before-after.png) · [English 360px](screenshots/heuristic/h2-mobile-en-after.png)
 
-**③ 실제 방문자 GA4 (H1 · H2)**: 11/24~25 '사용자 획득' 기준 **사용자 5명**(관리자 브라우저 제외). 표본 30명 미만 · 공개 직후 집계 지연으로 case_view → request_click · form_start → form_submit 전환율은 **판단 보류**. → 다음 조치: LinkedIn과 커뮤니티 UTM 링크로 4주간 모아 다시 판단할 예정. **한계**: 배포 URL 대신 같은 코드를 로컬에서 실행 · 기본 글꼴로 측정.
+**③ 실제 방문자 GA4 (H1 · H2)**: 11/24~25 '사용자 획득' 기준 **사용자 5명**(관리자 브라우저 제외). 표본 부족 · 집계 지연으로 전환율은 **판단 보류** → LinkedIn · 커뮤니티 UTM 링크로 4주간 모아 다시 판단할 예정. **한계**: 배포 URL 대신 같은 코드를 로컬에서 실행 · 기본 글꼴로 측정.

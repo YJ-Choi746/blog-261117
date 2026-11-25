@@ -20,7 +20,7 @@
 ## 3. 미니프로젝트 수행 결과
 **① 데이터 수집 · 전처리 · EDA 시각화** — 저장소 커밋 기록(git log)과 운영자 실측 4건을 모아, 시간대(KST) 맞추기 · 커밋 종류 분류 · 합치기 커밋 제외로 정리함.
 
-<img src="screenshots/eda/eda-project.png" width="450">
+<img src="screenshots/eda/eda-project.png" width="700">
 
 - 커밋은 11/24(98개) · 11/25(45개)에 몰렸고 문서(docs)가 가장 많음. 게시 시간은 24 → 18 → 15 → 15분, 2건째부터 목표(20분) 안.
 
