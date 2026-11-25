@@ -75,6 +75,20 @@
           <input type="file" id="image-input" accept="image/*" multiple hidden>
         </div>
 
+        <details class="pw-key pw-memo-box" id="memo-box" open>
+          <summary>메모로 초안 만들기 <span class="pw-sum-sub">요청 · 한 일 · 결과를 적고 '메모로 AI 초안'</span></summary>
+          <div class="pw-memo">
+            <label><span class="pw-req">요청 · 고민</span><textarea id="m-request" rows="3" maxlength="1500" placeholder="예: 오래된 로고가 젊은 손님에게 안 맞는다고 느낌. 매장 분위기는 유지하고 싶어 함"></textarea></label>
+            <label><span class="pw-req">한 일</span><textarea id="m-work" rows="3" maxlength="1500" placeholder="예: 매장 방문, 주변 가게 간판 비교. 시안 3개 제안 후 2번 수정"></textarea></label>
+            <label><span class="pw-req">결과</span><textarea id="m-result" rows="3" maxlength="1500" placeholder="예: 간판, 포장지, 인스타그램 프로필에 새 로고 적용"></textarea></label>
+          </div>
+          <div class="pw-row">
+            <button type="button" id="generate" class="btn btn-outline">메모로 AI 초안</button>
+            <button type="button" id="c-template" class="btn btn-outline">직접 쓰기</button>
+          </div>
+          <p class="hint">메모는 관리자만 보고, 아래 칸을 채우는 데만 써요. 0원으로 쓰려면 <a href="https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA" target="_blank" rel="noopener">AI 작성기(Claude 아티팩트)</a>에서 만든 글을 위 칸에 붙여 넣으세요.</p>
+        </details>
+
         <div id="draft" class="pw-draft">
                     <div id="draft-edit" class="pw-draft">
             <label>01 요청<textarea id="c-problem" rows="3" maxlength="3000" placeholder="예: 오래된 로고가 젊은 손님에게 안 맞음"></textarea></label>
@@ -116,20 +130,6 @@
           </div>
           <p class="hint">작업 글을 다 쓴 뒤 만들어요. 인스타그램 게시는 직접 해 주세요.</p>
         </section>
-
-        <details class="pw-key">
-          <summary>메모로 초안 만들기 (선택)</summary>
-          <div class="pw-memo">
-            <label><span class="pw-req">요청 · 고민</span><textarea id="m-request" rows="3" maxlength="1500" placeholder="예: 오래된 로고가 젊은 손님에게 안 맞는다고 느낌. 매장 분위기는 유지하고 싶어 함"></textarea></label>
-            <label><span class="pw-req">한 일</span><textarea id="m-work" rows="3" maxlength="1500" placeholder="예: 매장 방문, 주변 가게 간판 비교. 시안 3개 제안 후 2번 수정"></textarea></label>
-            <label><span class="pw-req">결과</span><textarea id="m-result" rows="3" maxlength="1500" placeholder="예: 간판, 포장지, 인스타그램 프로필에 새 로고 적용"></textarea></label>
-          </div>
-          <div class="pw-row">
-            <button type="button" id="generate" class="btn btn-outline">메모로 AI 초안</button>
-            <button type="button" id="c-template" class="btn btn-outline">직접 쓰기</button>
-          </div>
-          <p class="hint">메모는 관리자만 보고, 위 칸을 채우는 데만 써요. 0원으로 쓰려면 <a href="https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA" target="_blank" rel="noopener">AI 작성기(Claude 아티팩트)</a>에서 만든 글을 위 칸에 붙여 넣으세요.</p>
-        </details>
 
         <details class="pw-key">
           <summary>내 API 키로 AI 쓰기</summary>

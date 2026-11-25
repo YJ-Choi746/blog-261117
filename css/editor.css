@@ -335,6 +335,11 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 #editor .pw-key { border: 1px solid var(--line); padding: 0 12px; font-size: 14px; } /* line */
 #editor .pw-key summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--gray-700); }
 #editor .pw-key[open] { padding-bottom: 12px; }
+/* 메모로 초안 만들기: 핵심 흐름이라 작업 정보 바로 아래 · 펼쳐 둠 (휴리스틱 H1) */
+#editor .pw-memo-box { border-color: var(--line-strong); padding: 0 16px; } /* line-strong */
+#editor .pw-memo-box summary { color: var(--black); font-size: 15px; font-weight: 600; flex-wrap: wrap; gap: 4px 8px; }
+#editor .pw-memo-box .pw-sum-sub { font-size: 13px; font-weight: 400; color: var(--gray-600); } /* gray-600 */
+#editor .pw-memo-box[open] { padding-bottom: 16px; }
 #editor .pw-key-row { display: flex; flex-wrap: wrap; gap: 8px; }
 #editor .pw-key-row input { flex: 1 1 200px; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); font: inherit; font-size: 14px; } /* line-strong */
 #editor .pw-key .check { margin-top: 8px; display: flex; flex-direction: row; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; color: var(--gray-700); }
