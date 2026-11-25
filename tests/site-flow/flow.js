@@ -79,6 +79,17 @@ const shot = (p, f, full = false) => p.screenshot({ path: path.join(OUT, f), ful
   await mp.goto(BASE + '/index.html'); await mp.waitForTimeout(800);
   const small = await mp.evaluate(() => [...document.querySelectorAll('button, a.btn, .btn')].filter((e) => { const r = e.getBoundingClientRect(); return r.width && r.height && r.height < 44; }).map((e) => (e.textContent || e.getAttribute('aria-label') || '').trim().slice(0, 14) + ':' + Math.round(e.getBoundingClientRect().height)));
   check('N03', '홈 버튼 높이 44px 이상', small.length === 0, small.join(', '));
+  // 휴리스틱 H2 · H3 (v1.4): 모바일 헤더 한 줄 · 홈 헤딩 어절 줄바꿈
+  const hdr = async () => mp.evaluate(() => { const h = document.querySelector('header'); return { h: Math.round(h.getBoundingClientRect().height), sw: document.documentElement.scrollWidth }; });
+  const hk = await hdr(); const wb = await mp.evaluate(() => getComputedStyle(document.querySelector('h1')).wordBreak);
+  check('N04', '모바일 헤더 한 줄(80px 이하) · 홈', hk.h <= 80 && hk.sw <= 360, `헤더 ${hk.h}px`);
+  check('N05', '홈 헤딩 word-break: keep-all', wb === 'keep-all', wb);
+  await mp.click('.lang-toggle'); await mp.waitForTimeout(400);
+  await mp.goto(BASE + '/works.html'); await mp.waitForTimeout(800);
+  const he = await hdr();
+  check('N06', '모바일 헤더 한 줄 · English 작업 목록 가로 넘침 없음', he.h <= 80 && he.sw <= 360, `헤더 ${he.h}px · scrollWidth ${he.sw}`);
+  await mp.screenshot({ path: path.join(OUT, 'v11-mobile-en.png') });
+  await mp.click('.lang-toggle'); await mp.waitForTimeout(300);
   if (process.env.LIVE) { require('fs').writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(results, null, 1)); await b.close(); return; }
   // ---------- 관리자 ----------
   const pa = await c.newPage(); pa.on('dialog', (d) => d.accept()); const aerr = []; pa.on('pageerror', (e) => aerr.push(e.message));
@@ -90,6 +101,9 @@ const shot = (p, f, full = false) => p.screenshot({ path: path.join(OUT, f), ful
   await shot(pa, 'a02-works.png');
   await pa.goto(BASE + '/admin/work.html'); await pa.waitForTimeout(1200);
   await shot(pa, 'a03a-editor-empty.png');
+  // 휴리스틱 H1 (v1.4): 메모 칸이 작업 정보 바로 아래에 펼쳐져 있음
+  const memo = await pa.evaluate(() => { const d = document.getElementById('memo-box'); const y = (el) => el.getBoundingClientRect().top + scrollY; return { open: d.open, top: Math.round(y(d)), draft: Math.round(y(document.getElementById('draft'))), client: Math.round(y(document.querySelector('.pw-client'))) }; });
+  check('A11', '메모 칸 펼침 · 작업 정보 바로 아래(클라이언트 · 초안보다 위)', memo.open && memo.top < memo.client && memo.top < memo.draft, `메모 ${memo.top}px · 초안 ${memo.draft}px`);
   await pa.evaluate(() => document.querySelectorAll('details.pw-key')[0].open = true);
   await pa.fill('#f-name', '꽃집 온라인 주문 페이지');
   // 빈 메모로 초안

@@ -1,150 +1,174 @@
 [
  {
-  "id": "V-01",
+  "id": "V01",
   "name": "홈 첫 화면 헤딩 · 의뢰 버튼",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-02",
+  "id": "V02",
   "name": "한 줄 의뢰 빈 입력 시 결과 없음",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-03",
+  "id": "V03",
   "name": "한 줄 의뢰 → 분야 추정 · 비슷한 작업",
   "ok": true,
   "note": "브랜딩 작업이 필요하신 것 같아요. 이런 작업을 했어요."
  },
  {
-  "id": "V-04",
+  "id": "V04",
   "name": "작업 상세 01 요청 · 02 과정 · 03 결과",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-05",
+  "id": "V05",
   "name": "작업 목록 게시 작업 3건",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-06",
+  "id": "V06",
   "name": "의뢰서에 한 줄 내용 · 분야 미리 채움",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-07",
+  "id": "V07",
   "name": "이름 · 이메일 오류 안내, 제출 막음",
   "ok": true,
   "note": "자음이나 모음만으로는 이름을 확인할 수 없어요. 올바른 이름을 적어주세요. / 이메일 주소를 name@example.com 형식으로 적어주세요."
  },
  {
-  "id": "V-08",
+  "id": "V08",
   "name": "레퍼런스 작업 · 링크 · 사진 첨부",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-09",
+  "id": "V09",
   "name": "제출 → 의뢰 저장 · 접수 화면",
   "ok": true,
   "note": "저장 1건"
  },
  {
-  "id": "V-10",
+  "id": "V10",
   "name": "한국어 → English 전환, 새로고침 후 유지",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-10b",
+  "id": "V10b",
   "name": "English 유지",
   "ok": true,
   "note": ""
  },
  {
-  "id": "V-11",
+  "id": "V11",
   "name": "방문자 화면 스크립트 오류 0건",
   "ok": true,
   "note": ""
  },
  {
-  "id": "N-01",
+  "id": "N01",
   "name": "모바일 360px 가로 넘침 없음",
   "ok": true,
   "note": "scrollWidth 360"
  },
  {
-  "id": "N-02",
+  "id": "N02",
   "name": "모바일 작업 상세 가로 넘침 없음",
   "ok": true,
   "note": "scrollWidth 360"
  },
  {
-  "id": "N-03",
+  "id": "N03",
   "name": "홈 버튼 높이 44px 이상",
   "ok": true,
   "note": ""
  },
  {
-  "id": "A-01",
+  "id": "N04",
+  "name": "모바일 헤더 한 줄(80px 이하) · 홈",
+  "ok": true,
+  "note": "헤더 65px"
+ },
+ {
+  "id": "N05",
+  "name": "홈 헤딩 word-break: keep-all",
+  "ok": true,
+  "note": "keep-all"
+ },
+ {
+  "id": "N06",
+  "name": "모바일 헤더 한 줄 · English 작업 목록 가로 넘침 없음",
+  "ok": true,
+  "note": "헤더 65px · scrollWidth 360"
+ },
+ {
+  "id": "A01",
   "name": "관리자 로그인 → 관리 화면",
   "ok": true,
   "note": "/admin/posts.html"
  },
  {
-  "id": "A-02",
+  "id": "A11",
+  "name": "메모 칸 펼침 · 작업 정보 바로 아래(클라이언트 · 초안보다 위)",
+  "ok": true,
+  "note": "메모 608px · 초안 1540px"
+ },
+ {
+  "id": "A02",
   "name": "메모 비우고 AI 초안 → 막고 안내",
   "ok": true,
   "note": "메모를 한 칸 이상 써 주세요."
  },
  {
-  "id": "A-03",
+  "id": "A03",
   "name": "AI 서버 꺼짐 → 안내 + 문장 틀로 대체, 메모 유지",
   "ok": true,
   "note": "AI 서버가 아직 꺼져 있어 메모를 칸에 먼저 옮겼어요 (functions/not-found). 아래 '내 API 키로 AI "
  },
  {
-  "id": "A-04",
+  "id": "A04",
   "name": "직접 쓰기 → 메모를 초안 칸으로",
   "ok": true,
   "note": "전화로만 주문을 받아서 바쁜 시간에 주문을 놓침."
  },
  {
-  "id": "A-05",
+  "id": "A05",
   "name": "전체 화면 미리보기에 제목 반영",
   "ok": true,
   "note": ""
  },
  {
-  "id": "A-06",
+  "id": "A06",
   "name": "게시 → 게시 완료 패널",
   "ok": true,
   "note": ""
  },
  {
-  "id": "A-07",
+  "id": "A07",
   "name": "인스타그램 문구 채움",
   "ok": true,
   "note": "✨ 꽃집 온라인 주문 페이지 💬 전화로만 주문을 받아서 바쁜 시간에 주"
  },
  {
-  "id": "A-08",
+  "id": "A08",
   "name": "게시한 작업이 작업 목록에 보임",
   "ok": true,
   "note": ""
  },
  {
-  "id": "A-09",
+  "id": "A09",
   "name": "관리자 의뢰 목록에 방금 의뢰",
   "ok": true,
   "note": ""
  },
  {
-  "id": "A-10",
+  "id": "A10",
   "name": "관리자 화면 스크립트 오류 0건",
   "ok": true,
   "note": ""

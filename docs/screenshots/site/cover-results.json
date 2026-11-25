@@ -1,48 +1,48 @@
 [
  {
-  "id": "C-01",
+  "id": "C01",
   "name": "고르기 전에는 첫 장이 타이틀",
   "ok": true,
   "note": "★ 타이틀 (홈) / 2 / 3"
  },
  {
-  "id": "C-02",
+  "id": "C02",
   "name": "3번째 썸네일을 누르면 그 사진이 타이틀",
   "ok": true,
   "note": "1 / 2 / ★ 타이틀 (홈)"
  },
  {
-  "id": "C-03",
+  "id": "C03",
   "name": "사진 순서와 본문 미리보기 배치는 그대로",
   "ok": true,
   "note": ""
  },
  {
-  "id": "C-04",
+  "id": "C04",
   "name": "저장: coverImageId = 누른 사진, imageIds 순서 그대로",
   "ok": true,
   "note": "upload3.png,upload1.png,upload2.png"
  },
  {
-  "id": "C-05",
+  "id": "C05",
   "name": "홈 화면 카드 사진 = 누른 사진",
   "ok": true,
   "note": ""
  },
  {
-  "id": "C-06",
+  "id": "C06",
   "name": "작업 상세 맨 위는 원래 순서 그대로(첫 장)",
   "ok": true,
   "note": ""
  },
  {
-  "id": "C-07",
+  "id": "C07",
   "name": "다시 열어도 누른 사진이 타이틀, 순서 유지",
   "ok": true,
   "note": "1 / 2 / ★ 타이틀 (홈)"
  },
  {
-  "id": "C-08",
+  "id": "C08",
   "name": "스크립트 오류 0건",
   "ok": true,
   "note": ""
