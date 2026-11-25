@@ -97,7 +97,7 @@ const shot = (p, f, full = false) => p.screenshot({ path: path.join(OUT, f), ful
   const e1 = (await pa.textContent('#act-msg')) || '';
   check('A-02', '메모 비우고 AI 초안 → 막고 안내', /메모|채워|적어/.test(e1), e1.trim().slice(0, 60));
   await pa.fill('#f-name', '꽃집 온라인 주문 페이지'); await pa.selectOption('#f-category', 'UI/UX 디자인');
-  await pa.fill('#f-industry', '꽃집'); await pa.fill('#f-period', '2주'); await pa.fill('#f-role', 'UX · UI');
+  await pa.fill('#f-industry', '꽃집'); await pa.fill('#f-period-from', '2026-10'); await pa.fill('#f-period-to', '2026-11'); await pa.fill('#f-role', 'UX · UI');
   await pa.fill('#m-request', '전화로만 주문을 받아서 바쁜 시간에 주문을 놓침'); await pa.fill('#m-work', '주문 단계를 3단계로 줄이고 꽃 종류를 사진으로 고르게 함'); await pa.fill('#m-result', '사장님이 주문을 한 화면에서 확인');
   await pa.locator('#image-input').setInputFiles([path.join(__dirname, 'upload1.png')]); await pa.waitForTimeout(1200);
   await pa.locator('details.pw-key').first().scrollIntoViewIfNeeded(); await shot(pa, 'a03-memo.png');
