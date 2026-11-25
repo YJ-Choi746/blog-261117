@@ -6,7 +6,7 @@
   const KEY = "jae-lang";
   const T = {
     // 메뉴 · 공통
-    "작업": "Work", "기록": "Journal", "서비스": "Services", "프로젝트 의뢰": "Start a project", "관리자": "Admin",
+    "작업": "Work", "기록": "Journal", "서비스": "Services", "프로젝트 의뢰": "Request", "관리자": "Admin",
     "주요 메뉴": "Main menu", "닫기": "Close", "카테고리": "Category", "전체": "All", "선택": "optional",
     // 첫 화면
     "생각을 화면으로,": "From ideas to screens,", "화면을": "from screens", "경험": "to experiences", "으로.": ".",
