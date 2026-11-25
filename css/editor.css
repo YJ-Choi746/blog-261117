@@ -404,3 +404,7 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pw-thumbs .work-image img { cursor: pointer; }
 .pw-thumbs .work-image img.pw-cover-on { outline: 3px solid var(--blue); outline-offset: 2px; } /* blue */
 .pw-thumbs .work-image img:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* 미리보기 이미지 캡션 · 캡션 입력칸 */
+.pv-cap { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--gray-600); text-align: center; overflow-wrap: anywhere; }
+.pv-tools .pv-cap-in { flex: 1 1 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); font: inherit; font-size: 14px; box-sizing: border-box; }

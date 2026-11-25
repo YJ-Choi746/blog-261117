@@ -146,3 +146,8 @@ h1, h2, h3, .case-head h1 { word-break: keep-all; overflow-wrap: break-word; hyp
 
 /* 대표 이미지(첫 장 · 맨 위): 카드와 같은 16:11 틀을 빈 공간 없이 꽉 채워요. 보이는 부분은 관리자 자르기(카드 16:11)로 정해요 */
 .case-cover img.is-hero { aspect-ratio: 16 / 11; height: auto; max-height: none; object-fit: cover; }
+
+/* 이미지 캡션: 본문(17px)보다 작게, gray-600 */
+.img-cap { margin-top: 0; margin-bottom: 12px; }
+.img-cap img { display: block; height: auto; }
+.img-cap figcaption { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--gray-600); text-align: center; overflow-wrap: anywhere; }

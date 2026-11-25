@@ -10,7 +10,7 @@ import {
 import { uploadImage, uploadCanvas, getImageData } from "./images.js";
 import { openCrop } from "./crop.js";
 import { templateDraft, templateSns } from "./templates.js";
-import { SPOTS, normLayout, applyLayout, sortBySpot, clampW } from "./image-layout.js";
+import { SPOTS, normLayout, applyLayout, sortBySpot, clampW, withCaption } from "./image-layout.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_IMAGES = 4;
@@ -62,7 +62,7 @@ $("undo").addEventListener("click", () => {
 
 // ---- 이미지 ----
 // 위치 · 폭 · 정렬은 오른쪽 미리보기에서 바로 바꿔요 (끌어서 옮기기 · 모서리로 크기). js/image-layout.js
-const layoutOf = (im) => normLayout({ w: im.w, align: im.align, at: im.at }, 0);
+const layoutOf = (im) => normLayout({ w: im.w, align: im.align, at: im.at, cap: im.cap }, 0);
 function reorderImages() { images = sortBySpot(images, layoutOf); }
 // 타이틀 이미지 = 홈 화면 · 작업 목록 카드 사진. 썸네일을 누르면 정해지고, 고르지 않았으면 첫 장
 const coverImg = () => images.find((x) => x.cover) || images[0];
@@ -421,7 +421,7 @@ function renderFullPreview(px = "fp") {
     const l = layoutOf(im);
     const img = document.createElement("img"); img.alt = `${title} 이미지 ${i + 1}`; img.src = im.data; img.draggable = false;
     const hero = i === 0 && l.at === "cover"; // 맨 위 첫 장: 16:11 꽉 차게 (방문자 화면과 같게). 타이틀 이미지와는 따로예요
-    if (!live) { applyLayout(img, l); if (hero) img.classList.add("is-hero"); boxes[l.at].appendChild(img); return; }
+    if (!live) { if (hero) img.classList.add("is-hero"); boxes[l.at].appendChild(withCaption(img, l)); return; }
     boxes[l.at].appendChild(editableFigure(im, i, img, l));
   });
   Object.values(boxes).forEach((b) => { b.hidden = !b.children.length && !(live && dragging); });
@@ -440,7 +440,10 @@ function editableFigure(im, i, img, l) {
   fig.setAttribute("aria-label", `이미지 ${i + 1} · 폭 ${l.w}% · 눌러서 편집`);
   const wrap = document.createElement("div"); wrap.className = "pv-imgwrap"; wrap.appendChild(img);
   fig.appendChild(wrap);
-  fig.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selImg = i; renderLive(); } });
+  // 캡션 (사진 아래 작은 글씨)
+  const capEl = document.createElement("figcaption"); capEl.className = "pv-cap"; capEl.textContent = l.cap || ""; capEl.hidden = !l.cap;
+  fig.appendChild(capEl);
+  fig.addEventListener("keydown", (e) => { if (e.target !== fig) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selImg = i; renderLive(); } });
   // 끌어서 옮기기: 사진을 누른 채 다른 칸(맨 위 · 01 · 02 · 03)으로 옮겨요
   img.addEventListener("pointerdown", (e) => startMove(e, i, fig));
   if (i === selImg) {
@@ -448,7 +451,7 @@ function editableFigure(im, i, img, l) {
     handle.className = "pv-handle"; handle.title = "끌어서 크기 바꾸기";
     handle.addEventListener("pointerdown", (e) => startResize(e, im, fig));
     wrap.appendChild(handle);
-    fig.appendChild(imageToolbar(im, i));
+    fig.appendChild(imageToolbar(im, i, capEl));
   }
   return fig;
 }
@@ -459,9 +462,16 @@ function tbButton(text, label, on, fn) {
   b.addEventListener("click", (e) => { e.stopPropagation(); fn(); });
   return b;
 }
-function imageToolbar(im, i) {
+function imageToolbar(im, i, capEl) {
   const bar = document.createElement("div");
   bar.className = "pv-tools";
+  // 캡션 입력: 쓰는 대로 사진 아래에 보여요 (다시 그리지 않아 입력이 끊기지 않아요)
+  const capIn = document.createElement("input");
+  capIn.className = "pv-cap-in"; capIn.maxLength = 120; capIn.placeholder = "캡션 (선택) · 예: 매장 간판 시안"; capIn.setAttribute("aria-label", "이미지 캡션");
+  capIn.value = im.cap || "";
+  capIn.addEventListener("input", () => { im.cap = capIn.value; if (capEl) { capEl.textContent = capIn.value.trim(); capEl.hidden = !capIn.value.trim(); } changed(); });
+  capIn.addEventListener("pointerdown", (e) => e.stopPropagation());
+  bar.appendChild(capIn);
   const l = layoutOf(im);
   const wlab = document.createElement("span"); wlab.className = "pv-w"; wlab.textContent = `${l.w}%`;
   bar.append(wlab,

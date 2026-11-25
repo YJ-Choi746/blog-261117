@@ -1,7 +1,7 @@
 // 작업 상세 (PRD v1.3 F3, 프로토타입 디자인) — 제목 · 요약 → 정보 줄 → 커버 → 01 요청 · 02 과정 · 03 결과 → 다른 프로젝트 → 의뢰 띠
 // 공개 문서(works)만 읽어요. 메모 · 비공개 실명은 관리자 문서(workNotes)에 있어 여기서 읽을 수 없어요.
 // 모든 내용은 textContent로만 넣어요 (XSS)
-import { normLayout, applyLayout } from "./image-layout.js";
+import { normLayout, applyLayout, withCaption } from "./image-layout.js";
 import { db, isConfigured, doc, getDoc } from "./firebase.js";
 import { getImageData } from "./images.js";
 import { CATEGORIES, loadPublishedWorks } from "./works-data.js";
@@ -63,9 +63,8 @@ async function load() {
   (w.imageIds || []).forEach((im, i) => {
     const l = normLayout((w.imageSizes || [])[i], i);
     const img = image(im, `${w.title || w.name} 이미지 ${i + 1}`);
-    applyLayout(img, l);
     if (i === 0 && l.at === "cover") img.classList.add("is-hero"); // 맨 위 첫 장: 16:11 꽉 차게 (타이틀 이미지는 홈 카드에만 쓰여요)
-    boxes[l.at].appendChild(img);
+    boxes[l.at].appendChild(withCaption(img, l)); // 캡션이 있으면 사진 아래 작은 글씨
   });
   Object.values(boxes).forEach((b) => { b.hidden = !b.children.length; });
   pager(w);
