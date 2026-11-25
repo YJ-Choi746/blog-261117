@@ -11,12 +11,12 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == "MSBbFHuHxmUeHxF1UJ687xZsXeF3";
     }
 
-    // 평가자 보기 전용 계정 (2026-11-25 17:00 KST까지만, 읽기만): 기록 · 작업 초안을 볼 수 있어요.
+    // 평가자 보기 전용 계정 (2026-11-25 20:00 KST까지만, 읽기만): 기록 · 작업 초안을 볼 수 있어요.
     // 의뢰(이름 · 이메일)와 작업 메모(workNotes, 비공개 클라이언트 이름)는 볼 수 없어요. 쓰기는 모두 막혀요.
     function isViewer() {
       return request.auth != null
         && request.auth.token.email == "evaluator@example.com"
-        && request.time < timestamp.value(1795593600000);
+        && request.time < timestamp.value(1795604400000);
     }
 
     function validPost() {

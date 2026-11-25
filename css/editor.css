@@ -427,6 +427,6 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .cat-inputs label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600); }
 .cat-inputs input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); font: inherit; font-size: 15px; color: var(--black); }
 
-/* 평가자 보기 전용 안내 띠 (D39, 2026-11-25 17:00까지) */
+/* 평가자 보기 전용 안내 띠 (D39, 2026-11-25 20:00까지) */
 .viewer-bar { margin: 0; padding: 10px 24px; background: var(--blue-tint); color: var(--blue-tint-ink); font-size: 14px; text-align: center; } /* blue-tint */
 .is-viewer button:disabled { cursor: not-allowed; }
