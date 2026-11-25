@@ -219,7 +219,7 @@ if (!isConfigured) {
     if (applyViewerMode(user, () => signOut(auth))) {
       // 평가자 보기: 의뢰에는 이름 · 이메일이 있어 목록을 불러오지 않아요 (보안 규칙도 막아요)
       const st = document.getElementById("list-status") || document.getElementById("checking");
-      if (st) { st.hidden = false; st.textContent = "평가자 보기에서는 개인정보 보호를 위해 의뢰 목록을 숨겼어요. 의뢰 카드 화면은 테스트 보고서 스크린샷(A-09)에서 볼 수 있어요."; }
+      if (st) { st.hidden = false; st.textContent = "평가자 보기에서는 개인정보 보호를 위해 의뢰 목록을 숨겼어요. 의뢰 카드 화면은 테스트 보고서 스크린샷(A09)에서 볼 수 있어요."; }
       return;
     }
     try {
