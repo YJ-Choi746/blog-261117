@@ -13,7 +13,7 @@
 | 배포된 블로그 | https://blog---261117.web.app (GitHub Pages: https://yj-choi746.github.io/blog-261117/) · 관리자 로그인 https://blog---261117.web.app/admin/login.html |
 | PRD 기획서 | [docs/PRD.md](docs/PRD.md) v1.5, A4 2쪽 (v0.2 → v1.5 변화는 커밋 기록 `docs: PRD ...`) |
 | 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) v1.4, A4 2쪽 (실제 사이트 자동 37/37 + 운영자 실측 + 휴리스틱 평가 + GA4 실제 방문자) · 스크린샷 [docs/screenshots/site/](docs/screenshots/site/) · 자동 테스트 [tests/site-flow/](tests/site-flow/) (이전 프로토타입 24/24: [tests/e2e_prototype.py](tests/e2e_prototype.py)) |
-| 결과보고서 | [docs/RESULT_REPORT.md](docs/RESULT_REPORT.md) v1.0, A4 2쪽 (만든 것 · 목표 대비 결과 · 배운 것 · 다음 단계) |
+| 결과보고서 | [docs/RESULT_REPORT.md](docs/RESULT_REPORT.md) v1.1, A4 2쪽 (수업 내용 → 프로젝트 적용 · 데이터 EDA · 크롤링 계획 · AI 기능 결과 · 소감) · 분석 코드 [analysis/eda_project.py](analysis/eda_project.py) |
 | 소스 코드 | 이 저장소 `main` (커밋 기록이 개발 과정) · 파일별 역할 · 기능(F1~F7)별 대응표는 [docs/SOURCE_CODE.md](docs/SOURCE_CODE.md) · 요약은 아래 [구조](#구조) |
 | 에이전트용 지침 | [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) · [CLAUDE.md](CLAUDE.md) |
 | 의사결정 로그 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) (D1~D39) |

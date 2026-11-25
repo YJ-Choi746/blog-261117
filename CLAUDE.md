@@ -66,6 +66,7 @@ docs/SUCCESS_FAILURE_LOG.md  성공 · 실패 로그 (테스트 실행 · 프롬
 docs/TEST_REPORT.md     테스트 보고서 (유저플로우 스크린샷 + 기능별 단위 테스트, 2쪽 이하)
 docs/WORKLOG.md         작업 일지 (날짜 · 시간순)
 docs/screenshots/       사이트 화면 스크린샷 · prototype/ 아래는 프로토타입 유저플로우 11장과 test-results.json
+analysis/eda_project.py  미니프로젝트 EDA (커밋 기록 · 운영자 실측 → pandas → matplotlib, 결과 docs/screenshots/eda/), 실행: pip install pandas matplotlib && python3 analysis/eda_project.py
 tests/site-flow/    실제 사이트 유저플로우 자동 테스트 (Playwright + 가짜 Firebase, 실행: cd tests/site-flow && npm install && npm test · 이 폴더만 npm, D37)
 tests/e2e_prototype.py  프로토타입 유저플로우 자동 테스트 24건 (Playwright Python, 실행: python3 tests/e2e_prototype.py) · tests/fixtures/ 첨부 테스트 파일
 docs/USER_STORIES.md    사용자 스토리와 완료 기준
