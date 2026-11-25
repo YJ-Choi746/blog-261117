@@ -1,0 +1,43 @@
+// 타이틀 이미지를 순서와 상관없이 고르기 (D36). 실행: node cover.js (로컬 서버 + 가짜 Firebase)
+const { launch, ctx, BASE } = require('./lib');
+const path = require('path'); const OUT = process.env.OUT || path.join(__dirname, 'out');
+const results = []; const check = (id, name, ok, note = '') => { results.push({ id, name, ok: !!ok, note }); console.log(ok ? 'PASS' : 'FAIL', id, name, note); };
+(async () => {
+  require('fs').mkdirSync(OUT, { recursive: true });
+  const b = await launch(); const c = await ctx(b);
+  const pa = await c.newPage(); pa.on('dialog', (d) => d.accept()); const errs = []; pa.on('pageerror', (e) => errs.push(e.message));
+  await pa.goto(BASE + '/admin/login.html'); await pa.fill('#email', 'admin@example.com'); await pa.fill('#password', 'test-only'); await pa.click('#login-btn'); await pa.waitForTimeout(800);
+  await pa.goto(BASE + '/admin/work.html'); await pa.waitForTimeout(1000);
+  await pa.fill('#f-name', '타이틀 이미지 고르기 테스트');
+  await pa.locator('#image-input').setInputFiles(['upload3.png', 'upload1.png', 'upload2.png'].map((f) => path.join(__dirname, f))); await pa.waitForTimeout(1500);
+  const caps = await pa.locator('#images figcaption').allTextContents();
+  check('C-01', '고르기 전에는 첫 장이 타이틀', caps[0] === '타이틀 (카드)', caps.join(' / '));
+  // 3번째 사진(02 과정 칸)을 타이틀로
+  await pa.locator('#images figure').nth(2).getByRole('button', { name: /타이틀 이미지로/ }).click(); await pa.waitForTimeout(500);
+  const caps2 = await pa.locator('#images figcaption').allTextContents();
+  const heroSrc = await pa.evaluate(() => { const h = document.querySelector('#lp-cover .is-hero img, #lp-cover img.is-hero'); return h ? h.src.length : 0; });
+  check('C-02', "'타이틀로' → 타이틀 표시 · 미리보기 맨 위 첫 자리", caps2.filter((t) => t === '타이틀 (카드)').length === 1 && heroSrc > 0, caps2.join(' / '));
+  await pa.locator('#images').screenshot({ path: path.join(OUT, 'c01-cover-thumbs.png') });
+  await pa.fill('#c-summary', '타이틀 이미지 테스트'); await pa.fill('#c-problem', '요청'); await pa.fill('#c-process', '과정'); await pa.fill('#c-result', '결과');
+  await pa.click('#publish'); await pa.waitForTimeout(1500);
+  const saved = await pa.evaluate(() => { const s = JSON.parse(localStorage.getItem('fakefs')); const w = Object.values(s.works).find((x) => x.title === '타이틀 이미지 고르기 테스트'); const imgs = s.images; return { cover: w.coverImageId, ids: w.imageIds, coverName: imgs[w.coverImageId] && imgs[w.coverImageId].name, firstName: imgs[w.imageIds[0]] && imgs[w.imageIds[0]].name }; });
+  check('C-03', '저장된 coverImageId = 고른 사진 (upload2)', /upload2/.test(saved.coverName || ''), `cover=${saved.coverName}`);
+  const wid = await pa.evaluate(() => Object.entries(JSON.parse(localStorage.getItem('fakefs')).works).find(([, x]) => x.title === '타이틀 이미지 고르기 테스트')[0]);
+  const pv = await c.newPage(); await pv.goto(BASE + '/work.html?id=' + wid); await pv.waitForTimeout(1200);
+  const heroOk = await pv.evaluate(() => { const box = document.getElementById('work-cover'); const f = box && box.firstElementChild; return !!(f && f.classList.contains('is-hero')); });
+  check('C-04', '작업 상세 맨 위 첫 자리에 고른 사진(16:11)', heroOk);
+  await pv.screenshot({ path: path.join(OUT, 'c02-cover-detail.png') });
+  await pv.goto(BASE + '/works.html'); await pv.waitForTimeout(1200);
+  const cardSrc = await pv.evaluate(() => { const a = [...document.querySelectorAll('a[href*="work.html?id="]')].find((x) => x.textContent.includes('타이틀 이미지 고르기')); const i = a && a.querySelector('img'); return i ? i.src : ''; });
+  const coverData = await pv.evaluate((id) => JSON.parse(localStorage.getItem('fakefs')).images[id].data, saved.cover);
+  check('C-05', '작업 카드 썸네일 = 고른 사진', cardSrc && cardSrc === coverData);
+  await pv.goto(BASE + '/work.html?id=w1'); await pv.waitForTimeout(1000);
+  check('C-06', '예전 작업(coverImageId 첫 장)은 그대로', await pv.evaluate(() => !!document.querySelector('#work-cover .is-hero')));
+  await pa.goto(BASE + '/admin/work.html?id=' + wid); await pa.waitForTimeout(1500);
+  const caps3 = await pa.locator('#images figcaption').allTextContents();
+  const ti = caps3.indexOf('타이틀 (카드)');
+  check('C-07', '다시 열어도 고른 사진이 타이틀 (순서는 그대로)', caps3.filter((t) => t === '타이틀 (카드)').length === 1 && caps3.length === 3 && (await pa.locator('#images figure').nth(ti).locator('img').getAttribute('src')) === coverData, caps3.join(' / '));
+  check('C-08', '스크립트 오류 0건', errs.length === 0, errs.join(' | '));
+  require('fs').writeFileSync(path.join(OUT, 'cover-results.json'), JSON.stringify(results, null, 1));
+  await b.close();
+})();
