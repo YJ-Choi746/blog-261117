@@ -1,6 +1,6 @@
 # Jae 블로그 — AI 케이스 스터디 작성기
 
-> **평가자용 바로가기** · 배포 블로그: https://blog---261117.web.app · PRD: [docs/PRD.md](docs/PRD.md) (v1.5, 2쪽) · 테스트 보고서: [docs/TEST_REPORT.md](docs/TEST_REPORT.md) (v1.3, 2쪽, 실제 사이트 자동 25/25)
+> **평가자용 바로가기** · 배포 블로그: https://blog---261117.web.app · PRD: [docs/PRD.md](docs/PRD.md) (v1.5, 2쪽) · 테스트 보고서: [docs/TEST_REPORT.md](docs/TEST_REPORT.md) (v1.3, 2쪽, 실제 사이트 자동 33/33)
 
 웹·앱 디자이너의 블로그 겸 의뢰 페이지에 **AI로 운영자의 워크플로우를 자동화**하는 미니 프로젝트예요 (기획 · 디자인 · 개발 1인).
 
@@ -14,7 +14,7 @@
 | PRD 기획서 | [docs/PRD.md](docs/PRD.md) v1.5, A4 2쪽 (v0.2 → v1.5 변화는 커밋 기록 `docs: PRD ...`) |
 | AI 작성기 (Claude 아티팩트, 비용 0원) | https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA — 메모로 AI 초안과 인스타그램 문구 3안을 만들어 사이트에 붙여 넣음 (소유자만 열림, 공유는 아티팩트 공유 메뉴에서) |
 | 디자인 프로토타입 | [prototype.html](prototype.html) (배포 후 https://yj-choi746.github.io/blog-261117/prototype.html) — 방문자 · 관리자 화면 흐름을 한 파일로 클릭해 볼 수 있음 |
-| 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) v1.3 (실제 사이트 자동 25/25 + 운영자 실측 + 휴리스틱 평가 + GA4) · 스크린샷 [docs/screenshots/site/](docs/screenshots/site/) · 자동 테스트 [tests/site-flow/](tests/site-flow/) (이전 프로토타입 24/24: [tests/e2e_prototype.py](tests/e2e_prototype.py)) |
+| 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) v1.3 (실제 사이트 자동 33/33 + 운영자 실측 + 휴리스틱 평가 + GA4) · 스크린샷 [docs/screenshots/site/](docs/screenshots/site/) · 자동 테스트 [tests/site-flow/](tests/site-flow/) (이전 프로토타입 24/24: [tests/e2e_prototype.py](tests/e2e_prototype.py)) |
 | 에이전트용 지침 | [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) · [CLAUDE.md](CLAUDE.md) |
 | 의사결정 로그 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) |
 | 성공 · 실패 로그 | [docs/SUCCESS_FAILURE_LOG.md](docs/SUCCESS_FAILURE_LOG.md) · 주제별 [docs/failures/](docs/failures/) |
