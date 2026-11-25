@@ -49,6 +49,13 @@ input, select, textarea, button { font: inherit; }
 .nav { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; font-size: 15px; }
 .nav a { text-decoration: none; }
 .nav a[aria-current="page"] { color: var(--blue); font-weight: 600; }
+/* 모바일 헤더 한 줄 (휴리스틱 H2: 360px에서 3줄 208px → 한 줄) */
+@media (max-width: 600px) {
+  .site-header .wrap { flex-wrap: nowrap; gap: 8px; padding-top: 10px; padding-bottom: 10px; padding-left: 16px; padding-right: 16px; }
+  .site-header .nav { flex-wrap: nowrap; gap: 12px; font-size: 14px; }
+  .site-header .nav .btn { padding: 0 12px; font-size: 13px; white-space: nowrap; }
+  .site-header .nav a { white-space: nowrap; }
+}
 .badge { font-size: 12px; font-weight: 600; background: var(--blue-tint); color: var(--blue-tint-ink); padding: 3px 10px; border-radius: var(--radius-pill); }
 
 /* 버튼 */
