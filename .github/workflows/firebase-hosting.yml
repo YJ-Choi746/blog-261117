@@ -1,4 +1,4 @@
-# main 브랜치에 올리면 Firebase Hosting(https://blog---261117.web.app)에도 자동 배포해요.
+# main 브랜치에 올리면 Firebase Hosting(https://jae-design.web.app · 이전 주소 blog---261117.web.app도 같은 내용)에도 자동 배포해요.
 # 필요한 것: GitHub 저장소 Settings → Secrets and variables → Actions 에
 #   FIREBASE_SERVICE_ACCOUNT 라는 이름으로 서비스 계정 키(JSON)를 넣어야 해요. (docs/FIREBASE_SETUP.md 참고)
 name: Deploy to Firebase Hosting

@@ -9,7 +9,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 
 const PROJECT = "blog---261117";
-const SITE = "https://blog---261117.web.app/";
+const SITE = "https://jae-design.web.app/";
 const API = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents`;
 const OUT = "p";
 

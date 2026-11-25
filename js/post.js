@@ -172,7 +172,7 @@ function navItem(p, dir, wrapped) {
 // 공유 링크: 카카오톡 · SNS에 붙이면 글마다 제목 · 요약 · 대표 이미지 카드가 떠요.
 // 이 주소(p/글ID.html)는 GitHub Actions가 Firebase에 올릴 때 글마다 만들어요 (.github/scripts/share-pages.mjs).
 // 새로 발행한 글은 다음 배포(늦어도 1시간 안) 뒤에 공유 페이지가 생겨요.
-const SHARE_BASE = "https://blog---261117.web.app/p/";
+const SHARE_BASE = "https://jae-design.web.app/p/";
 function setupShare(p) {
   const btn = $("share-btn"), msg = $("share-msg");
   const url = SHARE_BASE + encodeURIComponent(id) + ".html";

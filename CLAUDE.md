@@ -5,7 +5,7 @@
 ## 프로젝트 한 줄 소개
 웹·앱 디자이너의 블로그 겸 프리랜서 의뢰 페이지. 바이브코딩 수업을 들으며 만들고 있어요.
 
-- 사이트 주소: https://yj-choi746.github.io/blog-261117/ (GitHub Pages) · https://blog---261117.web.app (Firebase Hosting)
+- 사이트 주소: https://jae-design.web.app (Firebase Hosting 대표 주소) · https://blog---261117.web.app (이전 주소, 같은 내용으로 함께 배포) · https://yj-choi746.github.io/blog-261117/ (GitHub Pages)
 - 디자인 시안 캔버스: https://claude.ai/artifact/4WLPHZ2fxuUN4uYXBvdAvE (시안 06 결합안 + 블로그 화면 5종)
 - 디자인 시스템 아티팩트: https://claude.ai/artifact/9fFNM9rcdWzavxsyPd68KN (색 · 글꼴 · 간격 · 컴포넌트 7종)
 
@@ -107,7 +107,7 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 - 입력칸을 추가하면 꼭 `name` 속성을 붙여요. `name`이 없으면 메일에 안 담겨요.
 
 ## 배포 규칙
-- `main`에 커밋한 뒤 `main`과 `gh-pages` 두 브랜치에 모두 푸시해요. `main`에 올리면 GitHub Actions가 Firebase Hosting(`blog---261117.web.app`)에도 자동 배포해요 (`.github/workflows/firebase-hosting.yml`, 비밀 키는 GitHub Secret `FIREBASE_SERVICE_ACCOUNT`).
+- `main`에 커밋한 뒤 `main`과 `gh-pages` 두 브랜치에 모두 푸시해요. `main`에 올리면 GitHub Actions가 Firebase Hosting 두 사이트(`jae-design.web.app` · 이전 주소 `blog---261117.web.app`, `firebase.json`의 hosting 목록)에도 자동 배포해요 (`.github/workflows/firebase-hosting.yml`, 비밀 키는 GitHub Secret `FIREBASE_SERVICE_ACCOUNT`).
   ```bash
   git push origin main && git push origin main:gh-pages
   ```

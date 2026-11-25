@@ -17,6 +17,7 @@ const ADMIN_UID = "MSBbFHuHxmUeHxF1UJ687xZsXeF3";
 
 // 사이트 주소에서 온 요청만 받아요
 const ALLOWED_ORIGINS = [
+  "https://jae-design.web.app",
   "https://blog---261117.web.app",
   "https://blog---261117.firebaseapp.com",
   "https://yj-choi746.github.io",
