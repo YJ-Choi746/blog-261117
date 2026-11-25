@@ -11,14 +11,6 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == "MSBbFHuHxmUeHxF1UJ687xZsXeF3";
     }
 
-    // 평가자 보기 전용 계정 (2026-11-25 20:00 KST까지만, 읽기만): 기록 · 작업 초안을 볼 수 있어요.
-    // 의뢰(이름 · 이메일)와 작업 메모(workNotes, 비공개 클라이언트 이름)는 볼 수 없어요. 쓰기는 모두 막혀요.
-    function isViewer() {
-      return request.auth != null
-        && request.auth.token.email == "evaluator@example.com"
-        && request.time < timestamp.value(1795604400000);
-    }
-
     function validPost() {
       let p = request.resource.data;
       return p.title is string && p.title.size() > 0 && p.title.size() <= 200
@@ -30,7 +22,7 @@ service cloud.firestore {
 
     // 글: 발행된 글은 누구나, 임시저장·비공개 글은 관리자만 읽어요
     match /posts/{postId} {
-      allow read: if resource.data.status == "published" || isAdmin() || isViewer();
+      allow read: if resource.data.status == "published" || isAdmin();
       allow create, update: if isAdmin() && validPost();
       allow delete: if isAdmin();
     }
@@ -66,7 +58,7 @@ service cloud.firestore {
     // 작업 · 케이스 스터디 (PRD v1.1 F3 · F4 · F6): 게시된 작업은 누구나, 초안은 관리자만 읽어요.
     // 방문자에게 보이면 안 되는 메모 · 비공개 클라이언트 이름은 workNotes(관리자 전용)에 따로 둬요.
     match /works/{workId} {
-      allow read: if resource.data.status == "published" || isAdmin() || isViewer();
+      allow read: if resource.data.status == "published" || isAdmin();
       allow create, update: if isAdmin() && validWork();
       allow delete: if isAdmin();
     }

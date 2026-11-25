@@ -3,7 +3,6 @@ import {
   auth, db, isConfigured, onAuthStateChanged, signOut, collection, getDocs, friendlyError, formatDate, markAdminBrowser,
   doc, setDoc, serverTimestamp
 } from "./firebase.js";
-import { applyViewerMode, isViewer } from "./viewer.js";
 import { loadCategories, normalizeCategory } from "./categories.js";
 import { getImageData } from "./images.js";
 
@@ -77,7 +76,6 @@ if (!isConfigured) {
     if (!user) { location.replace("login.html?next=works.html"); return; }
     markAdminBrowser();
     $("who").textContent = user.email || "";
-    applyViewerMode(user, () => signOut(auth)); // 평가자 보기 전용 (D39)
     $("checking").hidden = true; $("manage").hidden = false;
     try {
       const snap = await getDocs(collection(db, "works"));

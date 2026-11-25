@@ -7,7 +7,6 @@ import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
 } from "./firebase.js";
-import { applyViewerMode, isViewer } from "./viewer.js";
 import { uploadImage, uploadCanvas, getImageData } from "./images.js";
 import { openCrop } from "./crop.js";
 import { templateDraft, templateSns } from "./templates.js";
@@ -688,7 +687,6 @@ if (!isConfigured) {
     if (!u) { location.replace(`login.html?next=${isNew ? "work.html" : "works.html"}`); return; }
     user = u; markAdminBrowser();
     $("who").textContent = u.email || "";
-    applyViewerMode(u, () => signOut(auth)); // 평가자 보기 전용 (D39)
     $("checking").hidden = true; $("editor").hidden = false;
     try { await load(); } catch (err) { say(friendlyError(err), true); }
   });
