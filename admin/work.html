@@ -63,18 +63,6 @@
           <label class="pw-period">작업 기간 (정렬 기준)<span class="pw-months"><input type="month" id="f-period-from" aria-label="작업 시작 월"><span aria-hidden="true">–</span><input type="month" id="f-period-to" aria-label="작업 끝 월"></span><input type="hidden" id="f-period"></label>
           <label>맡은 일<input id="f-role" maxlength="60" placeholder="예: 로고, 간판"></label>
         </div>
-        <div class="pw-client">
-          <label>클라이언트<input id="f-client" maxlength="50" placeholder="비워도 돼요"></label>
-          <label class="check"><input type="checkbox" id="f-client-public"><span>이름 공개에 동의했어요<br>(체크 안 하면 AI · 방문자에게 이름이 보이지 않아요)</span></label>
-        </div>
-        <label class="pw-summary">한 줄 요약<textarea id="c-summary" rows="2" maxlength="200" placeholder="한 문장이면 돼요"></textarea></label>
-        <div class="pw-thumbs" aria-label="작업 이미지">
-          <span class="pw-cap" style="margin: 0 6px 0 0">이미지 (최대 4장 · 사진을 누르면 홈 화면 타이틀 이미지 ★ · 끌어서 순서 바꾸기 · 파일을 끌어다 놓아도 돼요)</span>
-          <div id="images" class="work-images"></div>
-          <button type="button" id="add-image" class="pw-add" aria-label="이미지 추가"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
-          <input type="file" id="image-input" accept="image/*" multiple hidden>
-        </div>
-
         <details class="pw-key pw-memo-box" id="memo-box" open>
           <summary>메모로 초안 만들기 <span class="pw-sum-sub">요청 · 한 일 · 결과를 적고 '메모로 AI 초안'</span></summary>
           <div class="pw-memo">
@@ -88,6 +76,17 @@
           </div>
           <p class="hint">메모는 관리자만 보고, 아래 칸을 채우는 데만 써요. 0원으로 쓰려면 <a href="https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA" target="_blank" rel="noopener">AI 작성기(Claude 아티팩트)</a>에서 만든 글을 위 칸에 붙여 넣으세요.</p>
         </details>
+        <div class="pw-client">
+          <label>클라이언트<input id="f-client" maxlength="50" placeholder="비워도 돼요"></label>
+          <label class="check"><input type="checkbox" id="f-client-public"><span>이름 공개에 동의했어요<br>(체크 안 하면 AI · 방문자에게 이름이 보이지 않아요)</span></label>
+        </div>
+        <label class="pw-summary">한 줄 요약<textarea id="c-summary" rows="2" maxlength="200" placeholder="한 문장이면 돼요"></textarea></label>
+        <div class="pw-thumbs" aria-label="작업 이미지">
+          <span class="pw-cap" style="margin: 0 6px 0 0">이미지 (최대 4장 · 사진을 누르면 홈 화면 타이틀 이미지 ★ · 끌어서 순서 바꾸기 · 파일을 끌어다 놓아도 돼요)</span>
+          <div id="images" class="work-images"></div>
+          <button type="button" id="add-image" class="pw-add" aria-label="이미지 추가"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
+          <input type="file" id="image-input" accept="image/*" multiple hidden>
+        </div>
 
         <div id="draft" class="pw-draft">
                     <div id="draft-edit" class="pw-draft">
