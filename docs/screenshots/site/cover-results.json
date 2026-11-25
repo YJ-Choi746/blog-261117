@@ -3,43 +3,43 @@
   "id": "C-01",
   "name": "고르기 전에는 첫 장이 타이틀",
   "ok": true,
-  "note": "타이틀 (카드) / 2 / 3"
+  "note": "★ 타이틀 (홈) / 2 / 3"
  },
  {
   "id": "C-02",
-  "name": "'타이틀로' → 타이틀 표시 · 미리보기 맨 위 첫 자리",
+  "name": "3번째 썸네일을 누르면 그 사진이 타이틀",
   "ok": true,
-  "note": "1 / 타이틀 (카드) / 3"
+  "note": "1 / 2 / ★ 타이틀 (홈)"
  },
  {
   "id": "C-03",
-  "name": "저장된 coverImageId = 고른 사진 (upload2)",
-  "ok": true,
-  "note": "cover=upload2.png"
- },
- {
-  "id": "C-04",
-  "name": "작업 상세 맨 위 첫 자리에 고른 사진(16:11)",
+  "name": "사진 순서와 본문 미리보기 배치는 그대로",
   "ok": true,
   "note": ""
  },
  {
+  "id": "C-04",
+  "name": "저장: coverImageId = 누른 사진, imageIds 순서 그대로",
+  "ok": true,
+  "note": "upload3.png,upload1.png,upload2.png"
+ },
+ {
   "id": "C-05",
-  "name": "작업 카드 썸네일 = 고른 사진",
+  "name": "홈 화면 카드 사진 = 누른 사진",
   "ok": true,
   "note": ""
  },
  {
   "id": "C-06",
-  "name": "예전 작업(coverImageId 첫 장)은 그대로",
+  "name": "작업 상세 맨 위는 원래 순서 그대로(첫 장)",
   "ok": true,
   "note": ""
  },
  {
   "id": "C-07",
-  "name": "다시 열어도 고른 사진이 타이틀 (순서는 그대로)",
+  "name": "다시 열어도 누른 사진이 타이틀, 순서 유지",
   "ok": true,
-  "note": "1 / 타이틀 (카드) / 3"
+  "note": "1 / 2 / ★ 타이틀 (홈)"
  },
  {
   "id": "C-08",

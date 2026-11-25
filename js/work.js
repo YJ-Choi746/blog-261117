@@ -60,12 +60,11 @@ async function load() {
   // 이미지: 관리자가 정한 위치 · 폭 · 정렬대로 (js/image-layout.js)
   const boxes = { cover: $("work-cover"), problem: $("work-imgs-problem"), process: $("work-images"), result: $("work-imgs-result") };
   Object.values(boxes).forEach((b) => b.replaceChildren());
-  const coverId = w.coverImageId || (w.imageIds || [])[0]; // 타이틀 이미지: 관리자가 고른 사진 (예전 작업은 첫 장)
   (w.imageIds || []).forEach((im, i) => {
     const l = normLayout((w.imageSizes || [])[i], i);
     const img = image(im, `${w.title || w.name} 이미지 ${i + 1}`);
     applyLayout(img, l);
-    if (im === coverId && l.at === "cover") { img.classList.add("is-hero"); boxes.cover.prepend(img); return; } // 맨 위 첫 자리, 16:11 꽉 차게
+    if (i === 0 && l.at === "cover") img.classList.add("is-hero"); // 맨 위 첫 장: 16:11 꽉 차게 (타이틀 이미지는 홈 카드에만 쓰여요)
     boxes[l.at].appendChild(img);
   });
   Object.values(boxes).forEach((b) => { b.hidden = !b.children.length; });

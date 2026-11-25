@@ -64,13 +64,14 @@ $("undo").addEventListener("click", () => {
 // 위치 · 폭 · 정렬은 오른쪽 미리보기에서 바로 바꿔요 (끌어서 옮기기 · 모서리로 크기). js/image-layout.js
 const layoutOf = (im) => normLayout({ w: im.w, align: im.align, at: im.at }, 0);
 function reorderImages() { images = sortBySpot(images, layoutOf); }
-// 타이틀 이미지(카드 · 작업 상세 맨 위): 순서와 상관없이 고른 사진. 고르지 않았으면 첫 장
+// 타이틀 이미지 = 홈 화면 · 작업 목록 카드 사진. 썸네일을 누르면 정해지고, 고르지 않았으면 첫 장
 const coverImg = () => images.find((x) => x.cover) || images[0];
 function setCover(im) {
+  // 홈 화면 · 작업 목록 카드에 보이는 사진만 바꿔요. 사진 순서와 본문 위치는 그대로 (D36)
+  if (im === coverImg()) return;
   images.forEach((x) => { delete x.cover; });
-  im.cover = true; im.at = "cover"; // 작업 상세 맨 위(타이틀 자리)에 보여요
-  reorderImages(); selImg = -1; changed(); renderImages();
-  say("타이틀 이미지로 정했어요. 저장하면 카드와 작업 상세 맨 위에 보여요.");
+  im.cover = true; changed(); renderImages();
+  say("타이틀 이미지(홈 화면 카드)로 정했어요. 사진 순서는 그대로예요. 저장해야 반영돼요.");
 }
 let selImg = -1; // 미리보기에서 고른 이미지 번호
 function renderImages() {
@@ -83,7 +84,13 @@ function renderImages() {
     img.alt = isCover ? "타이틀 이미지" : `이미지 ${i + 1}`;
     img.src = im.data || "";
     const cap = document.createElement("figcaption");
-    cap.textContent = isCover ? "타이틀 (카드)" : `${i + 1}`;
+    cap.textContent = isCover ? "★ 타이틀 (홈)" : `${i + 1}`;
+    // 썸네일을 누르면 타이틀 이미지(홈 화면 카드)로 정해요. 끌어서 옮기기는 그대로
+    img.classList.toggle("pw-cover-on", isCover);
+    img.tabIndex = 0; img.setAttribute("role", "button"); img.setAttribute("aria-pressed", String(isCover));
+    img.title = isCover ? "홈 화면에 보이는 타이틀 이미지" : "눌러서 홈 화면 타이틀 이미지로";
+    img.addEventListener("click", () => setCover(im));
+    img.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setCover(im); } });
     const rm = document.createElement("button");
     rm.type = "button"; rm.className = "pw-x"; rm.title = "이미지 빼기";
     rm.setAttribute("aria-label", `${img.alt} 빼기`);
@@ -103,13 +110,6 @@ function renderImages() {
     crop.setAttribute("aria-label", `${img.alt} 자르기`);
     crop.addEventListener("click", () => cropImage(im));
     fig.append(rm, img, cap, size, crop);
-    if (!isCover) {
-      const cv = document.createElement("button");
-      cv.type = "button"; cv.className = "btn btn-text pw-crop"; cv.textContent = "타이틀로";
-      cv.setAttribute("aria-label", `${img.alt}를 타이틀 이미지로`);
-      cv.addEventListener("click", () => setCover(im));
-      fig.append(cv);
-    }
     // 끌어서 순서 바꾸기 (컴퓨터): 다른 썸네일 위에 놓으면 그 자리로 가요
     fig.draggable = true; fig.dataset.i = String(i);
     fig.addEventListener("dragstart", (e) => { e.dataTransfer.setData("text/x-work-image", String(i)); e.dataTransfer.effectAllowed = "move"; fig.classList.add("pw-dragging"); });
@@ -171,7 +171,7 @@ fileDropZone(document.querySelector(".pw-live"), (e) => {
 // 자르기: 창에서 영역을 정하면 잘린 이미지를 새로 저장하고 바꿔 끼워요 (원본은 이 화면에서 '원본으로'로 되돌릴 수 있어요)
 async function cropImage(im) {
   if (!im.data) return;
-  const canvas = await openCrop(im.data, { ratio: im === coverImg() ? 16 / 11 : 0 }); // 타이틀 이미지는 카드 16:11로 시작
+  const canvas = await openCrop(im.data, { ratio: im === coverImg() || images.indexOf(im) === 0 ? 16 / 11 : 0 }); // 타이틀(카드) · 맨 위 첫 장은 16:11로 시작
   if (!canvas) return;
   setState("자른 이미지 저장하는 중…");
   try {
@@ -420,10 +420,9 @@ function renderFullPreview(px = "fp") {
     if (!im.data) return;
     const l = layoutOf(im);
     const img = document.createElement("img"); img.alt = `${title} 이미지 ${i + 1}`; img.src = im.data; img.draggable = false;
-    const hero = im === coverImg() && l.at === "cover"; // 타이틀 이미지: 맨 위 첫 자리, 16:11 꽉 차게 (방문자 화면과 같게)
-    const put = (el) => (hero ? boxes[l.at].prepend(el) : boxes[l.at].appendChild(el));
-    if (!live) { applyLayout(img, l); if (hero) img.classList.add("is-hero"); put(img); return; }
-    put(editableFigure(im, i, img, l));
+    const hero = i === 0 && l.at === "cover"; // 맨 위 첫 장: 16:11 꽉 차게 (방문자 화면과 같게). 타이틀 이미지와는 따로예요
+    if (!live) { applyLayout(img, l); if (hero) img.classList.add("is-hero"); boxes[l.at].appendChild(img); return; }
+    boxes[l.at].appendChild(editableFigure(im, i, img, l));
   });
   Object.values(boxes).forEach((b) => { b.hidden = !b.children.length && !(live && dragging); });
   $p("tags").replaceChildren(...tagsFromInput().map((t) => { const sp = document.createElement("span"); sp.className = "tag"; sp.textContent = `#${t}`; return sp; }));
@@ -434,7 +433,7 @@ const spotBoxes = (px) => ({ cover: $(`${px}-cover`), problem: $(`${px}-imgs-pro
 let dragging = false;
 function editableFigure(im, i, img, l) {
   const fig = document.createElement("figure");
-  fig.className = "pv-fig" + (i === selImg ? " on" : "") + (im === coverImg() && l.at === "cover" ? " is-hero" : "");
+  fig.className = "pv-fig" + (i === selImg ? " on" : "") + (i === 0 && l.at === "cover" ? " is-hero" : "");
   fig.dataset.i = String(i);
   applyLayout(fig, l);
   fig.tabIndex = 0;
@@ -479,7 +478,6 @@ function imageToolbar(im, i) {
     tbButton("위로", "같은 칸에서 위로", false, () => { swapInSpot(i, -1); }),
     tbButton("아래로", "같은 칸에서 아래로", false, () => { swapInSpot(i, 1); }),
     tbButton("자르기", "이미지 자르기", false, () => cropImage(im)));
-  if (im !== coverImg()) bar.append(tbButton("타이틀로", "타이틀 이미지로 정하기", false, () => setCover(im)));
   if (im.orig) bar.append(tbButton("원본으로", "자르기 전 원본으로", false, () => { im.id = im.orig.id; im.data = im.orig.data; delete im.orig; changed(); renderImages(); }));
   bar.append(tbButton("완료", "편집 끝내기", false, () => { selImg = -1; renderLive(); }));
   return bar;
