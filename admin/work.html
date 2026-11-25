@@ -55,6 +55,7 @@
 
     <div class="pw-cols">
       <!-- 왼쪽: 작업 입력 · 간단히 쓰기 · AI로 수정하기 (F4 · F5 · F6) -->
+      <div class="pw-leftcol">
       <section class="pw-panel pw-left" aria-label="작업 입력">
         <input id="f-name" class="pw-title-in" maxlength="60" placeholder="제목 (필수, 예: 성수 카페의 새 얼굴)" aria-label="제목" aria-required="true">
         <div class="pw-meta-in">
@@ -62,23 +63,8 @@
           <label>업종<input id="f-industry" maxlength="30" placeholder="예: 베이커리"></label>
           <label class="pw-period">작업 기간 (정렬 기준)<span class="pw-months"><input type="month" id="f-period-from" aria-label="작업 시작 월"><span aria-hidden="true">–</span><input type="month" id="f-period-to" aria-label="작업 끝 월"></span><input type="hidden" id="f-period"></label>
           <label>맡은 일<input id="f-role" maxlength="60" placeholder="예: 로고, 간판"></label>
-        </div>
-        <details class="pw-key pw-memo-box" id="memo-box" open>
-          <summary>메모로 초안 만들기 <span class="pw-sum-sub">요청 · 한 일 · 결과를 적고 '메모로 AI 초안'</span></summary>
-          <div class="pw-memo">
-            <label><span class="pw-req">요청 · 고민</span><textarea id="m-request" rows="3" maxlength="1500" placeholder="예: 오래된 로고가 젊은 손님에게 안 맞는다고 느낌. 매장 분위기는 유지하고 싶어 함"></textarea></label>
-            <label><span class="pw-req">한 일</span><textarea id="m-work" rows="3" maxlength="1500" placeholder="예: 매장 방문, 주변 가게 간판 비교. 시안 3개 제안 후 2번 수정"></textarea></label>
-            <label><span class="pw-req">결과</span><textarea id="m-result" rows="3" maxlength="1500" placeholder="예: 간판, 포장지, 인스타그램 프로필에 새 로고 적용"></textarea></label>
-          </div>
-          <div class="pw-row">
-            <button type="button" id="generate" class="btn btn-outline">메모로 AI 초안</button>
-            <button type="button" id="c-template" class="btn btn-outline">직접 쓰기</button>
-          </div>
-          <p class="hint">메모는 관리자만 보고, 아래 칸을 채우는 데만 써요. 0원으로 쓰려면 <a href="https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA" target="_blank" rel="noopener">AI 작성기(Claude 아티팩트)</a>에서 만든 글을 위 칸에 붙여 넣으세요.</p>
-        </details>
-        <div class="pw-client">
           <label>클라이언트<input id="f-client" maxlength="50" placeholder="비워도 돼요"></label>
-          <label class="check"><input type="checkbox" id="f-client-public"><span>이름 공개에 동의했어요<br>(체크 안 하면 AI · 방문자에게 이름이 보이지 않아요)</span></label>
+          <label class="check pw-consent"><input type="checkbox" id="f-client-public"><span>이름 공개에 동의했어요<br>(체크 안 하면 AI · 방문자에게 이름이 보이지 않아요)</span></label>
         </div>
         <label class="pw-summary">한 줄 요약<textarea id="c-summary" rows="2" maxlength="200" placeholder="한 문장이면 돼요"></textarea></label>
         <div class="pw-thumbs" aria-label="작업 이미지">
@@ -95,9 +81,34 @@
             <label>03 결과<textarea id="c-result" rows="3" maxlength="3000" placeholder="예: 간판, 포장지에 새 로고 적용"></textarea></label>
             <label>태그 (쉼표로 구분)<input id="c-tags" placeholder="브랜딩, 카페, 로고"></label>
           </div>
+          <details class="pw-key" id="memo-box">
+            <summary>메모로 초안 만들기 (선택)</summary>
+            <div class="pw-memo">
+              <label><span class="pw-req">요청 · 고민</span><textarea id="m-request" rows="3" maxlength="1500" placeholder="예: 오래된 로고가 젊은 손님에게 안 맞는다고 느낌. 매장 분위기는 유지하고 싶어 함"></textarea></label>
+              <label><span class="pw-req">한 일</span><textarea id="m-work" rows="3" maxlength="1500" placeholder="예: 매장 방문, 주변 가게 간판 비교. 시안 3개 제안 후 2번 수정"></textarea></label>
+              <label><span class="pw-req">결과</span><textarea id="m-result" rows="3" maxlength="1500" placeholder="예: 간판, 포장지, 인스타그램 프로필에 새 로고 적용"></textarea></label>
+            </div>
+            <div class="pw-row">
+              <button type="button" id="generate" class="btn btn-outline">메모로 AI 초안</button>
+              <button type="button" id="c-template" class="btn btn-outline">직접 쓰기</button>
+            </div>
+            <p class="hint">메모는 관리자만 보고, 위 칸을 채우는 데만 써요. 0원으로 쓰려면 <a href="https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA" target="_blank" rel="noopener">AI 작성기(Claude 아티팩트)</a>에서 만든 글을 위 칸에 붙여 넣으세요.</p>
+          </details>
+          <details class="pw-key">
+            <summary>내 API 키로 AI 쓰기</summary>
+            <div class="pw-key-row">
+              <label class="sr-only" for="ai-key">Anthropic API 키</label>
+              <input id="ai-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-...">
+              <button type="button" id="ai-key-save" class="btn btn-outline">연결</button>
+              <button type="button" id="ai-key-clear" class="btn btn-text" hidden>지우기</button>
+            </div>
+            <label class="check"><input type="checkbox" id="ai-key-remember"> 이 브라우저에 기억하기 (내 기기에서만 켜 주세요)</label>
+            <p id="ai-key-state" class="hint" role="status" aria-live="polite"></p>
+            <p class="hint">키는 이 브라우저에만 저장되고 사이트 서버 · Firestore로는 보내지 않아요. 키가 있으면 'AI로 수정하기' · 'AI 문구 만들기'가 바로 Claude를 불러요 (쓴 만큼 API 요금).</p>
+          </details>
           <div class="pw-row pw-ai-row">
             <button type="button" id="polish" class="btn btn-primary">AI로 수정하기</button>
-            <button type="button" id="undo" class="btn btn-outline" disabled>되돌리기</button>
+            <button type="button" id="undo" class="pw-undo" aria-label="되돌리기" title="되돌리기 (AI로 고치기 전으로)" disabled><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8.5a4.5 4.5 0 0 1 0 9H8"/><path d="M7.5 4.5 4 8l3.5 3.5"/></svg></button>
             <span id="ai-badge" class="badge">직접 작성</span>
           </div>
           <p id="gen-status" class="notice notice-info" role="status" hidden></p>
@@ -112,37 +123,27 @@
           <p id="act-msg" class="notice" role="status" aria-live="polite" style="margin: 0" hidden></p>
         </div>
 
-        <!-- 인스타그램 홍보 문구 (F7): 작업 글 바로 밑 -->
-        <section id="sns-panel" class="pw-sns" aria-label="인스타그램 홍보 문구">
-          <div class="pw-tabs"><h2 class="pw-h" style="margin: 0">인스타그램 홍보 문구 <span id="sns-badge" class="ai-badge" hidden>AI 초안</span></h2><span id="sns-variant" class="badge"></span></div>
-          <p id="sns-status" class="notice notice-info" role="status" hidden></p>
-          <div id="sns-warn" class="notice notice-error" role="alert" hidden></div>
-          <label class="sr-only" for="s-caption">소개 문구</label>
-          <textarea id="s-caption" class="pw-copybox" rows="6" maxlength="2200" placeholder="'AI 문구 만들기'나 '직접 쓰기'를 누르거나 바로 써 주세요."></textarea>
-          <label class="pw-tags-in">해시태그 (쉼표로 구분, # 없이)<input id="s-hashtags" placeholder="브랜딩, 카페로고, 성수카페"></label>
-          <div class="pw-row">
-            <button type="button" id="sns-copy" class="btn btn-primary">문구 복사</button>
-            <button type="button" id="sns-next" class="btn btn-outline" hidden>다른 문구 보기</button>
-            <button type="button" id="sns-generate" class="btn btn-outline">AI 문구 만들기</button>
-            <button type="button" id="sns-template" class="btn btn-outline">직접 쓰기</button>
-            <span id="sns-copied" class="save-state" role="status" aria-live="polite"></span>
-          </div>
-          <p class="hint">작업 글을 다 쓴 뒤 만들어요. 인스타그램 게시는 직접 해 주세요.</p>
-        </section>
 
-        <details class="pw-key">
-          <summary>내 API 키로 AI 쓰기</summary>
-          <div class="pw-key-row">
-            <label class="sr-only" for="ai-key">Anthropic API 키</label>
-            <input id="ai-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-...">
-            <button type="button" id="ai-key-save" class="btn btn-outline">연결</button>
-            <button type="button" id="ai-key-clear" class="btn btn-text" hidden>지우기</button>
-          </div>
-          <label class="check"><input type="checkbox" id="ai-key-remember"> 이 브라우저에 기억하기 (내 기기에서만 켜 주세요)</label>
-          <p id="ai-key-state" class="hint" role="status" aria-live="polite"></p>
-          <p class="hint">키는 이 브라우저에만 저장되고 사이트 서버 · Firestore로는 보내지 않아요. 키가 있으면 'AI로 수정하기' · 'AI 문구 만들기'가 바로 Claude를 불러요 (쓴 만큼 API 요금).</p>
-        </details>
       </section>
+
+      <!-- 인스타그램 홍보 문구 (F7): 게시 아래, 흰 상자 밖 · 작업 글보다 작게 -->
+      <section id="sns-panel" class="pw-sns" aria-label="인스타그램 홍보 문구">
+        <div class="pw-tabs"><h2 class="pw-h" style="margin: 0">인스타그램 홍보 문구 <span id="sns-badge" class="ai-badge" hidden>AI 초안</span></h2><span id="sns-variant" class="badge"></span></div>
+        <p id="sns-status" class="notice notice-info" role="status" hidden></p>
+        <div id="sns-warn" class="notice notice-error" role="alert" hidden></div>
+        <label class="sr-only" for="s-caption">소개 문구</label>
+        <textarea id="s-caption" class="pw-copybox" rows="6" maxlength="2200" placeholder="'AI 문구 만들기'나 '직접 쓰기'를 누르거나 바로 써 주세요."></textarea>
+        <label class="pw-tags-in">해시태그 (쉼표로 구분, # 없이)<input id="s-hashtags" placeholder="브랜딩, 카페로고, 성수카페"></label>
+        <div class="pw-row">
+          <button type="button" id="sns-copy" class="btn btn-primary">문구 복사</button>
+          <button type="button" id="sns-next" class="btn btn-outline" hidden>다른 문구 보기</button>
+          <button type="button" id="sns-generate" class="btn btn-outline">AI 문구 만들기</button>
+          <button type="button" id="sns-template" class="btn btn-outline">직접 쓰기</button>
+          <span id="sns-copied" class="save-state" role="status" aria-live="polite"></span>
+        </div>
+        <p class="hint">작업 글을 다 쓴 뒤 만들어요. 인스타그램 게시는 직접 해 주세요.</p>
+      </section>
+      </div>
 
       <!-- 오른쪽: 화면 미리보기 (방문자 작업 상세와 같은 모양, 쓰는 대로 바로 바뀜) -->
       <section class="pw-panel pw-right" aria-label="화면 미리보기">
