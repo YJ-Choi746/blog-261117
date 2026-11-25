@@ -16,8 +16,10 @@ function trackView(p) {
   tracked = true;
   // GA는 주소의 ?id= 를 떼고 경로만 보여줘요 → 글마다 따로 보이도록 /post/글ID 경로로 기록해요
   // (GitHub Pages는 /blog-261117/post/글ID, Firebase는 /post/글ID)
+  // UTM(utm_source · utm_medium · utm_campaign …)은 남겨야 GA가 유입 출처를 읽어요 → ?id=만 빼고 utm_* 는 그대로 붙여요
+  const utm = new URLSearchParams([...new URLSearchParams(location.search)].filter(([k]) => k.startsWith("utm_"))).toString();
   const pageLocation = p
-    ? location.origin + location.pathname.replace(/post\.html$/, "post/" + encodeURIComponent(id))
+    ? location.origin + location.pathname.replace(/post\.html$/, "post/" + encodeURIComponent(id)) + (utm ? "?" + utm : "")
     : location.href;
   window.trackEvent("page_view", { page_title: document.title, page_location: pageLocation });
   if (p) window.trackEvent("view_post", postParams(p));
