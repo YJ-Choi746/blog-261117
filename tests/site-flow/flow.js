@@ -101,9 +101,9 @@ const shot = (p, f, full = false) => p.screenshot({ path: path.join(OUT, f), ful
   await shot(pa, 'a02-works.png');
   await pa.goto(BASE + '/admin/work.html'); await pa.waitForTimeout(1200);
   await shot(pa, 'a03a-editor-empty.png');
-  // 휴리스틱 H1 (v1.4): 메모 칸이 작업 정보 바로 아래에 펼쳐져 있음
-  const memo = await pa.evaluate(() => { const d = document.getElementById('memo-box'); const y = (el) => el.getBoundingClientRect().top + scrollY; return { open: d.open, top: Math.round(y(d)), draft: Math.round(y(document.getElementById('draft'))), client: Math.round(y(document.querySelector('.pw-client'))) }; });
-  check('A11', '메모 칸 펼침 · 작업 정보 바로 아래(클라이언트 · 초안보다 위)', memo.open && memo.top < memo.client && memo.top < memo.draft, `메모 ${memo.top}px · 초안 ${memo.draft}px`);
+  // 휴리스틱 H1 (v1.4 조치 → 사용자 피드백으로 되돌림): 메모는 접힌 '(선택)' 칸, 클라이언트는 '맡은 일' 옆
+  const memo = await pa.evaluate(() => { const d = document.getElementById('memo-box'); const r = (id) => document.getElementById(id).getBoundingClientRect(); return { open: d.open, label: d.querySelector('summary').textContent.trim(), roleTop: Math.round(r('f-role').top), clientTop: Math.round(r('f-client').top), clientRight: r('f-client').left > r('f-role').left }; });
+  check('A11', "메모는 접힌 '(선택)' 칸 · 클라이언트는 맡은 일 옆 (H1 되돌림)", !memo.open && memo.label.includes('(선택)') && Math.abs(memo.clientTop - memo.roleTop) < 30 && memo.clientRight, `메모 ${memo.open ? '펼침' : '접힘'} · 맡은 일 ${memo.roleTop}px · 클라이언트 ${memo.clientTop}px`);
   await pa.evaluate(() => document.querySelectorAll('details.pw-key')[0].open = true);
   await pa.fill('#f-name', '꽃집 온라인 주문 페이지');
   // 빈 메모로 초안

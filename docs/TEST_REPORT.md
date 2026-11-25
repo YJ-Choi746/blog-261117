@@ -31,7 +31,7 @@
 | <sub>[N01](../tests/site-flow/flow.js#L72) · [N02](../tests/site-flow/flow.js#L76) · [N03](../tests/site-flow/flow.js#L81)</sub> | 비기능 | 360px 홈 · 상세 가로 넘침 없음, 홈 버튼 44px 이상 |
 | <sub>[N04](../tests/site-flow/flow.js#L85) · [N05](../tests/site-flow/flow.js#L86) · [N06](../tests/site-flow/flow.js#L90)</sub> | 비기능 | **v1.4 신규** · 360px 헤더 한 줄(80px 이하) / 홈 헤딩 `keep-all` / English 작업 목록도 넘침 없음 (휴리스틱 H2 · H3) |
 | <sub>[A01](../tests/site-flow/flow.js#L99) · [A02](../tests/site-flow/flow.js#L112)</sub> | F4 | 로그인 / 메모 없이 'AI 초안' → "메모를 한 칸 이상 써 주세요" |
-| <sub>[A11](../tests/site-flow/flow.js#L106)</sub> | F4 | **v1.4 신규** · 메모 칸이 펼쳐져 있고 클라이언트 · 초안보다 위 (휴리스틱 H1) |
+| <sub>[A11](../tests/site-flow/flow.js#L106)</sub> | F4 | **v1.4 신규** · 메모는 접힌 '(선택)' 칸, 클라이언트는 맡은 일 옆 (H1 되돌림) |
 | <sub>[A03](../tests/site-flow/flow.js#L122) · [A04](../tests/site-flow/flow.js#L125)</sub> | F5 | AI 서버 꺼짐 → 안내 후 문장 틀로 대체, 메모 유지 / '직접 쓰기' |
 | <sub>[A05](../tests/site-flow/flow.js#L129) · [A06](../tests/site-flow/flow.js#L133) · [A07](../tests/site-flow/flow.js#L136)</sub> | F6 · F7 | 전체 미리보기에 제목 반영 / 게시 완료 패널 / 인스타그램 문구 3안 |
 | <sub>[A08](../tests/site-flow/flow.js#L141) · [A09](../tests/site-flow/flow.js#L143)</sub> | F3 · F2 | 게시 작업이 방문자 목록에 / 방문자 의뢰가 관리자 의뢰 목록에 |
@@ -55,7 +55,7 @@
 
 | 등급 · 원칙 | 문제 (조치 전) | 1차 조치 결과 | 2차 조치 결과 | 검증 |
 |---|---|---|---|---|
-| **높음** · 시스템과 실제의 일치 | 메모 3칸이 맨 아래 접힌 '(선택)' 칸, 2113px 중 1910px | 이미지 아래로 옮기고 펼침, '(선택)' 삭제 → 932px. 첫 화면(860px) 밖이라 미흡 | 작업 정보 바로 아래(클라이언트 · 요약보다 위)로 → **608px, 첫 화면 안 ✅** | <sub>[A11](../tests/site-flow/flow.js#L106)</sub> |
+| **높음** · 시스템과 실제의 일치 | 메모 3칸이 맨 아래 접힌 '(선택)' 칸, 2113px 중 1910px | 이미지 아래로 옮기고 펼침, '(선택)' 삭제 → 932px. 첫 화면(860px) 밖이라 미흡 | 작업 정보 바로 아래로 → 608px ✅. 단, 메모가 작업 정보와 섞여 보인다는 **운영자 피드백으로 되돌림**('(선택)' 칸, 클라이언트는 맡은 일 옆) | <sub>[A11](../tests/site-flow/flow.js#L106)</sub> |
 | **중간** · 미니멀 디자인 | 360px 헤더 3줄 208px(첫 화면 27%) | 600px 이하 한 줄 → **65px(8%)** | 1차 뒤 English 모드에서 'Start a project' 버튼이 넘쳐 가로 405px → 'Request' · 간격 8px로 **360px ✅** | <sub>[N04](../tests/site-flow/flow.js#L85) · [N06](../tests/site-flow/flow.js#L90)</sub> |
 | **낮음** · 가독성 | 홈 헤딩 한 글자만 넘어감. 원인: 홈은 `site.css`를 안 불러 `word-break: normal` | 홈 헤딩에 `keep-all` → **어절 단위 줄바꿈 ✅** | 추가 조치 없음 | <sub>[N05](../tests/site-flow/flow.js#L86)</sub> |
 | **정보** · 가시성 | AI 작성기 아티팩트는 소유자만 열림 | 관리자 편집 화면(메모 → 초안) 캡처와 전후 비교 이미지 첨부 | ⏳ 아티팩트 자체 화면 캡처는 운영자 계정에서 첨부 예정 | — |
