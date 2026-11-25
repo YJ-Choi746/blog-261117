@@ -5,6 +5,7 @@ import {
 } from "./firebase.js";
 import { applyViewerMode, isViewer } from "./viewer.js";
 import { loadCategories, normalizeCategory } from "./categories.js";
+import { getImageData } from "./images.js";
 
 const $ = (id) => document.getElementById(id);
 const STATE = { draft: "초안", published: "게시" };
@@ -13,6 +14,11 @@ function millis(t) { return t && typeof t.toMillis === "function" ? t.toMillis()
 function row(w) {
   const r = document.createElement("div");
   r.className = "manage-row work-row";
+  // 썸네일: 홈 카드에 쓰이는 타이틀 이미지 (없으면 첫 장) — 기록 관리와 같은 모양
+  const thumb = document.createElement("img");
+  thumb.className = "thumb"; thumb.alt = "";
+  const coverId = w.coverImageId || (w.imageIds || [])[0];
+  if (coverId) getImageData(coverId).then((d) => { if (d) thumb.src = d; });
   const mid = document.createElement("div");
   mid.style.minWidth = "0";
   const a = document.createElement("a");
@@ -27,11 +33,11 @@ function row(w) {
   const name = document.createElement("span"); name.textContent = w.name || "";
   const cat = document.createElement("span"); cat.textContent = w.category || "";
   const date = document.createElement("span"); date.textContent = `수정 ${formatDate(w.updatedAt)}`;
-  meta.append(st, name, cat, date);
+  meta.append(st, ...((w.name && w.name !== (w.title || w.name)) ? [name] : []), cat, date); // 제목과 같으면 이름은 한 번만
   mid.append(a, meta);
   const edit = document.createElement("a");
   edit.className = "btn btn-outline"; edit.textContent = "편집"; edit.href = a.href;
-  r.append(mid, edit);
+  r.append(thumb, mid, edit);
   return r;
 }
 
