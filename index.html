@@ -25,6 +25,15 @@ input,select,textarea{font:inherit}
 #request input::placeholder,#request textarea::placeholder{color:#DCE7FD;opacity:1}
 #request input[type=checkbox]{accent-color:#FFFFFF}
 </style>
+<style>
+/* 모바일 헤더 한 줄 (휴리스틱 H2) · 인라인 스타일을 덮어야 해서 !important */
+@media (max-width: 600px) {
+  .hdr-wrap { flex-wrap: nowrap !important; gap: 8px !important; padding: 10px 16px !important; }
+  .hdr-nav { flex-wrap: nowrap !important; gap: 12px !important; font-size: 14px !important; }
+  .hdr-nav a { white-space: nowrap; }
+  .hdr-nav .hdr-cta { padding: 0 12px !important; font-size: 13px; }
+}
+</style>
 <style>html{scroll-behavior:smooth}
 /* 최근 기록 한 줄: 날짜 · 제목+요약 · 카테고리 · 썸네일 (글 목록 .post-row 와 같은 배치) */
 .home-row{text-decoration:none;display:grid;grid-template-columns:minmax(120px,160px) minmax(0,1fr) auto;gap:24px;align-items:center;padding:28px 0;border-bottom:1px solid #E5E5E5}
@@ -109,20 +118,20 @@ input,select,textarea{font:inherit}
 <div style="min-height: 100vh; display: flex; flex-direction: column; background: #FAFAFA; color: #111111; font-family: 'Noto Sans KR', sans-serif; font-size: 16px; line-height: 1.6">
 
   <header style="border-bottom: 1px solid #E5E5E5">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between">
+    <div class="hdr-wrap" style="max-width: 1200px; margin: 0 auto; padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between">
       <a href="#" style="font-family: 'Noto Serif KR', serif; font-weight: 600; font-size: 22px; text-decoration: none">Jae</a>
-      <nav aria-label="주요 메뉴" style="display: flex; flex-wrap: wrap; gap: 28px; align-items: center; font-size: 15px">
+      <nav class="hdr-nav" aria-label="주요 메뉴" style="display: flex; flex-wrap: wrap; gap: 28px; align-items: center; font-size: 15px">
         <a href="#work" style="text-decoration: none">작업</a>
         <a data-ga-event="click_cta" data-ga-cta_name="nav_blog" data-ga-cta_location="header" href="posts.html" style="text-decoration: none">기록</a>
         <a href="#service" style="text-decoration: none">서비스</a>
-        <a class="fx fx-wave fx-dark" data-ga-event="request_click" data-ga-cta_location="header" href="#request" style="text-decoration: none; background: #111111; color: #FFFFFF; padding: 0 18px; border-radius: 999px; min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center">프로젝트 의뢰</a>
+        <a class="fx fx-wave fx-dark hdr-cta" data-ga-event="request_click" data-ga-cta_location="header" href="#request" style="text-decoration: none; background: #111111; color: #FFFFFF; padding: 0 18px; border-radius: 999px; min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center">프로젝트 의뢰</a>
       </nav>
     </div>
   </header>
 
   <section style="width: 100%; box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 120px 24px 96px">
     <p style="margin: 0 0 24px; font-size: 13px; letter-spacing: 0.16em; color: #5F5F5F">BRANDING · UI/UX · CONTENT DESIGN</p>
-    <h1 style="margin: 0; font-family: 'Noto Serif KR', serif; font-weight: 600; font-size: clamp(44px, 7vw, 96px); line-height: 1.15; letter-spacing: -0.02em">생각을 화면으로,<br>화면을 <span style="color: #2F6BEA">경험</span>으로.</h1>
+    <h1 style="margin: 0; font-family: 'Noto Serif KR', serif; font-weight: 600; font-size: clamp(44px, 7vw, 96px); line-height: 1.15; letter-spacing: -0.02em; word-break: keep-all">생각을 화면으로,<br>화면을 <span style="color: #2F6BEA">경험</span>으로.</h1>
     <div style="margin-top: 48px; display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-end; justify-content: space-between">
       <p style="margin: 0; max-width: 520px; font-size: 18px; color: #3A3A3A">웹·앱 디자인과 콘텐츠를 만드는 디자이너입니다. 지금은 바이브코딩으로 디자인을 직접 구현하는 과정을 기록하고 있어요.</p>
       <div style="display: flex; flex-wrap: wrap; gap: 12px">
