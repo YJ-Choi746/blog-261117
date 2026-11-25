@@ -2,6 +2,7 @@ import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, getDocs, doc, updateDoc, serverTimestamp, friendlyError, formatDate, markAdminBrowser
 } from "./firebase.js";
+import { applyViewerMode, isViewer } from "./viewer.js";
 import { getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
 
@@ -117,6 +118,7 @@ if (!isConfigured) {
     if (!user) { location.replace("login.html?next=posts.html"); return; }
     markAdminBrowser();
     $("who").textContent = user.email || "";
+    applyViewerMode(user, () => signOut(auth)); // 평가자 보기 전용 (D39)
     $("checking").hidden = true; $("manage").hidden = false;
     try {
       const snap = await getDocs(collection(db, "posts"));

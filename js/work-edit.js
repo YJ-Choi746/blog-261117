@@ -7,6 +7,7 @@ import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
 } from "./firebase.js";
+import { applyViewerMode, isViewer } from "./viewer.js";
 import { uploadImage, uploadCanvas, getImageData } from "./images.js";
 import { openCrop } from "./crop.js";
 import { templateDraft, templateSns } from "./templates.js";
@@ -660,10 +661,10 @@ async function load() {
   const labels = await loadCategories(); // 관리자가 정한 분야 이름 (예전 '기타'는 편집디자인 칸)
   applyCategoryLabels(labels);
   if (isNew) { workId = doc(collection(db, "works")).id; renderImages(); return; }
-  const [ws, ns] = await Promise.all([getDoc(doc(db, "works", workId)), getDoc(doc(db, "workNotes", workId))]);
+  const [ws, ns] = await Promise.all([getDoc(doc(db, "works", workId)), getDoc(doc(db, "workNotes", workId)).catch(() => null)]); // 평가자 보기는 메모를 못 읽어요
   if (!ws.exists()) { say("작업을 찾을 수 없어요. 새 작업으로 시작해요.", true); isNew = true; workId = doc(collection(db, "works")).id; renderImages(); return; }
   existing = ws.data();
-  const n = ns.exists() ? ns.data() : {};
+  const n = ns && ns.exists() ? ns.data() : {};
   $("f-name").value = existing.title || existing.name || ""; $("f-category").value = normalizeCategory(existing.category, labels) || labels[0];
   $("f-industry").value = existing.industry || ""; fillPeriod(existing.period); $("f-role").value = existing.role || "";
   $("f-client").value = n.client || existing.client || ""; $("f-client-public").checked = !!n.clientPublic;
@@ -687,6 +688,7 @@ if (!isConfigured) {
     if (!u) { location.replace(`login.html?next=${isNew ? "work.html" : "works.html"}`); return; }
     user = u; markAdminBrowser();
     $("who").textContent = u.email || "";
+    applyViewerMode(u, () => signOut(auth)); // 평가자 보기 전용 (D39)
     $("checking").hidden = true; $("editor").hidden = false;
     try { await load(); } catch (err) { say(friendlyError(err), true); }
   });

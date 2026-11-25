@@ -2,6 +2,7 @@ import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, addDoc, updateDoc, getDoc, serverTimestamp, friendlyError, markAdminBrowser
 } from "./firebase.js";
+import { applyViewerMode, isViewer } from "./viewer.js";
 import { sanitizeToFragment, sanitizeElementToHtml, htmlToText, imageIds } from "./sanitize.js";
 import { mountWidgets } from "./widgets.js";
 import { uploadImage, resolveImages, getImageData } from "./images.js";
@@ -213,6 +214,7 @@ if (!isConfigured) {
     if (currentUser) return;
     currentUser = user;
     markAdminBrowser();
+    applyViewerMode(user, () => signOut(auth)); // 평가자 보기 전용 (D39)
     $("checking").hidden = true;
     $("toolbar").hidden = false;
     $("workspace").hidden = false;
