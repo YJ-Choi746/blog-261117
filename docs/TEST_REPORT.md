@@ -49,7 +49,7 @@
 | 1 · 2 · 3 · 4 | 24 · 18 · 15 · 15분 | 0 · 0 · 0 · 1건 | 65 · 80 · 50 · 60% |
 | 결과 | 평균 18분, 합계 72분 (목표 80분) **달성** | 합계 1건 **미달** | 평균 63.8% **달성** |
 
-1건째만 24분으로 목표를 넘었고 2건째부터 20분 안으로 줄어듦. 4건째 초안은 운영자가 쓴 내용의 순서를 바꿔 말뜻이 달라진 곳이 1건 있어 KR2(0건)는 지키지 못함. 고친 곳은 대부분 '-했습니다' 체의 긴 문장을 줄이는 일이었음. → 다음 조치: 프롬프트에 '메모의 순서와 인과는 그대로', '짧은 해요체'를 넣고 실측을 다시 할 예정.
+1건째만 24분, 2건째부터 20분 안. 4건째 초안에서 순서가 바뀌어 말뜻이 달라진 곳 1건(KR2 미달). 고친 곳은 주로 '-했습니다' 체 긴 문장. → 다음 조치: 프롬프트에 '메모 순서 · 인과 유지', '짧은 해요체'를 넣고 다시 실측할 예정.
 
 **② 휴리스틱 평가 (Nielsen 10원칙) → 1 · 2차 조치**: 1차 조치 후 다시 재서 남은 문제를 2차에서 고침. 수치는 크롬 1280×860 · 360×780 실측.
 
@@ -62,9 +62,6 @@
 
 | 메모 칸 위치 (전 → 후) | 모바일 헤더 · 홈 헤딩 (전 → 후) | English 360px (후) |
 |---|---|---|
-| <img src="screenshots/heuristic/h1-memo-before-after.png" width="150"> | <img src="screenshots/heuristic/h2-h3-mobile-before-after.png" width="230"> | <img src="screenshots/heuristic/h2-mobile-en-after.png" width="110"> |
+| <img src="screenshots/heuristic/h1-memo-before-after.png" width="120"> | <img src="screenshots/heuristic/h2-h3-mobile-before-after.png" width="180"> | <img src="screenshots/heuristic/h2-mobile-en-after.png" width="88"> |
 
-**③ 실제 방문자 GA4 (H1 · H2)**: 11/24~25 GA4 '사용자 획득' 보고서 기준 **사용자 5명**. 표본 30명 미만이고 공개 직후라 이벤트 집계도 늦어 case_view → request_click · form_start → form_submit 전환율은 **집계 지연 · 표본 부족으로 판단 보류**. 관리자 브라우저는 GA에서 제외해 실제 방문자만 셈. → 다음 조치: LinkedIn과 커뮤니티 UTM 링크로 4주간 모아 다시 판단할 예정.
-
-## 4. 한계
-배포 URL은 테스트 환경에서 열리지 않아 같은 코드를 로컬에서 실행함. 배포 사이트 방문자 화면은 `LIVE=1 BASE=https://blog---261117.web.app node flow.js`로 다시 찍을 수 있음(제출 · 관리자 단계 제외). H5 · H6은 공개 후 GA4로 확인할 예정. 테스트는 웹 글꼴을 막고 기본 글꼴로 재서, 실제 Noto 글꼴에서는 줄바꿈 위치가 조금 다를 수 있음. v1.4에서 작업 기간 입력이 월 선택 칸으로 바뀐 것을 테스트가 따라가지 못해 멈추던 문제를 먼저 고침(성공 실패 로그).
+**③ 실제 방문자 GA4 (H1 · H2)**: 11/24~25 '사용자 획득' 기준 **사용자 5명**(관리자 브라우저 제외). 표본 30명 미만 · 공개 직후 집계 지연으로 case_view → request_click · form_start → form_submit 전환율은 **판단 보류**. → 다음 조치: LinkedIn과 커뮤니티 UTM 링크로 4주간 모아 다시 판단할 예정. **한계**: 배포 URL 대신 같은 코드를 로컬에서 실행 · 기본 글꼴로 측정.
