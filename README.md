@@ -1,6 +1,6 @@
 # Jae 블로그 — AI 케이스 스터디 작성기
 
-> **평가자용 바로가기** · 배포 블로그: https://blog---261117.web.app · PRD: [docs/PRD.md](docs/PRD.md) (v1.5, 2쪽) · 테스트 보고서: [docs/TEST_REPORT.md](docs/TEST_REPORT.md) (v1.3, 2쪽, 실제 사이트 자동 33/33)
+> **평가자용 바로가기** · 배포 블로그: https://blog---261117.web.app · PRD: [docs/PRD.md](docs/PRD.md) (v1.5, 2쪽) · 테스트 보고서: [docs/TEST_REPORT.md](docs/TEST_REPORT.md) (v1.4, 2쪽, 실제 사이트 자동 37/37) · 결과보고서: [docs/RESULT_REPORT.md](docs/RESULT_REPORT.md) (2쪽)
 
 웹·앱 디자이너의 블로그 겸 의뢰 페이지에 **AI로 운영자의 워크플로우를 자동화**하는 미니 프로젝트예요 (기획 · 디자인 · 개발 1인).
 
@@ -12,7 +12,8 @@
 |---|---|
 | 배포된 블로그 | https://blog---261117.web.app (GitHub Pages: https://yj-choi746.github.io/blog-261117/) · 관리자 로그인 https://blog---261117.web.app/admin/login.html |
 | PRD 기획서 | [docs/PRD.md](docs/PRD.md) v1.5, A4 2쪽 (v0.2 → v1.5 변화는 커밋 기록 `docs: PRD ...`) |
-| 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) v1.3, A4 2쪽 (실제 사이트 자동 33/33 + 운영자 실측 + 휴리스틱 평가 + GA4 실제 방문자) · 스크린샷 [docs/screenshots/site/](docs/screenshots/site/) · 자동 테스트 [tests/site-flow/](tests/site-flow/) (이전 프로토타입 24/24: [tests/e2e_prototype.py](tests/e2e_prototype.py)) |
+| 테스트 보고서 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) v1.4, A4 2쪽 (실제 사이트 자동 37/37 + 운영자 실측 + 휴리스틱 평가 + GA4 실제 방문자) · 스크린샷 [docs/screenshots/site/](docs/screenshots/site/) · 자동 테스트 [tests/site-flow/](tests/site-flow/) (이전 프로토타입 24/24: [tests/e2e_prototype.py](tests/e2e_prototype.py)) |
+| 결과보고서 | [docs/RESULT_REPORT.md](docs/RESULT_REPORT.md) v1.0, A4 2쪽 (만든 것 · 목표 대비 결과 · 배운 것 · 다음 단계) |
 | 소스 코드 | 이 저장소 `main` (커밋 기록이 개발 과정) · 파일별 역할 · 기능(F1~F7)별 대응표는 [docs/SOURCE_CODE.md](docs/SOURCE_CODE.md) · 요약은 아래 [구조](#구조) |
 | 에이전트용 지침 | [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) · [CLAUDE.md](CLAUDE.md) |
 | 의사결정 로그 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) (D1~D39) |
