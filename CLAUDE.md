@@ -65,6 +65,7 @@ docs/SUCCESS_FAILURE_LOG.md  성공 · 실패 로그 (테스트 실행 · 프롬
 docs/TEST_REPORT.md     테스트 보고서 (유저플로우 스크린샷 + 기능별 단위 테스트, 2쪽 이하)
 docs/WORKLOG.md         작업 일지 (날짜 · 시간순)
 docs/screenshots/       사이트 화면 스크린샷 · prototype/ 아래는 프로토타입 유저플로우 11장과 test-results.json
+tests/site-flow/    실제 사이트 유저플로우 자동 테스트 (Playwright + 가짜 Firebase, 실행: cd tests/site-flow && npm install && npm test · 이 폴더만 npm, D37)
 tests/e2e_prototype.py  프로토타입 유저플로우 자동 테스트 24건 (Playwright Python, 실행: python3 tests/e2e_prototype.py) · tests/fixtures/ 첨부 테스트 파일
 docs/USER_STORIES.md    사용자 스토리와 완료 기준
 docs/FIREBASE_SETUP.md  Firebase 연결 순서 (처음 한 번)
@@ -75,7 +76,7 @@ docs/failures/*.md      막혔던 일과 푼 방법 (주제별: 깃허브-배포
 ```
 
 ## 기술 규칙
-- 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요. 예외: 서버 함수 `functions/` 폴더 (DECISION_LOG D10).
+- 빌드 도구 없이 **HTML + CSS + 순수 JavaScript(ES 모듈)**만 써요. 프레임워크·npm 패키지를 추가하려면 먼저 물어보세요. 예외: 서버 함수 `functions/` 폴더 (DECISION_LOG D10), 자동 테스트 `tests/site-flow/` 폴더 (테스트 전용, 사이트에는 안 들어감, D37).
 - AI API 키는 Firebase Secret Manager(`ANTHROPIC_API_KEY`)에만 둬요. 방문자 화면 코드에서 AI API를 직접 부르지 않고 `analyzeRequest` 함수를 거쳐요. 예외: 관리자 작업 편집의 "내 API 키로 AI 쓰기"(`js/ai-direct.js`, D30)는 운영자가 넣은 키를 그 브라우저에만 두고 `api.anthropic.com`을 직접 불러요. 키를 코드 · Firestore · GA · 로그에 남기지 않아요.
 - 외부 리소스는 Google Fonts, **Firebase SDK**(`www.gstatic.com/firebasejs/10.12.2/`), **Google Analytics**(`www.googletagmanager.com`, `js/analytics.js`), **PokéAPI**(`pokeapi.co` 데이터 + `raw.githubusercontent.com/PokeAPI/sprites` 그림, `js/widgets.js`의 포켓몬 위젯만)만 써요. 새 방문자 페이지를 만들면 `<head>`에 `js/analytics.js`를 넣고, 관리자 화면에는 넣지 않아요.
 - GA 이벤트를 새로 만들거나 바꾸면 **먼저 `docs/ANALYTICS_EVENTS.md`에 적고** 이름 규칙(`동사_대상`, snake_case)을 지켜요. 이름 · 이메일 · 의뢰 내용 같은 개인 정보는 GA로 보내지 않아요. Firebase는 `js/firebase.js`에서만 불러오고, 다른 스크립트는 `./firebase.js`를 import해요.

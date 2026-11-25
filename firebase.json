@@ -8,7 +8,8 @@
       "**/node_modules/**",
       "docs/**",
       "**/*.md",
-      "functions/**"
+      "functions/**",
+      "tests/**"
     ],
     "cleanUrls": false,
     "headers": [
