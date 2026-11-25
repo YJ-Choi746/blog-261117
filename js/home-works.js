@@ -1,11 +1,11 @@
-// 홈 '선택한 작업' (PRD v1.1 F3) — 플레이스홀더 대신 게시된 작업 최신 3개
+// 홈 '선택한 작업' (PRD v1.1 F3) — 게시된 작업 6개 (작업 기간이 최근인 순)
 import { loadPublishedWorks, workCard } from "./works-data.js";
 
 const grid = document.getElementById("home-works");
 const statusEl = document.getElementById("home-works-status");
 if (grid) {
   loadPublishedWorks().then((works) => {
-    const top = works.slice(0, 3);
+    const top = works.slice(0, 6);
     grid.replaceChildren(...top.map((w) => workCard(w)));
     grid.hidden = !top.length;
     statusEl.textContent = top.length ? "" : "지금 작업을 케이스 스터디로 정리하고 있어요. 곧 문제를 푼 과정까지 보여드릴게요.";

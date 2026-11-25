@@ -3,14 +3,23 @@
 // 작업 내용은 모두 textContent로만 넣어요 (XSS)
 import { db, isConfigured, collection, getDocs, query, where } from "./firebase.js";
 import { getImageData } from "./images.js";
+import { DEFAULT_CATEGORIES, loadCategories, normalizeCategory } from "./categories.js";
 
-export const CATEGORIES = ["브랜딩", "UI/UX 디자인", "콘텐츠 제작", "기타"];
+export const CATEGORIES = DEFAULT_CATEGORIES; // 기본 이름 (관리자가 바꾼 이름은 loadCategories())
 const millis = (t) => (t && typeof t.toMillis === "function" ? t.toMillis() : 0);
 
 export async function loadPublishedWorks() {
   if (!isConfigured || !db) return [];
-  const snap = await getDocs(query(collection(db, "works"), where("status", "==", "published")));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => millis(b.publishedAt) - millis(a.publishedAt));
+  const [snap, labels] = await Promise.all([getDocs(query(collection(db, "works"), where("status", "==", "published"))), loadCategories()]);
+  return snap.docs.map((d) => { const w = { id: d.id, ...d.data() }; w.category = normalizeCategory(w.category, labels); return w; })
+    .sort((a, b) => (periodKey(b) - periodKey(a)) || (millis(b.publishedAt) - millis(a.publishedAt)));
+}
+
+// 정렬 기준: 작업 기간(works.period, 예: "2026.03 – 2026.05")의 가장 늦은 날짜. 날짜가 없으면 맨 뒤, 그 안에서는 게시일 순
+export function periodKey(w) {
+  const ds = [...String(w.period || "").matchAll(/(\d{4})[.\-/년]\s*(\d{1,2})(?:[.\-/월]\s*(\d{1,2}))?/g)]
+    .map((m) => Number(m[1]) * 10000 + Number(m[2]) * 100 + Number(m[3] || 0));
+  return ds.length ? Math.max(...ds) : 0;
 }
 
 // 작업 카드: 커버 → 제목 · 분야 → 한 줄 요약

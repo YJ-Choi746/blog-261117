@@ -3,7 +3,8 @@
 // - 의뢰서의 "제 작업에서 고르기"에 게시된 작업을 체크 칩으로 그려요 (최대 5개)
 // - 입력과 작업 이름은 textContent로만 넣어요 (XSS)
 import { loadPublishedWorks, workCard } from "./works-data.js";
-import { guessCategory, CATEGORIES } from "./templates.js";
+import { guessCategorySlots } from "./templates.js";
+import { loadCategories } from "./categories.js";
 
 const MAX_REF_WORKS = 5;
 const askForm = document.getElementById("ask-form");
@@ -36,12 +37,13 @@ function renderRefWorks() {
   }));
 }
 
-// 의뢰서 미리 채우기: 내용이 비어 있으면 한 줄을 넣고, 분야를 하나만 체크
-export function prefillRequest(form, q, cat) {
+// 의뢰서 미리 채우기: 내용이 비어 있으면 한 줄을 넣고, 추정한 분야(1~2개)를 체크
+export function prefillRequest(form, q, cats) {
   if (!form) return;
+  const list = Array.isArray(cats) ? cats : cats ? [cats] : [];
   const content = form.querySelector('[name="프로젝트 내용"]');
   if (content && !content.value.trim()) content.value = q;
-  if (cat && CATEGORIES.includes(cat)) form.querySelectorAll('input[name="의뢰분야"]').forEach((x) => { x.checked = x.value === cat; });
+  if (list.length) form.querySelectorAll('input[name="의뢰분야"]').forEach((x) => { x.checked = list.includes(x.value); });
   form.querySelectorAll(".rq-chip").forEach((l) => l.classList.toggle("on", !!l.querySelector("input")?.checked));
 }
 
@@ -49,14 +51,19 @@ async function handleAsk(q) {
   q = String(q || "").trim().slice(0, 200);
   if (!q) return;
   await ready;
-  const cat = guessCategory(q);
-  const same = cat ? works.filter((w) => w.category === cat) : [];
-  const shown = (same.length ? same : works).slice(0, 3);
+  const labels = await loadCategories();
+  const cats = guessCategorySlots(q).map((i) => labels[i]); // 예: 쇼핑몰 상세페이지 → 콘텐츠 제작 · UI/UX 디자인
+  // 분야가 둘이면 번갈아 섞어서 두 분야 작업이 모두 보이게 (최대 3개, 두 분야면 4개)
+  const groups = cats.map((c) => works.filter((w) => w.category === c));
+  const same = [];
+  for (let i = 0; groups.some((g) => g[i]); i++) groups.forEach((g) => { if (g[i]) same.push(g[i]); });
+  const shown = (same.length ? same : works).slice(0, cats.length > 1 ? 4 : 3);
+  const found = cats.filter((c, i) => groups[i].length);
   msg.textContent = !works.length ? "곧 작업을 소개할게요. 의뢰서는 미리 채워 두었어요."
-    : same.length ? `${cat} 작업이 필요하신 것 같아요. 이런 작업을 했어요.`
+    : same.length ? `${found.join(" · ")} 작업이 필요하신 것 같아요. 이런 작업을 했어요.`
     : "분야를 정확히 몰라도 괜찮아요. 최근 작업을 보여드릴게요.";
   worksBox.replaceChildren(...shown.map((w) => workCard(w)));
-  prefillRequest(requestForm, q, cat);
+  prefillRequest(requestForm, q, cats);
   result.hidden = false;
 }
 

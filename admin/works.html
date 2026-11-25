@@ -43,6 +43,21 @@
       <a class="btn btn-primary" href="work.html">새 작업</a>
     </div>
     <p id="manage-error" class="notice notice-error" role="alert" hidden></p>
+    <!-- 분야 이름 바꾸기: 홈 · 작업 목록 · 의뢰서 · 작업 편집에 같이 보여요 (js/categories.js, settings/categories) -->
+    <details id="cat-editor" class="cat-editor">
+      <summary>분야 이름 바꾸기</summary>
+      <p class="hint" style="margin: 8px 0 12px">홈 · 작업 목록 분야 칩, 의뢰서 분야, 작업 편집의 분야 이름이 함께 바뀌어요. 이미 게시한 작업의 분야도 새 이름으로 같이 바뀌어요.</p>
+      <div class="cat-inputs">
+        <label>1<input id="cat-0" maxlength="20" required></label>
+        <label>2<input id="cat-1" maxlength="20" required></label>
+        <label>3<input id="cat-2" maxlength="20" required></label>
+        <label>4<input id="cat-3" maxlength="20" required></label>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px">
+        <button type="button" id="cat-save" class="btn btn-dark">이름 저장</button>
+        <span id="cat-msg" role="status" aria-live="polite" style="font-size: 14px; color: var(--gray-600)"></span>
+      </div>
+    </details>
     <p id="list-status" role="status" style="color: var(--gray-600)">작업을 불러오는 중…</p>
     <div id="work-list" style="border-top: 1px solid var(--black)" hidden></div>
   </main>

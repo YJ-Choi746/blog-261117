@@ -58,9 +58,9 @@
       <section class="pw-panel pw-left" aria-label="작업 입력">
         <input id="f-name" class="pw-title-in" maxlength="60" placeholder="제목 (필수, 예: 성수 카페의 새 얼굴)" aria-label="제목" aria-required="true">
         <div class="pw-meta-in">
-          <label>분야<select id="f-category"><option value="브랜딩">브랜딩</option><option value="UI/UX 디자인">UI/UX 디자인</option><option value="콘텐츠 제작">콘텐츠 제작</option><option value="기타">기타</option></select></label>
+          <label>분야<select id="f-category"><option data-cat-slot="0" value="브랜딩">브랜딩</option><option data-cat-slot="1" value="UI/UX 디자인">UI/UX 디자인</option><option data-cat-slot="2" value="콘텐츠 제작">콘텐츠 제작</option><option data-cat-slot="3" value="편집디자인">편집디자인</option></select></label>
           <label>업종<input id="f-industry" maxlength="30" placeholder="예: 베이커리"></label>
-          <label>기간<input id="f-period" maxlength="30" placeholder="예: 3주"></label>
+          <label class="pw-period">작업 기간 (정렬 기준)<span class="pw-months"><input type="month" id="f-period-from" aria-label="작업 시작 월"><span aria-hidden="true">–</span><input type="month" id="f-period-to" aria-label="작업 끝 월"></span><input type="hidden" id="f-period"></label>
           <label>맡은 일<input id="f-role" maxlength="60" placeholder="예: 로고, 간판"></label>
         </div>
         <div class="pw-client">

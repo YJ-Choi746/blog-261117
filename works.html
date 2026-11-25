@@ -44,10 +44,10 @@
     <p style="margin: 0 0 48px; max-width: 560px; font-size: 18px; color: var(--gray-700)">결과물만이 아니라 문제를 푼 과정까지 보여드려요.</p>
     <div class="chips" role="group" aria-label="분야" id="chips" style="margin-bottom: 8px">
       <button type="button" class="chip" aria-pressed="true" data-cat="">전체</button>
-      <button type="button" class="chip" aria-pressed="false" data-cat="브랜딩">브랜딩</button>
-      <button type="button" class="chip" aria-pressed="false" data-cat="UI/UX 디자인">UI/UX 디자인</button>
-      <button type="button" class="chip" aria-pressed="false" data-cat="콘텐츠 제작">콘텐츠 제작</button>
-      <button type="button" class="chip" aria-pressed="false" data-cat="기타">기타</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat-slot="0" data-cat="브랜딩">브랜딩</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat-slot="1" data-cat="UI/UX 디자인">UI/UX 디자인</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat-slot="2" data-cat="콘텐츠 제작">콘텐츠 제작</button>
+      <button type="button" class="chip" aria-pressed="false" data-cat-slot="3" data-cat="편집디자인">편집디자인</button>
     </div>
     <p id="list-status" role="status" style="color: var(--gray-600)">작업을 불러오는 중…</p>
     <div id="work-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); column-gap: 48px" hidden></div>

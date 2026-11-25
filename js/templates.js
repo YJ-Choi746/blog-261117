@@ -2,14 +2,25 @@
 // 프로토타입(prototype.html)의 templateDraft · guessCat 규칙을 사이트용으로 옮겼어요.
 // 메모에 있는 문장만 그대로 쓰고, 새 사실을 만들지 않아요.
 
-export const CATEGORIES = ["브랜딩", "UI/UX 디자인", "콘텐츠 제작", "기타"];
+export const CATEGORIES = ["브랜딩", "UI/UX 디자인", "콘텐츠 제작", "편집디자인"]; // 기본 이름 (관리자가 바꾼 이름은 js/categories.js)
 
 // 한 줄 의뢰에서 분야를 단어로 추정 (프로토타입과 같은 단어 목록)
 const KEYWORDS = {
   "브랜딩": ["로고", "브랜드", "브랜딩", "간판", "명함", "네이밍", "패키지", "포장"],
   "UI/UX 디자인": ["앱", "웹", "홈페이지", "사이트", "화면", "랜딩", "ui", "ux", "리디자인"],
   "콘텐츠 제작": ["상세페이지", "카드뉴스", "썸네일", "sns", "인스타", "배너", "포스터", "콘텐츠"],
+  "편집디자인": ["편집", "브로슈어", "리플렛", "전단", "책자", "카탈로그", "메뉴판", "잡지", "인쇄"],
 };
+const SLOT = { "브랜딩": 0, "UI/UX 디자인": 1, "콘텐츠 제작": 2, "편집디자인": 3 };
+// 두 분야에 걸친 의뢰: 쇼핑몰 상세페이지는 콘텐츠 제작 + UI/UX 디자인 작업을 같이 보여줘요
+const BOTH = [{ words: ["상세페이지", "상세 페이지", "쇼핑몰", "스마트스토어"], slots: [2, 1] }];
+// 분야 칸 번호 목록 (0 브랜딩 · 1 UI/UX · 2 콘텐츠 · 3 편집디자인). 못 찾으면 []
+export function guessCategorySlots(text) {
+  const t = String(text || "").toLowerCase();
+  for (const b of BOTH) if (b.words.some((w) => t.includes(w))) return b.slots;
+  const best = guessCategory(text);
+  return best ? [SLOT[best]] : [];
+}
 export function guessCategory(text) {
   const t = String(text || "").toLowerCase();
   let best = "", score = 0;

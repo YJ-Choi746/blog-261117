@@ -12,7 +12,7 @@
     "생각을 화면으로,": "From ideas to screens,", "화면을": "from screens", "경험": "to experiences", "으로.": ".",
     "웹·앱 디자인과 콘텐츠를 만드는 디자이너입니다. 지금은 바이브코딩으로 디자인을 직접 구현하는 과정을 기록하고 있어요.": "I'm a designer who makes web and app designs and content. Right now I'm documenting how I build my own designs with vibe coding.",
     "의뢰 문의하기": "Request a project", "기록 읽기": "Read the journal",
-    "브랜딩": "Branding", "UI/UX 디자인": "UI/UX Design", "콘텐츠 제작": "Content Design", "기타": "Other",
+    "브랜딩": "Branding", "UI/UX 디자인": "UI/UX Design", "콘텐츠 제작": "Content Design", "기타": "Other", "편집디자인": "Editorial Design",
     "바이브코딩": "Vibe coding", "디자인": "Design", "콘텐츠": "Content",
     "로고, 브랜드 컬러·타이포그래피, 브랜드 가이드까지 브랜드의 첫인상을 설계합니다.": "From logos, brand colors and typography to brand guides, I design a brand's first impression.",
     "웹·앱 화면 설계, 사용자 흐름, 디자인 시스템과 프로토타입.": "Web and app screens, user flows, design systems and prototypes.",
@@ -85,7 +85,7 @@
   };
   // 숫자 · 이름이 들어가는 문장
   const P = [
-    [/^(.+) 작업이 필요하신 것 같아요\. 이런 작업을 했어요\.$/, (m) => `Looks like you need ${tr(m[1])}. Here's similar work.`],
+    [/^(.+) 작업이 필요하신 것 같아요\. 이런 작업을 했어요\.$/, (m) => `Looks like you need ${m[1].split(" · ").map(tr).join(" · ")}. Here's similar work.`],
     [/^링크는 (\d+)개까지 붙일 수 있어요\.$/, (m) => `You can add up to ${m[1]} links.`],
     [/^사진은 (\d+)장까지 첨부할 수 있어요\.$/, (m) => `You can attach up to ${m[1]} photos.`],
     [/^확인이 필요한 칸이 (\d+)개 있어요\.$/, (m) => `${m[1]} field${m[1] === "1" ? " needs" : "s need"} checking.`],

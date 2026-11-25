@@ -83,6 +83,18 @@ service cloud.firestore {
         && w.authorUid == request.auth.uid;
     }
 
+    // 분야 이름 (4칸): 누구나 읽고, 관리자만 바꿔요 (작업 관리 '분야 이름 바꾸기', js/categories.js)
+    match /settings/categories {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(["labels", "updatedAt"])
+        && request.resource.data.labels is list && request.resource.data.labels.size() == 4
+        && request.resource.data.labels[0] is string && request.resource.data.labels[0].size() > 0 && request.resource.data.labels[0].size() <= 20
+        && request.resource.data.labels[1] is string && request.resource.data.labels[1].size() > 0 && request.resource.data.labels[1].size() <= 20
+        && request.resource.data.labels[2] is string && request.resource.data.labels[2].size() > 0 && request.resource.data.labels[2].size() <= 20
+        && request.resource.data.labels[3] is string && request.resource.data.labels[3].size() > 0 && request.resource.data.labels[3].size() <= 20;
+    }
+
     // 의뢰 (v0.2 의뢰 저장 기능): 방문자는 만들기만, 읽기 · 수정 · 삭제는 관리자만.
     // 이름 · 이메일이 들어 있는 개인정보라 방문자 읽기는 절대 열지 않아요.
     // AI 분석 결과(ai) · 상태 변경(status)은 관리자만 update로 붙여요.
@@ -103,8 +115,8 @@ service cloud.firestore {
         && r.name is string && r.name.size() > 0 && r.name.size() <= 50
         && r.email is string && r.email.size() <= 100
         && r.email.matches("^[^@\\s]+@[^@\\s]+[.][^@\\s]+$")
+        // 분야 이름은 관리자가 바꿀 수 있어서(settings/categories) 고정 목록 대신 개수만 확인해요
         && r.categories is list && r.categories.size() <= 4
-        && r.categories.hasOnly(["브랜딩", "UI/UX 디자인", "콘텐츠 제작", "기타"])
         && r.budget is string && r.budget.size() <= 50
         && r.content is string && r.content.size() >= 5 && r.content.size() <= 3000
         && r.status == "new"

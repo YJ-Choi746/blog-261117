@@ -4,7 +4,8 @@
 import { normLayout, applyLayout, withCaption } from "./image-layout.js";
 import { db, isConfigured, doc, getDoc } from "./firebase.js";
 import { getImageData } from "./images.js";
-import { CATEGORIES, loadPublishedWorks } from "./works-data.js";
+import { loadPublishedWorks } from "./works-data.js";
+import { loadCategories, normalizeCategory } from "./categories.js";
 
 const $ = (id) => document.getElementById(id);
 const id = new URLSearchParams(location.search).get("id");
@@ -37,6 +38,8 @@ async function load() {
   }
   if (w.status !== "published") { $("work-status").textContent = "공개되지 않은 작업이에요."; return; }
 
+  const labels = await loadCategories();
+  w.category = normalizeCategory(w.category, labels); // 예전 '기타' → 편집디자인 칸 이름
   document.title = `${w.title || w.name} — Jae`;
   if (typeof window.trackEvent === "function") window.trackEvent("case_view", { post_id: id, post_title: w.title || w.name || "", post_category: w.category || "" });
   const desc = document.querySelector('meta[name="description"]');
@@ -72,7 +75,7 @@ async function load() {
 
   // F3 의뢰 버튼: 의뢰 폼으로 가면서 이 작업의 분야를 자동 선택 (허용된 분야만 넘겨요)
   const cta = $("work-cta");
-  const cat = CATEGORIES.includes(w.category) ? w.category : "";
+  const cat = labels.includes(w.category) ? w.category : "";
   cta.href = `index.html${cat ? `?category=${encodeURIComponent(cat)}` : ""}#request`;
 
   $("work-status").hidden = true;

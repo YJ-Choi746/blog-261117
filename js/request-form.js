@@ -5,7 +5,8 @@ import { db, isConfigured, collection, doc, setDoc, serverTimestamp } from "./fi
 
 const SAVE_TIMEOUT_MS = 3000;
 const MAX_CONTENT = 3000; // firestore.rules · functions/analyze.js와 같은 값
-const CATEGORIES = ["브랜딩", "UI/UX 디자인", "콘텐츠 제작", "기타"];
+import { DEFAULT_CATEGORIES, loadCategories, applyCategoryLabels } from "./categories.js";
+let CATEGORIES = [...DEFAULT_CATEGORIES]; // 관리자가 바꾼 분야 이름을 불러오면 바뀌어요
 
 const form = document.getElementById("request-form");
 
@@ -201,6 +202,7 @@ async function addPhotos(f, fileList) {
 }
 
 if (form) {
+  loadCategories().then((labels) => { CATEGORIES = labels; applyCategoryLabels(labels, form); preselectCategory(form, location.search); syncChips(form); });
   preselectCategory(form, location.search);
   form.querySelector("#photo-in")?.addEventListener("change", (e) => {
     const files = [...e.target.files];

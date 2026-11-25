@@ -262,10 +262,15 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 .pw-cap { font-size: 12px; color: var(--gray-600); margin: 0; }
 .pw-req::after { content: " *"; color: var(--danger); }
 #editor .pw-title-in { font-family: var(--font-serif); font-weight: 600; font-size: 21px; border: 0; border-bottom: 1px solid var(--line-strong); padding: 6px 0; background: transparent; }
-.pw-meta-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--black); border-bottom: 1px solid var(--line); }
+.pw-meta-in { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--black); border-bottom: 1px solid var(--line); }
 .pw-panel .pw-meta-in label { gap: 2px; font-size: 12px; padding: 8px 8px 8px 0; color: var(--gray-600); }
 #editor .pw-meta-in input, #editor .pw-meta-in select { min-height: 44px; padding: 4px 8px; font-size: 13px; }
 @media (max-width: 640px) { .pw-meta-in { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* 작업 기간: 시작 · 끝 월 (작업 목록 · 홈 정렬 기준) */
+.pw-meta-in .pw-period { grid-column: span 3; }
+.pw-months { display: flex; align-items: center; gap: 6px; }
+#editor .pw-months input { flex: 1 1 0; min-width: 0; }
+@media (max-width: 640px) { .pw-meta-in .pw-period { grid-column: span 2; } }
 .pw-client { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: end; }
 @media (max-width: 420px) { .pw-client { grid-template-columns: 1fr; } }
 .pw-thumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -408,3 +413,11 @@ a.post-nav-item:hover .post-nav-title { color: var(--blue); }
 /* 미리보기 이미지 캡션 · 캡션 입력칸 */
 .pv-cap { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--gray-600); text-align: center; overflow-wrap: anywhere; }
 .pv-tools .pv-cap-in { flex: 1 1 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); font: inherit; font-size: 14px; box-sizing: border-box; }
+
+/* 작업 관리: 분야 이름 바꾸기 */
+.cat-editor { border: 1px solid var(--line); padding: 0 16px; margin-bottom: 24px; background: var(--white); }
+.cat-editor summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.cat-editor[open] { padding-bottom: 16px; }
+.cat-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 8px; }
+.cat-inputs label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600); }
+.cat-inputs input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); font: inherit; font-size: 15px; color: var(--black); }

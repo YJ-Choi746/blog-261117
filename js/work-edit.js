@@ -11,6 +11,7 @@ import { uploadImage, uploadCanvas, getImageData } from "./images.js";
 import { openCrop } from "./crop.js";
 import { templateDraft, templateSns } from "./templates.js";
 import { SPOTS, normLayout, applyLayout, sortBySpot, clampW, withCaption } from "./image-layout.js";
+import { loadCategories, applyCategoryLabels, normalizeCategory } from "./categories.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_IMAGES = 4;
@@ -640,14 +641,31 @@ document.querySelectorAll("#editor input, #editor textarea, #editor select").for
 window.addEventListener("beforeunload", (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
 
 // ---- 불러오기 ----
+// 작업 기간: 시작 · 끝 월 → works.period "2026.03 – 2026.05" (작업 목록 · 홈은 이 날짜로 정렬)
+const ym = (v) => (v ? v.replace("-", ".") : "");
+function syncPeriod() {
+  const a = ym($("f-period-from").value), b = ym($("f-period-to").value);
+  if (!a && !b) return; // 둘 다 비우면 예전 글자(예: '3주')를 그대로 둬요
+  $("f-period").value = a && b && a !== b ? `${a} – ${b}` : a || b;
+  changed(); renderLive();
+}
+["f-period-from", "f-period-to"].forEach((id) => $(id).addEventListener("change", syncPeriod));
+function fillPeriod(text) {
+  $("f-period").value = text || "";
+  const ds = [...String(text || "").matchAll(/(\d{4})[.\-/년]\s*(\d{1,2})/g)].map((m) => `${m[1]}-${m[2].padStart(2, "0")}`);
+  $("f-period-from").value = ds[0] || ""; $("f-period-to").value = ds[1] || ds[0] || "";
+}
+
 async function load() {
+  const labels = await loadCategories(); // 관리자가 정한 분야 이름 (예전 '기타'는 편집디자인 칸)
+  applyCategoryLabels(labels);
   if (isNew) { workId = doc(collection(db, "works")).id; renderImages(); return; }
   const [ws, ns] = await Promise.all([getDoc(doc(db, "works", workId)), getDoc(doc(db, "workNotes", workId))]);
   if (!ws.exists()) { say("작업을 찾을 수 없어요. 새 작업으로 시작해요.", true); isNew = true; workId = doc(collection(db, "works")).id; renderImages(); return; }
   existing = ws.data();
   const n = ns.exists() ? ns.data() : {};
-  $("f-name").value = existing.title || existing.name || ""; $("f-category").value = existing.category || "브랜딩";
-  $("f-industry").value = existing.industry || ""; $("f-period").value = existing.period || ""; $("f-role").value = existing.role || "";
+  $("f-name").value = existing.title || existing.name || ""; $("f-category").value = normalizeCategory(existing.category, labels) || labels[0];
+  $("f-industry").value = existing.industry || ""; fillPeriod(existing.period); $("f-role").value = existing.role || "";
   $("f-client").value = n.client || existing.client || ""; $("f-client-public").checked = !!n.clientPublic;
   $("m-request").value = (n.memo && n.memo.request) || ""; $("m-work").value = (n.memo && n.memo.work) || ""; $("m-result").value = (n.memo && n.memo.result) || "";
   fillDraft(existing);
