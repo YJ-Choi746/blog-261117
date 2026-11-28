@@ -48,6 +48,7 @@ js/templates.js     문장 틀 초안 · 인스타그램 문장 틀 · 분야 �
 js/request-form.js  의뢰 폼 → Firestore requests 저장 후 FormSubmit 메일 (저장 실패해도 메일은 감)
 js/i18n.js          방문자 페이지 한국어 ⇄ English (헤더 '작업' 왼쪽 국기 동그라미 버튼, 고정 문구는 사전으로 바꾸고 'jae:langchange' 이벤트를 보냄, 상세 페이지 <body data-lang-reload>는 새로 불러옴)
 js/content-lang.js  글 · 작업의 영어 버전(문서의 en 칸) 고르기 — 영어 칸이 없으면 한국어 + "Korean only" 안내 (D40)
+js/auto-translate.js 관리자 전용: 저장 · 게시 때 크롬 내장 번역(Translator API)으로 en 칸 자동 채우기, 한국어 지문(en.src)이 같으면 다시 번역 안 함 (D41)
 js/analytics.js     Google Analytics 4 (방문자 페이지에만, 관리자 화면 제외)
 js/*.js             그 밖의 페이지별 스크립트 (login, write, admin-posts, posts, post, render)
 firestore.rules     Firestore 보안 규칙 (콘솔에 붙여넣음)
