@@ -140,12 +140,18 @@ async function save(status) {
   if (data.contentHtml.length > MAX_HTML) { showError("글이 너무 길어요. 글을 나눠서 올려 주세요."); return null; }
 
   busy(true);
+  let enNote = "";
   // 영어 버전: 한국어가 바뀌었거나 아직 없으면 자동 번역 (크롬 내장 번역, D41) — 실패해도 저장은 계속
   if (needsTranslation(data.en, fingerprint(postSource(data)))) {
     setStatus("영어로 자동 번역하는 중…");
     const r = await translatePost(data, htmlToText, (p) => setStatus(`번역 기능 내려받는 중… ${p}%`));
     if (r.ok) { data.en = r.en; fillEn(r.en); }
-    else $("en-status").textContent = `${r.reason}. 한국어는 저장하고, 영어 화면엔 한국어가 보여요.`;
+    else {
+      // 이유를 접힌 영어 칸 안에만 두면 안 보여서, 칸을 펼치고 저장 상태 줄에도 붙여요
+      $("en-status").textContent = `${r.reason}. 한국어는 저장하고, 영어 화면엔 한국어가 보여요.`;
+      $("en-box").open = true;
+      enNote = ` · 영어 번역 안 됨: ${r.reason}`;
+    }
   }
   setStatus(status === "draft" ? "저장하는 중…" : "발행하는 중…");
   const payload = { ...data, status, authorUid: currentUser.uid, updatedAt: serverTimestamp() };
@@ -163,7 +169,7 @@ async function save(status) {
     dirty = false;
     clearBackup([oldKey, backupKey()]);
     const label = { draft: "임시저장됨", published: "발행됨", private: "비공개로 저장됨" }[status];
-    setStatus(`${label} · ${nowLabel()}`);
+    setStatus(`${label} · ${nowLabel()}${enNote}`);
     return postId;
   } catch (err) {
     setStatus("저장하지 못했어요");

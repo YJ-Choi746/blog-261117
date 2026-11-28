@@ -607,11 +607,17 @@ async function save(status, showDone = false) {
   // 영어 버전: 한국어가 바뀌었거나 아직 없으면 자동 번역 (크롬 내장 번역, D41) — 실패해도 저장은 계속
   const ko = { title: work.title, summary: work.summary, industry: work.industry, period: work.period, role: work.role, problem: work.problem, process: work.process, result: work.result, tags: work.tags };
   let en = enValues();
+  let enNote = "";
   if (needsTranslation(en, fingerprint(workSource(ko)))) {
     setState("영어로 자동 번역하는 중…");
     const r = await translateWork(ko, (p) => setState(`번역 기능 내려받는 중… ${p}%`));
     if (r.ok) { en = r.en; fillEn(en); }
-    else $("en-status").textContent = `${r.reason}. 한국어는 저장하고, 영어 화면엔 한국어가 보여요.`;
+    else {
+      // 이유를 접힌 영어 칸 안에만 두면 안 보여서, 칸을 펼치고 저장 안내에도 붙여요
+      $("en-status").textContent = `${r.reason}. 한국어는 저장하고, 영어 화면엔 한국어가 보여요.`;
+      $("en-box").open = true;
+      enNote = ` 영어 번역은 안 됐어요: ${r.reason}.`;
+    }
   }
   work.en = en;
   setState("저장하는 중…");
@@ -626,7 +632,7 @@ async function save(status, showDone = false) {
     if (isNew) { isNew = false; history.replaceState(null, "", `work.html?id=${encodeURIComponent(workId)}`); }
     applyStatus(status);
     setState(status === "published" ? "게시됨" : "초안 저장됨");
-    say(showDone ? "" : (status === "published" ? "저장했어요. 게시된 페이지에도 바로 반영돼요." : "초안으로 저장했어요."));
+    say((showDone ? "" : (status === "published" ? "저장했어요. 게시된 페이지에도 바로 반영돼요." : "초안으로 저장했어요.")) + enNote);
     if (showDone && status === "published") {
       $("done-title").textContent = "게시됐어요.";
       $("done-view").href = `../work.html?id=${encodeURIComponent(workId)}`;

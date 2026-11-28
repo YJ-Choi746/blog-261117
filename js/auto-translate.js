@@ -93,11 +93,16 @@ async function translateHtml(t, html) {
 
 // 작업(케이스 스터디): 한국어 칸 → en 칸 모양 그대로
 export const WORK_KEYS = ["title", "summary", "industry", "period", "role", "problem", "process", "result"];
+// 영어는 한국어보다 글자 수가 2~3배 길어요. 보안 규칙(firestore.rules validWorkEn · validPost)의 길이 제한을 넘으면
+// 저장이 통째로 거절되니, 번역 결과를 제한 안으로 잘라요 (긴 칸은 관리자가 영어 칸에서 다듬을 수 있어요).
+const WORK_MAX = { title: 100, summary: 200, industry: 40, period: 40, role: 80, problem: 4000, process: 6000, result: 4000 };
+const POST_MAX = { title: 200, summary: 300 };
+const clip = (s, n) => (s.length <= n ? s : s.slice(0, n - 1).trimEnd() + "…");
 export async function translateWork(ko, onProgress, wait = false) {
   try {
     const t = await translator(onProgress, wait);
     const en = {};
-    for (const k of WORK_KEYS) en[k] = await translateText(t, ko[k]);
+    for (const k of WORK_KEYS) en[k] = clip(await translateText(t, ko[k]), WORK_MAX[k]);
     en.tags = [];
     for (const tag of ko.tags || []) { const v = HANGUL.test(tag) ? (await tr1(t, tag)).trim() : tag; if (v && !en.tags.includes(v)) en.tags.push(v.slice(0, 40)); }
     en.tags = en.tags.slice(0, 8);
@@ -114,7 +119,7 @@ export async function translatePost(ko, htmlToText, onProgress, wait = false) {
   try {
     const t = await translator(onProgress, wait);
     const contentHtml = await translateHtml(t, ko.contentHtml);
-    return { ok: true, en: { title: await translateText(t, ko.title), summary: await translateText(t, ko.summary), contentHtml, body: htmlToText(contentHtml).slice(0, 100000), src: fingerprint(postSource(ko)) } };
+    return { ok: true, en: { title: clip(await translateText(t, ko.title), POST_MAX.title), summary: clip(await translateText(t, ko.summary), POST_MAX.summary), contentHtml, body: htmlToText(contentHtml).slice(0, 100000), src: fingerprint(postSource(ko)) } };
   } catch (e) {
     return { ok: false, code: e && e.code, reason: reasonOf(e) };
   }
