@@ -1,6 +1,7 @@
 // 첫 화면 "최근 기록" — 발행된 글을 불러와 최신순으로 보여주고, 카테고리로 걸러요.
 // 첫 화면은 인라인 스타일로 만든 페이지라서, 줄도 같은 모양(인라인 스타일)으로 만들어요.
 import { db, isConfigured, collection, getDocs, query, where, formatDate } from "./firebase.js";
+import { pick, onLangChange } from "./content-lang.js";
 import { getImageData } from "./images.js";
 
 const SHOW = 5; // 첫 화면에 보여줄 글 수
@@ -47,12 +48,12 @@ function rowEl(p, i) {
   mid.className = "home-mid";
   const title = document.createElement("span");
   title.setAttribute("style", "display: block; font-size: 22px; font-weight: 500; overflow-wrap: anywhere");
-  title.textContent = p.title;
+  title.textContent = pick(p, "title");
   mid.appendChild(title);
-  if (p.summary) {
+  if (pick(p, "summary")) {
     const desc = document.createElement("span");
     desc.setAttribute("style", "display: block; margin-top: 4px; font-size: 15px; color: #5F5F5F; overflow-wrap: anywhere");
-    desc.textContent = p.summary;
+    desc.textContent = pick(p, "summary");
     mid.appendChild(desc);
   }
   const cat = document.createElement("span");
@@ -70,6 +71,7 @@ function rowEl(p, i) {
   return a;
 }
 
+onLangChange(() => { if (typeof posts !== "undefined" && posts.length) render(); });
 function render() {
   const shown = (current ? posts.filter((p) => p.category === current) : posts).slice(0, SHOW);
   if (!shown.length) {

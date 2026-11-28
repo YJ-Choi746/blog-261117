@@ -4,6 +4,7 @@
 import { db, isConfigured, collection, getDocs, query, where } from "./firebase.js";
 import { getImageData } from "./images.js";
 import { DEFAULT_CATEGORIES, loadCategories, normalizeCategory } from "./categories.js";
+import { pick } from "./content-lang.js";
 
 export const CATEGORIES = DEFAULT_CATEGORIES; // 기본 이름 (관리자가 바꾼 이름은 loadCategories())
 const millis = (t) => (t && typeof t.toMillis === "function" ? t.toMillis() : 0);
@@ -41,14 +42,14 @@ export function workCard(w, base = "") {
   row.style.cssText = "display: flex; justify-content: space-between; gap: 12px; align-items: baseline";
   const h = document.createElement("h3");
   h.style.cssText = "margin: 0; font-size: 18px; font-weight: 600; word-break: keep-all; overflow-wrap: break-word; hyphens: auto";
-  h.textContent = w.title || w.name || "";
+  h.textContent = pick(w, "title") || w.name || "";
   const cat = document.createElement("span");
   cat.style.cssText = "color: #2F6BEA; font-size: 14px; white-space: nowrap"; // blue
   cat.textContent = w.category || "";
   row.append(h, cat);
   const sum = document.createElement("p");
   sum.style.cssText = "margin: 0; color: #5F5F5F; font-size: 15px; line-height: 1.6"; // gray-600
-  sum.textContent = w.summary || "";
+  sum.textContent = pick(w, "summary") || "";
   a.append(cover, row, sum);
   return a;
 }

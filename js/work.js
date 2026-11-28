@@ -6,6 +6,7 @@ import { db, isConfigured, doc, getDoc } from "./firebase.js";
 import { getImageData } from "./images.js";
 import { loadPublishedWorks } from "./works-data.js";
 import { loadCategories, normalizeCategory } from "./categories.js";
+import { pick, isEn, hasEn, koreanOnlyNote } from "./content-lang.js";
 
 const $ = (id) => document.getElementById(id);
 const id = new URLSearchParams(location.search).get("id");
@@ -40,16 +41,21 @@ async function load() {
 
   const labels = await loadCategories();
   w.category = normalizeCategory(w.category, labels); // 예전 '기타' → 편집디자인 칸 이름
-  document.title = `${w.title || w.name} — Jae`;
+  const title = pick(w, "title") || w.name || "";
+  const showEn = isEn() && hasEn(w, ["problem", "process", "result"]);
+  document.title = `${title} — Jae`;
   if (typeof window.trackEvent === "function") window.trackEvent("case_view", { post_id: id, post_title: w.title || w.name || "", post_category: w.category || "" });
   const desc = document.querySelector('meta[name="description"]');
-  if (desc && w.summary) desc.setAttribute("content", w.summary);
+  if (desc && pick(w, "summary")) desc.setAttribute("content", pick(w, "summary"));
 
   $("work-cat").textContent = w.category || "";
-  $("work-title").textContent = w.title || w.name || "";
-  $("work-summary").textContent = w.summary || "";
+  $("work-title").textContent = title;
+  $("work-summary").textContent = pick(w, "summary") || "";
+  // 영어 화면인데 영어 버전이 없으면 안내 + 한국어 본문에 lang="ko" (화면 읽기 프로그램이 한국어로 읽게)
+  $("work").setAttribute("lang", isEn() && !showEn ? "ko" : document.documentElement.lang);
+  if (isEn() && !showEn) $("work-summary").after(koreanOnlyNote());
   // 정보 줄: 업종 · 기간 · 맡은 일 (+ 공개 동의한 클라이언트)
-  const meta = [["업종", w.industry || "-"], ["기간", w.period || "-"], ["맡은 일", w.role || "-"]];
+  const meta = [["업종", pick(w, "industry") || "-"], ["기간", pick(w, "period") || "-"], ["맡은 일", pick(w, "role") || "-"]];
   if (w.client) meta.push(["클라이언트", w.client]);
   $("work-meta").replaceChildren(...meta.map(([k, v]) => {
     const box = document.createElement("div");
@@ -57,21 +63,21 @@ async function load() {
     const dd = document.createElement("dd"); dd.textContent = v;
     box.append(dt, dd); return box;
   }));
-  paragraphs($("work-problem"), w.problem);
-  paragraphs($("work-process"), w.process);
-  paragraphs($("work-result"), w.result);
+  paragraphs($("work-problem"), pick(w, "problem"));
+  paragraphs($("work-process"), pick(w, "process"));
+  paragraphs($("work-result"), pick(w, "result"));
   // 이미지: 관리자가 정한 위치 · 폭 · 정렬대로 (js/image-layout.js)
   const boxes = { cover: $("work-cover"), problem: $("work-imgs-problem"), process: $("work-images"), result: $("work-imgs-result") };
   Object.values(boxes).forEach((b) => b.replaceChildren());
   (w.imageIds || []).forEach((im, i) => {
     const l = normLayout((w.imageSizes || [])[i], i);
-    const img = image(im, `${w.title || w.name} 이미지 ${i + 1}`);
+    const img = image(im, isEn() ? `${title} image ${i + 1}` : `${title} 이미지 ${i + 1}`);
     if (i === 0 && l.at === "cover") img.classList.add("is-hero"); // 맨 위 첫 장: 16:11 꽉 차게 (타이틀 이미지는 홈 카드에만 쓰여요)
     boxes[l.at].appendChild(withCaption(img, l)); // 캡션이 있으면 사진 아래 작은 글씨
   });
   Object.values(boxes).forEach((b) => { b.hidden = !b.children.length; });
   pager(w);
-  $("work-tags").replaceChildren(...(w.tags || []).map((t) => { const s = document.createElement("span"); s.className = "tag"; s.textContent = `#${t}`; return s; }));
+  $("work-tags").replaceChildren(...(pick(w, "tags") || []).map((t) => { const s = document.createElement("span"); s.className = "tag"; s.textContent = `#${t}`; return s; }));
 
   // F3 의뢰 버튼: 의뢰 폼으로 가면서 이 작업의 분야를 자동 선택 (허용된 분야만 넘겨요)
   const cta = $("work-cta");
@@ -89,8 +95,8 @@ async function pager(w) {
   const i = list.findIndex((x) => x.id === id);
   if (i < 0 || list.length < 2) return;
   const prev = list[(i - 1 + list.length) % list.length], next = list[(i + 1) % list.length];
-  $("pg-prev").href = `work.html?id=${encodeURIComponent(prev.id)}`; $("pg-prev-t").textContent = prev.title || prev.name || "";
-  $("pg-next").href = `work.html?id=${encodeURIComponent(next.id)}`; $("pg-next-t").textContent = next.title || next.name || "";
+  $("pg-prev").href = `work.html?id=${encodeURIComponent(prev.id)}`; $("pg-prev-t").textContent = pick(prev, "title") || prev.name || "";
+  $("pg-next").href = `work.html?id=${encodeURIComponent(next.id)}`; $("pg-next-t").textContent = pick(next, "title") || next.name || "";
   $("work-pager").hidden = false;
 }
 load();

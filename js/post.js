@@ -5,6 +5,7 @@ import { mountWidgets } from "./widgets.js";
 import { likeButton, bookmarkButton } from "./reactions.js";
 import { resolveImages, getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
+import { pick, isEn, hasEn, koreanOnlyNote } from "./content-lang.js";
 
 const $ = (id) => document.getElementById(id);
 const id = new URLSearchParams(location.search).get("id");
@@ -153,7 +154,7 @@ function navItem(p, dir, wrapped) {
     : (wrapped ? "처음 글로 →" : "다음 글 →");
   const title = document.createElement("span");
   title.className = "post-nav-title";
-  title.textContent = p.title || "(제목 없음)";
+  title.textContent = pick(p, "title") || "(제목 없음)";
   const meta = document.createElement("span");
   meta.className = "post-nav-meta";
   meta.textContent = [p.category, formatDate(p.publishedAt)].filter(Boolean).join(" · ");
@@ -202,15 +203,18 @@ async function show(user) {
     if (!snap.exists()) { fail("글을 찾을 수 없어요."); return; }
     const p = snap.data();
     $("post-status").hidden = true;
-    document.title = `${p.title} — Jae`;
+    const showEn = isEn() && hasEn(p, ["contentHtml", "body"]);
+    const T = (k) => (showEn ? pick(p, k) : p[k]); // 영어 버전이 온전할 때만 섞지 않고 통째로 영어
+    document.title = `${T("title")} — Jae`;
     // 글마다 제목 · 설명(요약)을 페이지 정보에도 넣어요 (검색 결과 · 브라우저 탭)
-    const desc = (p.summary || (p.body || "").replace(/\s+/g, " ").slice(0, 120) || "").trim();
+    const desc = (T("summary") || (T("body") || "").replace(/\s+/g, " ").slice(0, 120) || "").trim();
     if (desc) { $("meta-desc").setAttribute("content", desc); $("og-desc").setAttribute("content", desc); }
     $("og-title").setAttribute("content", document.title);
     trackView(p);
     $("post-cat").textContent = p.category || "";
-    $("post-title").textContent = p.title;
-    if (p.summary) { $("post-summary").textContent = p.summary; $("post-summary").hidden = false; }
+    $("post-title").textContent = T("title");
+    if (T("summary")) { $("post-summary").textContent = T("summary"); $("post-summary").hidden = false; }
+    if (isEn() && !showEn) { $("post-title").before(koreanOnlyNote()); $("post-body").setAttribute("lang", "ko"); }
     if (p.status === "published") {
       setupShare(p);
       // 좋아요 · 저장 (PRD FR-04 · FR-05) — 발행된 글에서만, 공유 버튼 앞에
@@ -233,11 +237,11 @@ async function show(user) {
     if (p.format === "html") {
       body.className = "rich";
       body.style.padding = "40px 0 56px";
-      body.replaceChildren(sanitizeToFragment(p.contentHtml || ""));
+      body.replaceChildren(sanitizeToFragment(T("contentHtml") || ""));
       resolveImages(body);
       mountWidgets(body);
     } else {
-      renderBody(p.body, body);
+      renderBody(T("body"), body);
     }
     trackReading(p);
     renderPostNav();

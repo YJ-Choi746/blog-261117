@@ -1,4 +1,5 @@
 import { db, isConfigured, collection, getDocs, query, where, friendlyError, formatDate } from "./firebase.js";
+import { pick, onLangChange } from "./content-lang.js";
 import { getImageData } from "./images.js";
 import { auth, onAuthStateChanged } from "./firebase.js";
 import { adminButtons } from "./post-actions.js";
@@ -34,6 +35,7 @@ let current = "";
 
 const SAVED = "__saved"; // "저장한 글" 필터 (PRD FR-05)
 
+onLangChange(() => { if (typeof posts !== "undefined" && posts.length) render(); });
 function render() {
   let shown;
   if (current === SAVED) {
@@ -61,9 +63,9 @@ function render() {
     tagSelectPost(a, p, "blog_list", i + 1);
     const date = document.createElement("span"); date.className = "date"; date.textContent = formatDate(p.publishedAt);
     const mid = document.createElement("span");
-    const t = document.createElement("span"); t.className = "title"; t.textContent = p.title;
+    const t = document.createElement("span"); t.className = "title"; t.textContent = pick(p, "title");
     mid.appendChild(t);
-    if (p.summary) { const d = document.createElement("span"); d.className = "desc"; d.textContent = p.summary; mid.appendChild(d); }
+    if (pick(p, "summary")) { const d = document.createElement("span"); d.className = "desc"; d.textContent = pick(p, "summary"); mid.appendChild(d); }
     const cat = document.createElement("span"); cat.className = "cat"; cat.textContent = p.category || "";
     a.append(date, mid, cat);
     if (p.coverImageId) {

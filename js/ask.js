@@ -3,6 +3,7 @@
 // - 의뢰서의 "제 작업에서 고르기"에 게시된 작업을 체크 칩으로 그려요 (최대 5개)
 // - 입력과 작업 이름은 textContent로만 넣어요 (XSS)
 import { loadPublishedWorks, workCard } from "./works-data.js";
+import { pick } from "./content-lang.js";
 import { guessCategorySlots } from "./templates.js";
 import { loadCategories } from "./categories.js";
 
@@ -29,7 +30,7 @@ function renderRefWorks() {
       if (refBox.querySelectorAll("input:checked").length > MAX_REF_WORKS) box.checked = false;
       label.classList.toggle("on", box.checked);
     });
-    const name = document.createElement("span"); name.textContent = w.title || w.name || "";
+    const name = document.createElement("span"); name.textContent = pick(w, "title") || w.name || ""; // 메일로 가는 값(box.value)은 한국어 제목 그대로
     const cat = document.createElement("small"); cat.textContent = w.category || "";
     box.addEventListener("change", () => { cat.textContent = box.checked ? "선택됨" : (w.category || ""); });
     label.append(box, name, cat);
