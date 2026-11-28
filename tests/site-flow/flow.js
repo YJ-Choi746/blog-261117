@@ -129,7 +129,7 @@ const shot = (p, f, full = false) => p.screenshot({ path: path.join(OUT, f), ful
   check('A05', '전체 화면 미리보기에 제목 반영', (await pa.textContent('#fp-title')).includes('꽃집'));
   await shot(pa, 'a06-preview.png');
   await pa.click('#full-pv-close'); await pa.waitForTimeout(300);
-  await pa.click('#publish'); await pa.waitForTimeout(1500);
+  await pa.click('#publish'); await pa.locator('#published-panel').waitFor({ state: 'visible', timeout: 20000 }).catch(() => {}); // 자동 번역 확인(최대 5초) 뒤 저장돼요 (D41)
   check('A06', '게시 → 게시 완료 패널', await pa.locator('#published-panel').isVisible());
   await pa.click('#sns-template'); await pa.waitForTimeout(600);
   const cap = await pa.inputValue('#s-caption');
