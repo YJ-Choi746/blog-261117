@@ -3,7 +3,7 @@
 // - 키는 이 브라우저에만 둬요: 기본은 탭을 닫으면 지워지는 sessionStorage, "기억하기"를 켜면 localStorage.
 //   Firestore · GA · 로그 · 커밋에는 절대 보내거나 남기지 않아요. 방문자 화면에서는 이 파일을 쓰지 않아요.
 // - 규칙(프롬프트 · 출력 모양 · 메모에 없는 숫자 경고)은 서버 함수(functions/casestudy.js)와 같아요.
-import { CASE_SYSTEM_PROMPT, CASE_PROMPT_VERSION, buildCaseMessage, SNS_SYSTEM_PROMPT, SNS_PROMPT_VERSION, buildSnsMessage, POLISH_SYSTEM_PROMPT, POLISH_PROMPT_VERSION, buildPolishMessage } from "./ai-prompt.js";
+import { CASE_SYSTEM_PROMPT, CASE_PROMPT_VERSION, buildCaseMessage, SNS_SYSTEM_PROMPT, SNS_PROMPT_VERSION, buildSnsMessage, POLISH_SYSTEM_PROMPT, POLISH_PROMPT_VERSION, buildPolishMessage, TRANSLATE_SYSTEM_PROMPT, TRANSLATE_PROMPT_VERSION, buildTranslateMessage } from "./ai-prompt.js";
 
 const API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-opus-5-5"; // functions/analyze.js와 같은 모델
@@ -156,4 +156,31 @@ export async function polishCaseDirect(input, key = getKey()) {
   const nums = unsupportedNumbers([draft.title, draft.summary, draft.problem, draft.process, draft.result, ...draft.tags].join(" "),
     [input.title, input.summary, input.problem, input.process, input.result, input.category, input.industry, input.period, input.role, input.client, ...(input.tags || [])]);
   return { ok: true, result: draft, warnings: nums.length ? { unsupportedNumbers: nums } : null, ...meta() };
+}
+
+// '영어 버전 → AI로 번역': 작업(케이스 스터디)이나 글의 한국어 칸을 영어로 옮겨요.
+// fields 예: { title, summary, problem, process, result, industry, role, period, tags: [] } 또는 { title, summary, html }
+// 실패하면 { ok: false, reason } — 화면은 칸을 그대로 두고 직접 쓰게 해요
+export async function translateDirect(fields, key = getKey()) {
+  const started = Date.now();
+  const meta = () => ({ ms: Date.now() - started, promptVersion: `${TRANSLATE_PROMPT_VERSION}-direct` });
+  const keys = Object.keys(fields);
+  const schema = {
+    type: "object",
+    properties: Object.fromEntries(keys.map((k) => [k, Array.isArray(fields[k]) ? { type: "array", items: { type: "string" } } : { type: "string" }])),
+    required: keys, additionalProperties: false,
+  };
+  const long = String(fields.html || "").length > 6000;
+  const r = await callClaude({ key, system: TRANSLATE_SYSTEM_PROMPT, user: buildTranslateMessage(fields), schema, effort: "low", maxTokens: long ? 32000 : 8000, timeoutMs: long ? 180000 : 60000 });
+  if (!r.ok) return { ...r, ...meta() };
+  const o = parseJson(r.text);
+  if (!o || typeof o !== "object") return { ok: false, reason: "답을 읽지 못했어요", ...meta() };
+  const out = {};
+  for (const k of keys) {
+    if (Array.isArray(fields[k])) out[k] = Array.isArray(o[k]) ? [...new Set(o[k].filter((t) => typeof t === "string").map((t) => t.replace(/^#/, "").trim()).filter(Boolean))].slice(0, 8) : [];
+    else out[k] = typeof o[k] === "string" ? o[k].trim() : "";
+  }
+  const src = keys.filter((k) => k !== "html").map((k) => (Array.isArray(fields[k]) ? fields[k].join(" ") : fields[k]));
+  const nums = unsupportedNumbers(keys.filter((k) => k !== "html").map((k) => (Array.isArray(out[k]) ? out[k].join(" ") : out[k])).join(" "), src);
+  return { ok: true, result: out, warnings: nums.length ? { unsupportedNumbers: nums } : null, ...meta() };
 }

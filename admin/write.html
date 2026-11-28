@@ -142,6 +142,17 @@
           <textarea class="textarea" id="summary" rows="3" maxlength="300"></textarea>
         </label>
       </div>
+      <details class="card" id="en-box">
+        <summary style="cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600">English 버전 (해외 방문자용)</summary>
+        <p class="hint" id="en-sum">비어 있으면 영어 화면에도 한국어로 보이고 “Korean only” 안내가 붙어요.</p>
+        <label class="field" for="en-title"><span>Title</span><input class="input" id="en-title" type="text" maxlength="200" lang="en"></label>
+        <label class="field" for="en-summary"><span>Summary</span><textarea class="textarea" id="en-summary" rows="3" maxlength="300" lang="en"></textarea></label>
+        <div class="field"><span id="en-body-label">Body</span>
+          <div id="en-body" class="editor rich" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="en-body-label" lang="en" style="min-height: 160px; border: 1px solid var(--line-strong); padding: 12px; border-radius: 4px; font-size: 15px"></div>
+        </div>
+        <button type="button" id="en-translate" class="btn btn-outline">본문을 AI로 번역</button>
+        <p id="en-status" class="hint" role="status" aria-live="polite">작업 편집 화면의 ‘내 API 키로 AI 쓰기’에 연결한 키를 써요. 직접 써도 돼요. 저장 · 발행 때 함께 저장돼요.</p>
+      </details>
       <div class="card">
         <h2>대표 이미지</h2>
         <div id="cover" class="cover-side" hidden>

@@ -106,6 +106,26 @@
             <p id="ai-key-state" class="hint" role="status" aria-live="polite"></p>
             <p class="hint">키는 이 브라우저에만 저장되고 사이트 서버 · Firestore로는 보내지 않아요. 키가 있으면 'AI로 수정하기' · 'AI 문구 만들기'가 바로 Claude를 불러요 (쓴 만큼 API 요금).</p>
           </details>
+          <details class="pw-key pw-memo-box" id="en-box">
+            <summary>English 버전 (해외 방문자용) <span class="pw-sum-sub" id="en-sum">비어 있으면 영어 화면에도 한국어로 보여요</span></summary>
+            <div class="pw-memo">
+              <label>Title<input id="en-title" maxlength="100" lang="en" placeholder="예: A new face for a neighborhood bakery"></label>
+              <label>Summary<textarea id="en-summary" rows="2" maxlength="200" lang="en"></textarea></label>
+              <div class="pw-meta-in">
+                <label>Industry<input id="en-industry" maxlength="40" lang="en" placeholder="Bakery"></label>
+                <label>Duration<input id="en-period" maxlength="40" lang="en" placeholder="비우면 한국어 기간 그대로"></label>
+                <label>My role<input id="en-role" maxlength="80" lang="en" placeholder="Logo, signage"></label>
+              </div>
+              <label>01 Brief<textarea id="en-problem" rows="3" maxlength="4000" lang="en"></textarea></label>
+              <label>02 Process<textarea id="en-process" rows="4" maxlength="6000" lang="en"></textarea></label>
+              <label>03 Result<textarea id="en-result" rows="3" maxlength="4000" lang="en"></textarea></label>
+              <label>Tags (comma separated)<input id="en-tags" lang="en" placeholder="Branding, Café, Logo"></label>
+            </div>
+            <div class="pw-row">
+              <button type="button" id="en-translate" class="btn btn-outline">한국어 칸을 AI로 번역</button>
+            </div>
+            <p id="en-status" class="hint" role="status" aria-live="polite">‘내 API 키로 AI 쓰기’에 키를 연결하면 번역할 수 있어요. 직접 써도 돼요. 게시하기 · 초안 저장 때 함께 저장돼요.</p>
+          </details>
           <div class="pw-row pw-ai-row">
             <button type="button" id="polish" class="btn btn-primary">AI로 수정하기</button>
             <button type="button" id="undo" class="pw-undo" aria-label="되돌리기" title="되돌리기 (AI로 고치기 전으로)" disabled><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8.5a4.5 4.5 0 0 1 0 9H8"/><path d="M7.5 4.5 4 8l3.5 3.5"/></svg></button>

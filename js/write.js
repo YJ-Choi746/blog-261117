@@ -7,6 +7,7 @@ import { mountWidgets } from "./widgets.js";
 import { uploadImage, resolveImages, getImageData } from "./images.js";
 import { setupEditor } from "./editor.js";
 import { renderBody } from "./render.js";
+import { getKey, translateDirect } from "./ai-direct.js";
 
 const $ = (id) => document.getElementById(id);
 const editorEl = $("editor");
@@ -122,7 +123,9 @@ function collect() {
   const tags = $("tags").value.split(",").map((t) => t.trim().replace(/^#/, "")).filter(Boolean).slice(0, 10);
   const summary = $("summary").value.trim() || body.replace(/\s+/g, " ").slice(0, 120);
   const cover = coverImageId && ids.includes(coverImageId) ? coverImageId : (ids[0] || null);
-  return { title: $("title").value.trim(), contentHtml, body, format: "html", category: $("category").value, tags, summary, coverImageId: cover };
+  const enHtml = $("en-body").textContent.trim() || $("en-body").querySelector("img") ? sanitizeElementToHtml($("en-body")) : "";
+  const en = { title: $("en-title").value.trim(), summary: $("en-summary").value.trim(), contentHtml: enHtml, body: htmlToText(enHtml).slice(0, 100000) };
+  return { title: $("title").value.trim(), contentHtml, body, format: "html", category: $("category").value, tags, summary, coverImageId: cover, en };
 }
 
 async function save(status) {
@@ -181,6 +184,7 @@ async function loadPost(id) {
       html = sanitizeElementToHtml(tmp);
     }
     applyData({ ...p, html });
+    fillEn(p.en);
     if (p.status === "private") document.querySelector('input[name="visibility"][value="private"]').checked = true;
     wasPublished = p.status === "published" || p.status === "private";
     loadedAt = p.updatedAt && typeof p.updatedAt.toMillis === "function" ? p.updatedAt.toMillis() : 0;
@@ -240,3 +244,35 @@ if (!isConfigured) {
   });
   window.addEventListener("beforeunload", (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
 }
+
+// ---- English 버전 (해외 방문자용): posts.en — 방문자 영어 화면은 js/content-lang.js가 이 칸을 써요 ----
+function enSummary() {
+  const done = $("en-title").value.trim() && $("en-body").textContent.trim();
+  $("en-sum").textContent = done ? "영어 버전 있음 · 영어 화면에 이 내용이 보여요." : "비어 있으면 영어 화면에도 한국어로 보이고 “Korean only” 안내가 붙어요.";
+}
+function fillEn(en) {
+  en = en || {};
+  $("en-title").value = en.title || ""; $("en-summary").value = en.summary || "";
+  $("en-body").replaceChildren(sanitizeToFragment(en.contentHtml || ""));
+  resolveImages($("en-body"));
+  if (en.title || en.contentHtml) $("en-box").open = true;
+  enSummary();
+}
+["en-title", "en-summary"].forEach((id) => $(id).addEventListener("input", () => { markDirty(); enSummary(); }));
+$("en-body").addEventListener("input", () => { markDirty(); enSummary(); });
+$("en-translate").addEventListener("click", async () => {
+  const st = $("en-status");
+  if (!getKey()) { st.textContent = "번역하려면 작업 편집 화면의 ‘내 API 키로 AI 쓰기’에서 키를 먼저 연결해 주세요. 영어 칸에 직접 써도 돼요."; return; }
+  const html = sanitizeElementToHtml(editorEl);
+  if (!$("title").value.trim() || !htmlToText(html).trim()) { st.textContent = "제목과 본문을 먼저 써 주세요."; return; }
+  if (($("en-title").value.trim() || $("en-body").textContent.trim()) && !confirm("영어 칸에 쓴 내용을 번역으로 바꿀까요?")) return;
+  const btn = $("en-translate"); btn.disabled = true; st.textContent = "번역하는 중… (글이 길면 1~2분)";
+  try {
+    const r = await translateDirect({ title: $("title").value.trim(), summary: $("summary").value.trim(), html });
+    if (!r.ok) { st.textContent = `번역하지 못했어요: ${r.reason}. 영어 칸은 그대로예요.`; return; }
+    fillEn({ title: r.result.title, summary: r.result.summary, contentHtml: r.result.html });
+    markDirty();
+    const nums = r.warnings && r.warnings.unsupportedNumbers;
+    st.textContent = nums && nums.length ? `번역했어요. 한국어에 없는 숫자(${nums.join(", ")})가 있어요 — 확인해 주세요.` : "번역했어요. 읽어보고 어색한 곳을 고친 뒤 저장해 주세요.";
+  } finally { btn.disabled = false; }
+});

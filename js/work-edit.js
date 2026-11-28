@@ -2,7 +2,7 @@
 // - 왼쪽 입력 → "AI 초안 만들기" → 오른쪽 칸 채움 → 고쳐서 저장 · 게시
 // - 공개 문서 works/{id}: 방문자가 볼 내용만 / 관리자 문서 workNotes/{id}: 메모 · 클라이언트 실명 · AI 기록
 // - AI가 실패해도 오른쪽 칸에 직접 써서 저장 · 게시할 수 있어요 (F6)
-import { getKey, setKey, clearKey, isRemembered, looksLikeKey, generateCaseDirect, generateSnsDirect, polishCaseDirect } from "./ai-direct.js";
+import { getKey, setKey, clearKey, isRemembered, looksLikeKey, generateCaseDirect, generateSnsDirect, polishCaseDirect, translateDirect } from "./ai-direct.js";
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
@@ -596,6 +596,7 @@ async function save(status, showDone = false) {
     publishedAt: existing && existing.publishedAt ? existing.publishedAt : (status === "published" ? serverTimestamp() : null),
     authorUid: user.uid,
   };
+  work.en = enValues(); // 영어 버전 (비어 있어도 같은 모양으로 저장)
   const notes = {
     memo: { request: val("m-request"), work: val("m-work"), result: val("m-result") },
     client: val("f-client"), clientPublic, updatedAt: serverTimestamp(),
@@ -669,6 +670,7 @@ async function load() {
   $("f-client").value = n.client || existing.client || ""; $("f-client-public").checked = !!n.clientPublic;
   $("m-request").value = (n.memo && n.memo.request) || ""; $("m-work").value = (n.memo && n.memo.work) || ""; $("m-result").value = (n.memo && n.memo.result) || "";
   fillDraft(existing);
+  fillEn(existing.en);
   if (REQUIRED_TO_PUBLISH.some(([id]) => val(id))) showDraft(n.ai && n.ai.promptVersion === "template" ? "template" : n.ai && n.ai.promptVersion === "manual" ? "manual" : n.ai ? "ai" : "saved");
   if (n.ai) showWarnings(n.ai.warnings);
   if (n.sns) { snsCaptions = Array.isArray(n.sns.captions) ? n.sns.captions : []; snsIndex = Math.max(0, snsCaptions.indexOf(n.sns.caption)); if (snsCaptions.length) showSnsVariant(); $("s-caption").value = n.sns.caption || ""; $("s-hashtags").value = (n.sns.hashtags || []).join(", "); if (n.sns.ai) $("sns-badge").hidden = false; if (n.sns.copiedAt) $("sns-copied").textContent = "이전에 복사한 적 있어요."; }
@@ -709,3 +711,40 @@ $("ai-key-save").addEventListener("click", () => {
 $("ai-key-clear").addEventListener("click", () => { clearKey(); showKeyState(); });
 $("ai-key-remember").checked = isRemembered();
 showKeyState();
+
+// ---- English 버전 (해외 방문자용): works.en 칸 — 방문자 영어 화면은 js/content-lang.js가 이 칸을 써요 ----
+const EN_TEXT = ["title", "summary", "industry", "period", "role", "problem", "process", "result"];
+function enValues() {
+  const o = Object.fromEntries(EN_TEXT.map((k) => [k, val(`en-${k}`)]));
+  o.tags = [...new Set(val("en-tags").split(",").map((t) => t.replace(/^#/, "").trim()).filter(Boolean))].slice(0, 8);
+  return o;
+}
+function enSummary() {
+  const o = enValues();
+  const done = o.title && (o.problem || o.process || o.result);
+  $("en-sum").textContent = done ? "영어 버전 있음 · 영어 화면에 이 내용이 보여요" : "비어 있으면 영어 화면에도 한국어로 보여요";
+}
+function fillEn(en) {
+  en = en || {};
+  EN_TEXT.forEach((k) => { $(`en-${k}`).value = en[k] || ""; });
+  $("en-tags").value = (en.tags || []).join(", ");
+  enSummary();
+}
+document.querySelectorAll("#en-box input, #en-box textarea").forEach((el) => el.addEventListener("input", enSummary));
+$("en-translate").addEventListener("click", async () => {
+  const st = $("en-status");
+  if (!getKey()) { st.textContent = "번역하려면 ‘내 API 키로 AI 쓰기’에 키를 먼저 연결해 주세요. 영어 칸에 직접 써도 돼요."; return; }
+  const src = { title: val("f-name"), summary: val("c-summary"), industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
+    problem: val("c-problem"), process: val("c-process"), result: val("c-result"), tags: tagsFromInput() };
+  if (!src.title || !(src.problem || src.process || src.result)) { st.textContent = "제목과 01 요청 · 02 과정 · 03 결과 중 하나 이상을 먼저 채워 주세요."; return; }
+  if (EN_TEXT.some((k) => val(`en-${k}`)) && !confirm("영어 칸에 쓴 내용을 번역으로 바꿀까요?")) return;
+  const btn = $("en-translate"); btn.disabled = true; st.textContent = "번역하는 중… (보통 10~30초)";
+  try {
+    const r = await translateDirect(src);
+    if (!r.ok) { st.textContent = `번역하지 못했어요: ${r.reason}. 영어 칸은 그대로예요.`; return; }
+    fillEn(r.result);
+    changed();
+    const nums = r.warnings && r.warnings.unsupportedNumbers;
+    st.textContent = nums && nums.length ? `번역했어요. 한국어에 없는 숫자(${nums.join(", ")})가 있어요 — 확인해 주세요.` : "번역했어요. 읽어보고 어색한 곳을 고친 뒤 저장해 주세요.";
+  } finally { btn.disabled = false; }
+});

@@ -17,7 +17,13 @@ service cloud.firestore {
         && p.body is string && p.body.size() <= 100000
         && (!("contentHtml" in p) || (p.contentHtml is string && p.contentHtml.size() <= 400000))
         && p.status in ["draft", "published", "private"]
-        && p.authorUid == request.auth.uid;
+        && p.authorUid == request.auth.uid
+        && (!("en" in p) || (p.en is map
+          && p.en.keys().hasOnly(["title", "summary", "contentHtml", "body"])
+          && (!("title" in p.en) || (p.en.title is string && p.en.title.size() <= 200))
+          && (!("summary" in p.en) || (p.en.summary is string && p.en.summary.size() <= 300))
+          && (!("contentHtml" in p.en) || (p.en.contentHtml is string && p.en.contentHtml.size() <= 400000))
+          && (!("body" in p.en) || (p.en.body is string && p.en.body.size() <= 100000))));
     }
 
     // 글: 발행된 글은 누구나, 임시저장·비공개 글은 관리자만 읽어요
@@ -66,9 +72,25 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // 영어 버전 (해외 방문자용) — 관리자만 써요
+    function validWorkEn(e) {
+      return e is map
+        && e.keys().hasOnly(["title", "summary", "industry", "period", "role", "problem", "process", "result", "tags"])
+        && (!("title" in e) || (e.title is string && e.title.size() <= 100))
+        && (!("summary" in e) || (e.summary is string && e.summary.size() <= 200))
+        && (!("industry" in e) || (e.industry is string && e.industry.size() <= 40))
+        && (!("period" in e) || (e.period is string && e.period.size() <= 40))
+        && (!("role" in e) || (e.role is string && e.role.size() <= 80))
+        && (!("problem" in e) || (e.problem is string && e.problem.size() <= 4000))
+        && (!("process" in e) || (e.process is string && e.process.size() <= 6000))
+        && (!("result" in e) || (e.result is string && e.result.size() <= 4000))
+        && (!("tags" in e) || (e.tags is list && e.tags.size() <= 8));
+    }
+
     function validWork() {
       let w = request.resource.data;
-      return w.keys().hasOnly(["name", "title", "summary", "problem", "process", "result", "tags", "category", "industry", "period", "client", "coverImageId", "imageIds", "status", "createdAt", "updatedAt", "publishedAt", "authorUid", "role", "imageSizes"])
+      return w.keys().hasOnly(["name", "title", "summary", "problem", "process", "result", "tags", "category", "industry", "period", "client", "coverImageId", "imageIds", "status", "createdAt", "updatedAt", "publishedAt", "authorUid", "role", "imageSizes", "en"])
+        && (!("en" in w) || validWorkEn(w.en))
         && (!("imageSizes" in w) || (w.imageSizes is list && w.imageSizes.size() <= 4))
         && (!("role" in w) || (w.role is string && w.role.size() <= 60))
         && w.name is string && w.name.size() > 0 && w.name.size() <= 60
