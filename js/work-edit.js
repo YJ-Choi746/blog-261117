@@ -3,6 +3,7 @@
 // - 공개 문서 works/{id}: 방문자가 볼 내용만 / 관리자 문서 workNotes/{id}: 메모 · 클라이언트 실명 · AI 기록
 // - AI가 실패해도 오른쪽 칸에 직접 써서 저장 · 게시할 수 있어요 (F6)
 import { getKey, setKey, clearKey, isRemembered, looksLikeKey, generateCaseDirect, generateSnsDirect, polishCaseDirect, translateDirect } from "./ai-direct.js";
+import { translateWork, workSource, fingerprint, needsTranslation, hasTranslator } from "./auto-translate.js";
 import {
   auth, db, isConfigured, onAuthStateChanged, signOut,
   collection, doc, getDoc, setDoc, serverTimestamp, friendlyError, markAdminBrowser, callFunction
@@ -596,7 +597,6 @@ async function save(status, showDone = false) {
     publishedAt: existing && existing.publishedAt ? existing.publishedAt : (status === "published" ? serverTimestamp() : null),
     authorUid: user.uid,
   };
-  work.en = enValues(); // 영어 버전 (비어 있어도 같은 모양으로 저장)
   const notes = {
     memo: { request: val("m-request"), work: val("m-work"), result: val("m-result") },
     client: val("f-client"), clientPublic, updatedAt: serverTimestamp(),
@@ -604,6 +604,16 @@ async function save(status, showDone = false) {
   if (aiMeta) notes.ai = aiMeta;
   notes.sns = { caption: val("s-caption"), captions: snsCaptions, hashtags: hashtagsFromInput(), ...(snsMeta ? { ai: snsMeta } : {}), ...(snsCopiedAt ? { copiedAt: snsCopiedAt } : {}) };
   ["save", "publish", "unpublish", "polish", "preview-toggle"].forEach((id) => { $(id).disabled = true; });
+  // 영어 버전: 한국어가 바뀌었거나 아직 없으면 자동 번역 (크롬 내장 번역, D41) — 실패해도 저장은 계속
+  const ko = { title: work.title, summary: work.summary, industry: work.industry, period: work.period, role: work.role, problem: work.problem, process: work.process, result: work.result, tags: work.tags };
+  let en = enValues();
+  if (needsTranslation(en, fingerprint(workSource(ko)))) {
+    setState("영어로 자동 번역하는 중…");
+    const r = await translateWork(ko, (p) => setState(`번역 기능 내려받는 중… ${p}%`));
+    if (r.ok) { en = r.en; fillEn(en); }
+    else $("en-status").textContent = `${r.reason}. 한국어는 저장하고, 영어 화면엔 한국어가 보여요.`;
+  }
+  work.en = en;
   setState("저장하는 중…");
   try {
     await setDoc(doc(db, "workNotes", workId), notes, { merge: true });
@@ -714,35 +724,40 @@ showKeyState();
 
 // ---- English 버전 (해외 방문자용): works.en 칸 — 방문자 영어 화면은 js/content-lang.js가 이 칸을 써요 ----
 const EN_TEXT = ["title", "summary", "industry", "period", "role", "problem", "process", "result"];
+let enSrc = ""; // 마지막으로 번역한 한국어의 지문 — 한국어가 그대로면 손으로 고친 영어를 지켜요
 function enValues() {
   const o = Object.fromEntries(EN_TEXT.map((k) => [k, val(`en-${k}`)]));
+  o.src = enSrc;
   o.tags = [...new Set(val("en-tags").split(",").map((t) => t.replace(/^#/, "").trim()).filter(Boolean))].slice(0, 8);
   return o;
 }
 function enSummary() {
   const o = enValues();
   const done = o.title && (o.problem || o.process || o.result);
-  $("en-sum").textContent = done ? "영어 버전 있음 · 영어 화면에 이 내용이 보여요" : "비어 있으면 영어 화면에도 한국어로 보여요";
+  $("en-sum").textContent = done ? "자동 번역됨 · 고치고 싶을 때만 열어요" : "저장 · 게시할 때 자동으로 번역돼요";
 }
 function fillEn(en) {
   en = en || {};
   EN_TEXT.forEach((k) => { $(`en-${k}`).value = en[k] || ""; });
   $("en-tags").value = (en.tags || []).join(", ");
+  enSrc = en.src || "";
   enSummary();
 }
 document.querySelectorAll("#en-box input, #en-box textarea").forEach((el) => el.addEventListener("input", enSummary));
 $("en-translate").addEventListener("click", async () => {
   const st = $("en-status");
-  if (!getKey()) { st.textContent = "키가 없어요. 아래 ‘영어 번역기’ 링크(0원)에서 번역해 붙여넣거나, ‘내 API 키로 AI 쓰기’에 키를 연결해 주세요."; return; }
   const src = { title: val("f-name"), summary: val("c-summary"), industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
     problem: val("c-problem"), process: val("c-process"), result: val("c-result"), tags: tagsFromInput() };
   if (!src.title || !(src.problem || src.process || src.result)) { st.textContent = "제목과 01 요청 · 02 과정 · 03 결과 중 하나 이상을 먼저 채워 주세요."; return; }
   if (EN_TEXT.some((k) => val(`en-${k}`)) && !confirm("영어 칸에 쓴 내용을 번역으로 바꿀까요?")) return;
-  const btn = $("en-translate"); btn.disabled = true; st.textContent = "번역하는 중… (보통 10~30초)";
+  const btn = $("en-translate"); btn.disabled = true; st.textContent = "번역하는 중…";
   try {
-    const r = await translateDirect(src);
+    let r = await translateWork(src, (p) => { st.textContent = `번역 기능 내려받는 중… ${p}% (처음 한 번만)`; }, true);
+    if (r.ok) { fillEn(r.en); changed(); st.textContent = "다시 번역했어요. 저장하면 반영돼요."; return; }
+    if (!getKey()) { st.textContent = `${r.reason}.`; return; }
+    r = await translateDirect(src); // 크롬 번역이 없으면 연결한 키로
     if (!r.ok) { st.textContent = `번역하지 못했어요: ${r.reason}. 영어 칸은 그대로예요.`; return; }
-    fillEn(r.result);
+    fillEn({ ...r.result, src: fingerprint(workSource(src)) });
     changed();
     const nums = r.warnings && r.warnings.unsupportedNumbers;
     st.textContent = nums && nums.length ? `번역했어요. 한국어에 없는 숫자(${nums.join(", ")})가 있어요 — 확인해 주세요.` : "번역했어요. 읽어보고 어색한 곳을 고친 뒤 저장해 주세요.";

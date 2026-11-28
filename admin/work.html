@@ -107,7 +107,7 @@
             <p class="hint">키는 이 브라우저에만 저장되고 사이트 서버 · Firestore로는 보내지 않아요. 키가 있으면 'AI로 수정하기' · 'AI 문구 만들기'가 바로 Claude를 불러요 (쓴 만큼 API 요금).</p>
           </details>
           <details class="pw-key pw-memo-box" id="en-box">
-            <summary>English 버전 (해외 방문자용) <span class="pw-sum-sub" id="en-sum">비어 있으면 영어 화면에도 한국어로 보여요</span></summary>
+            <summary>English 버전 (자동) <span class="pw-sum-sub" id="en-sum">저장 · 게시할 때 자동으로 번역돼요</span></summary>
             <div class="pw-memo">
               <label>Title<input id="en-title" maxlength="100" lang="en" placeholder="예: A new face for a neighborhood bakery"></label>
               <label>Summary<textarea id="en-summary" rows="2" maxlength="200" lang="en"></textarea></label>
@@ -122,9 +122,9 @@
               <label>Tags (comma separated)<input id="en-tags" lang="en" placeholder="Branding, Café, Logo"></label>
             </div>
             <div class="pw-row">
-              <button type="button" id="en-translate" class="btn btn-outline">한국어 칸을 AI로 번역</button>
+              <button type="button" id="en-translate" class="btn btn-outline">지금 다시 번역</button>
             </div>
-            <p id="en-status" class="hint" role="status" aria-live="polite">키 없이 0원으로 쓰려면 <a href="https://claude.ai/artifact/Jeqg3LAL5cSKJ31nNiu4ES" target="_blank" rel="noopener">영어 번역기(Claude 아티팩트)</a>에서 번역해 칸마다 붙여넣으세요. 키를 연결했다면 위 버튼으로 바로 번역돼요. 저장 · 게시 때 함께 저장돼요.</p>
+            <p id="en-status" class="hint" role="status" aria-live="polite">따로 할 일은 없어요. 저장 · 게시하면 크롬 내장 번역으로 영어가 채워지고(키 · 요금 없음), 한국어를 고치면 다음 저장 때 다시 번역돼요. 영어를 손으로 고쳐도 한국어를 안 바꾸면 그대로 남아요.</p>
           </details>
           <div class="pw-row pw-ai-row">
             <button type="button" id="polish" class="btn btn-primary">AI로 수정하기</button>

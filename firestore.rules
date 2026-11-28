@@ -19,7 +19,8 @@ service cloud.firestore {
         && p.status in ["draft", "published", "private"]
         && p.authorUid == request.auth.uid
         && (!("en" in p) || (p.en is map
-          && p.en.keys().hasOnly(["title", "summary", "contentHtml", "body"])
+          && p.en.keys().hasOnly(["title", "summary", "contentHtml", "body", "src"])
+          && (!("src" in p.en) || (p.en.src is string && p.en.src.size() <= 40))
           && (!("title" in p.en) || (p.en.title is string && p.en.title.size() <= 200))
           && (!("summary" in p.en) || (p.en.summary is string && p.en.summary.size() <= 300))
           && (!("contentHtml" in p.en) || (p.en.contentHtml is string && p.en.contentHtml.size() <= 400000))
@@ -75,7 +76,8 @@ service cloud.firestore {
     // 영어 버전 (해외 방문자용) — 관리자만 써요
     function validWorkEn(e) {
       return e is map
-        && e.keys().hasOnly(["title", "summary", "industry", "period", "role", "problem", "process", "result", "tags"])
+        && e.keys().hasOnly(["title", "summary", "industry", "period", "role", "problem", "process", "result", "tags", "src"])
+        && (!("src" in e) || (e.src is string && e.src.size() <= 40))
         && (!("title" in e) || (e.title is string && e.title.size() <= 100))
         && (!("summary" in e) || (e.summary is string && e.summary.size() <= 200))
         && (!("industry" in e) || (e.industry is string && e.industry.size() <= 40))

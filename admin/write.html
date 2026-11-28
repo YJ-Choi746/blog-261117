@@ -143,15 +143,15 @@
         </label>
       </div>
       <details class="card" id="en-box">
-        <summary style="cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600">English 버전 (해외 방문자용)</summary>
-        <p class="hint" id="en-sum">비어 있으면 영어 화면에도 한국어로 보이고 “Korean only” 안내가 붙어요.</p>
+        <summary style="cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600">English 버전 (자동)</summary>
+        <p class="hint" id="en-sum">저장 · 발행할 때 자동으로 번역돼요.</p>
         <label class="field" for="en-title"><span>Title</span><input class="input" id="en-title" type="text" maxlength="200" lang="en"></label>
         <label class="field" for="en-summary"><span>Summary</span><textarea class="textarea" id="en-summary" rows="3" maxlength="300" lang="en"></textarea></label>
         <div class="field"><span id="en-body-label">Body</span>
           <div id="en-body" class="editor rich" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="en-body-label" lang="en" style="min-height: 160px; border: 1px solid var(--line-strong); padding: 12px; border-radius: 4px; font-size: 15px"></div>
         </div>
-        <button type="button" id="en-translate" class="btn btn-outline">본문을 AI로 번역</button>
-        <p id="en-status" class="hint" role="status" aria-live="polite">키 없이 0원으로 쓰려면 <a href="https://claude.ai/artifact/Jeqg3LAL5cSKJ31nNiu4ES" target="_blank" rel="noopener">영어 번역기(Claude 아티팩트)</a>에서 번역해 칸마다 붙여넣으세요. 키를 연결했다면 위 버튼으로 바로 번역돼요. 저장 · 게시 때 함께 저장돼요.</p>
+        <button type="button" id="en-translate" class="btn btn-outline">지금 다시 번역</button>
+        <p id="en-status" class="hint" role="status" aria-live="polite">따로 할 일은 없어요. 저장 · 발행하면 크롬 내장 번역으로 영어가 채워져요(키 · 요금 없음, 본문 사진 · 서식 그대로). 한국어를 고치면 다음 저장 때 다시 번역돼요.</p>
       </details>
       <div class="card">
         <h2>대표 이미지</h2>

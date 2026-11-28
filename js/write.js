@@ -8,6 +8,7 @@ import { uploadImage, resolveImages, getImageData } from "./images.js";
 import { setupEditor } from "./editor.js";
 import { renderBody } from "./render.js";
 import { getKey, translateDirect } from "./ai-direct.js";
+import { translatePost, postSource, fingerprint, needsTranslation } from "./auto-translate.js";
 
 const $ = (id) => document.getElementById(id);
 const editorEl = $("editor");
@@ -124,7 +125,7 @@ function collect() {
   const summary = $("summary").value.trim() || body.replace(/\s+/g, " ").slice(0, 120);
   const cover = coverImageId && ids.includes(coverImageId) ? coverImageId : (ids[0] || null);
   const enHtml = $("en-body").textContent.trim() || $("en-body").querySelector("img") ? sanitizeElementToHtml($("en-body")) : "";
-  const en = { title: $("en-title").value.trim(), summary: $("en-summary").value.trim(), contentHtml: enHtml, body: htmlToText(enHtml).slice(0, 100000) };
+  const en = { title: $("en-title").value.trim(), summary: $("en-summary").value.trim(), contentHtml: enHtml, body: htmlToText(enHtml).slice(0, 100000), src: enSrc };
   return { title: $("title").value.trim(), contentHtml, body, format: "html", category: $("category").value, tags, summary, coverImageId: cover, en };
 }
 
@@ -139,6 +140,13 @@ async function save(status) {
   if (data.contentHtml.length > MAX_HTML) { showError("글이 너무 길어요. 글을 나눠서 올려 주세요."); return null; }
 
   busy(true);
+  // 영어 버전: 한국어가 바뀌었거나 아직 없으면 자동 번역 (크롬 내장 번역, D41) — 실패해도 저장은 계속
+  if (needsTranslation(data.en, fingerprint(postSource(data)))) {
+    setStatus("영어로 자동 번역하는 중…");
+    const r = await translatePost(data, htmlToText, (p) => setStatus(`번역 기능 내려받는 중… ${p}%`));
+    if (r.ok) { data.en = r.en; fillEn(r.en); }
+    else $("en-status").textContent = `${r.reason}. 한국어는 저장하고, 영어 화면엔 한국어가 보여요.`;
+  }
   setStatus(status === "draft" ? "저장하는 중…" : "발행하는 중…");
   const payload = { ...data, status, authorUid: currentUser.uid, updatedAt: serverTimestamp() };
   if (status !== "draft" && !wasPublished) payload.publishedAt = serverTimestamp();
@@ -246,31 +254,35 @@ if (!isConfigured) {
 }
 
 // ---- English 버전 (해외 방문자용): posts.en — 방문자 영어 화면은 js/content-lang.js가 이 칸을 써요 ----
+let enSrc = ""; // 마지막으로 번역한 한국어의 지문
 function enSummary() {
   const done = $("en-title").value.trim() && $("en-body").textContent.trim();
-  $("en-sum").textContent = done ? "영어 버전 있음 · 영어 화면에 이 내용이 보여요." : "비어 있으면 영어 화면에도 한국어로 보이고 “Korean only” 안내가 붙어요.";
+  $("en-sum").textContent = done ? "자동 번역됨 · 고치고 싶을 때만 열어요." : "저장 · 발행할 때 자동으로 번역돼요.";
 }
 function fillEn(en) {
   en = en || {};
   $("en-title").value = en.title || ""; $("en-summary").value = en.summary || "";
   $("en-body").replaceChildren(sanitizeToFragment(en.contentHtml || ""));
   resolveImages($("en-body"));
-  if (en.title || en.contentHtml) $("en-box").open = true;
+  enSrc = en.src || "";
   enSummary();
 }
 ["en-title", "en-summary"].forEach((id) => $(id).addEventListener("input", () => { markDirty(); enSummary(); }));
 $("en-body").addEventListener("input", () => { markDirty(); enSummary(); });
 $("en-translate").addEventListener("click", async () => {
   const st = $("en-status");
-  if (!getKey()) { st.textContent = "키가 없어요. 아래 ‘영어 번역기’ 링크(0원)에서 번역해 붙여넣거나, 작업 편집 화면에서 키를 연결해 주세요."; return; }
   const html = sanitizeElementToHtml(editorEl);
   if (!$("title").value.trim() || !htmlToText(html).trim()) { st.textContent = "제목과 본문을 먼저 써 주세요."; return; }
   if (($("en-title").value.trim() || $("en-body").textContent.trim()) && !confirm("영어 칸에 쓴 내용을 번역으로 바꿀까요?")) return;
-  const btn = $("en-translate"); btn.disabled = true; st.textContent = "번역하는 중… (글이 길면 1~2분)";
+  const btn = $("en-translate"); btn.disabled = true; st.textContent = "번역하는 중…";
   try {
-    const r = await translateDirect({ title: $("title").value.trim(), summary: $("summary").value.trim(), html });
+    const ko = { title: $("title").value.trim(), summary: $("summary").value.trim(), contentHtml: html };
+    const a = await translatePost(ko, htmlToText, (p) => { st.textContent = `번역 기능 내려받는 중… ${p}% (처음 한 번만)`; }, true);
+    if (a.ok) { fillEn(a.en); markDirty(); st.textContent = "다시 번역했어요. 저장하면 반영돼요."; return; }
+    if (!getKey()) { st.textContent = `${a.reason}.`; return; }
+    const r = await translateDirect({ title: ko.title, summary: ko.summary, html }); // 크롬 번역이 없으면 연결한 키로
     if (!r.ok) { st.textContent = `번역하지 못했어요: ${r.reason}. 영어 칸은 그대로예요.`; return; }
-    fillEn({ title: r.result.title, summary: r.result.summary, contentHtml: r.result.html });
+    fillEn({ title: r.result.title, summary: r.result.summary, contentHtml: r.result.html, src: fingerprint(postSource(ko)) });
     markDirty();
     const nums = r.warnings && r.warnings.unsupportedNumbers;
     st.textContent = nums && nums.length ? `번역했어요. 한국어에 없는 숫자(${nums.join(", ")})가 있어요 — 확인해 주세요.` : "번역했어요. 읽어보고 어색한 곳을 고친 뒤 저장해 주세요.";
