@@ -1,6 +1,8 @@
 // 사이트 언어 바꾸기 (한국어 ⇄ English) — 방문자 페이지 전용, 관리자 화면에는 넣지 않아요.
 // - 헤더 '작업' 메뉴 왼쪽에 국기 동그라미 버튼을 넣어요. 누르면 언어가 바뀌고, 고른 언어는 이 브라우저에 기억해요.
-// - 화면의 고정 문구(메뉴 · 버튼 · 안내)만 아래 사전으로 바꿔요. 운영자가 쓴 글 · 작업 내용은 쓴 언어 그대로예요.
+// - 화면의 고정 문구(메뉴 · 버튼 · 안내)는 아래 사전으로 바꿔요.
+// - 운영자가 쓴 글 · 작업 내용은 문서의 en 칸(영어 버전)을 js/content-lang.js가 골라 보여줘요. 영어 버전이 없으면 한국어 그대로 + 안내.
+// - 버튼을 누르면 "jae:langchange"를 보내 목록을 다시 그리고, 상세 페이지(<body data-lang-reload>)는 새로 불러와요.
 // - 글자는 textContent · setAttribute로만 바꿔요 (innerHTML 없음). 의뢰서 칸의 name · value는 그대로라 메일 내용은 같아요.
 (() => {
   const KEY = "jae-lang";
@@ -75,10 +77,12 @@
     "이 브라우저에서는 저장할 수 없어요.": "This browser can't save entries.",
     "공유 링크를 복사했어요. 카카오톡 · SNS에 붙여 넣으세요.": "Link copied. Paste it into a chat or social post.",
     "(제목 없음)": "(Untitled)",
+    "저장한 글이 없어요. 글 아래 \"저장\"을 누르면 여기에 모여요.": "No saved entries yet. Tap \"Save\" under an entry to keep it here.",
+    "[예산 구간 1]": "[Budget range 1]", "[예산 구간 2]": "[Budget range 2]",
     // 페이지 제목 · 설명
     "Jae — 웹·앱 디자인 & 콘텐츠": "Jae — Web & App Design and Content",
     "웹·앱 디자인과 콘텐츠를 만드는 디자이너의 블로그이자 프로젝트 의뢰 페이지": "Blog and project request page of a web, app and content designer",
-    "작업 — Jae": "Work — Jae", "Jae의 작업 — 문제를 푼 과정까지 보여드리는 케이스 스터디": "Jae's work — case studies that show how each problem was solved",
+    "작업 — Jae": "Work — Jae", "문제를 푼 과정까지 보여드리는 케이스 스터디": "Case studies that show how each problem was solved", "Jae의 작업 — 문제를 푼 과정까지 보여드리는 케이스 스터디": "Jae's work — case studies that show how each problem was solved",
     "기록 — Jae": "Journal — Jae", "바이브코딩, 디자인, 콘텐츠 제작 기록": "Notes on vibe coding, design and content",
     "Jae의 기록 — 브랜딩 · UI/UX · 콘텐츠 디자인": "Jae's journal — Branding · UI/UX · Content design",
     "의뢰 접수 완료 — Jae": "Request received — Jae",
@@ -93,6 +97,10 @@
     [/^첨부 사진 (\d+) 빼기$/, (m) => `Remove photo ${m[1]}`],
     [/^첨부 사진 (\d+)$/, (m) => `Attached photo ${m[1]}`],
     [/^좋아요 (\d+)개$/, (m) => `${m[1]} like${m[1] === "1" ? "" : "s"}`],
+    // 작업 기간: 2주 · 3개월 · 10일
+    [/^(\d+)\s*주$/, (m) => `${m[1]} week${m[1] === "1" ? "" : "s"}`],
+    [/^(\d+)\s*개월$/, (m) => `${m[1]} month${m[1] === "1" ? "" : "s"}`],
+    [/^(\d+)\s*일$/, (m) => `${m[1]} day${m[1] === "1" ? "" : "s"}`],
   ];
   const tr = (s) => T[s] ?? s;
   function translate(raw) {
@@ -101,6 +109,11 @@
     const keep = (t) => raw.match(/^\s*/)[0] + t + raw.match(/\s*$/)[0]; // 앞뒤 빈칸은 그대로
     if (T[s] !== undefined) return keep(T[s]);
     for (const [re, fn] of P) { const m = s.match(re); if (m) return keep(fn(m)); }
+    // "디자인 · 2026.11.19"처럼 · 로 이어진 줄: 조각이 모두 사전에 있거나 한글이 없을 때만 바꿔요
+    if (s.includes(" · ")) {
+      const parts = s.split(" · ").map((x) => (/[가-힣]/.test(x) ? (T[x] ?? P.reduce((r, [re, fn]) => r ?? (x.match(re) ? fn(x.match(re)) : null), null)) : x));
+      if (parts.every((x) => x != null)) return keep(parts.join(" · "));
+    }
     return null;
   }
 
@@ -132,7 +145,10 @@
     document.documentElement.lang = "en";
     applyNode(document.body);
     const tt = translate(document.title); if (tt) { done.push([document, "title", document.title]); document.title = tt; }
-    const d = document.querySelector('meta[name="description"]'); if (d) { const td = translate(d.content); if (td) { done.push([d, "content", d.content]); d.content = td; } }
+    // 검색 · 공유 미리보기 정보도 (description · og · twitter)
+    document.querySelectorAll('meta[name="description"], meta[property^="og:"], meta[name^="twitter:"]').forEach((d) => {
+      const td = d.content && translate(d.content); if (td) { done.push([d, "content", d.content]); d.content = td; }
+    });
     observer = new MutationObserver((list) => {
       for (const m of list) {
         if (m.type === "characterData") textNode(m.target);
@@ -213,8 +229,10 @@
     b.addEventListener("click", () => {
       lang = lang === "en" ? "ko" : "en";
       try { localStorage.setItem(KEY, lang); } catch { /* 이번 화면에서만 바뀌어요 */ }
+      if (document.body.hasAttribute("data-lang-reload")) { location.reload(); return; } // 글 · 작업 상세는 영어 버전으로 새로 그려요
       if (lang === "en") toEnglish(); else toKorean();
       paint();
+      window.dispatchEvent(new CustomEvent("jae:langchange", { detail: { lang } })); // 목록은 다시 그려요
     });
     return b;
   }
