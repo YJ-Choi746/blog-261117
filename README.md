@@ -23,6 +23,7 @@
 | 디자인 시스템 · 사용자 스토리 | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) · [docs/USER_STORIES.md](docs/USER_STORIES.md) |
 | GA4 이벤트 · 통계 | [docs/ANALYTICS_EVENTS.md](docs/ANALYTICS_EVENTS.md) (이벤트 이름 · 기존 → 새 이름 표, D34) · [docs/ANALYTICS.md](docs/ANALYTICS.md) |
 | AI 작성기 (Claude 아티팩트, 비용 0원) | https://claude.ai/artifact/P6pJ9oB2nfDGJKTfgviAzA — 메모로 AI 초안과 인스타그램 문구 3안 (소유자만 열림, 공유는 아티팩트 공유 메뉴에서) |
+| 영어 번역기 (Claude 아티팩트, 비용 0원) | https://claude.ai/artifact/Jeqg3LAL5cSKJ31nNiu4ES — 작업 · 글을 영어 버전 칸 순서대로 번역, 칸마다 복사해 관리자 화면 'English 버전'에 붙여넣기 |
 
 ## 진행 상황 (PRD v1.5 기능 번호)
 | 기능 | 상태 |

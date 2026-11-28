@@ -262,7 +262,7 @@ function fillEn(en) {
 $("en-body").addEventListener("input", () => { markDirty(); enSummary(); });
 $("en-translate").addEventListener("click", async () => {
   const st = $("en-status");
-  if (!getKey()) { st.textContent = "번역하려면 작업 편집 화면의 ‘내 API 키로 AI 쓰기’에서 키를 먼저 연결해 주세요. 영어 칸에 직접 써도 돼요."; return; }
+  if (!getKey()) { st.textContent = "키가 없어요. 아래 ‘영어 번역기’ 링크(0원)에서 번역해 붙여넣거나, 작업 편집 화면에서 키를 연결해 주세요."; return; }
   const html = sanitizeElementToHtml(editorEl);
   if (!$("title").value.trim() || !htmlToText(html).trim()) { st.textContent = "제목과 본문을 먼저 써 주세요."; return; }
   if (($("en-title").value.trim() || $("en-body").textContent.trim()) && !confirm("영어 칸에 쓴 내용을 번역으로 바꿀까요?")) return;

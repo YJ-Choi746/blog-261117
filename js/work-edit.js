@@ -733,7 +733,7 @@ function fillEn(en) {
 document.querySelectorAll("#en-box input, #en-box textarea").forEach((el) => el.addEventListener("input", enSummary));
 $("en-translate").addEventListener("click", async () => {
   const st = $("en-status");
-  if (!getKey()) { st.textContent = "번역하려면 ‘내 API 키로 AI 쓰기’에 키를 먼저 연결해 주세요. 영어 칸에 직접 써도 돼요."; return; }
+  if (!getKey()) { st.textContent = "키가 없어요. 아래 ‘영어 번역기’ 링크(0원)에서 번역해 붙여넣거나, ‘내 API 키로 AI 쓰기’에 키를 연결해 주세요."; return; }
   const src = { title: val("f-name"), summary: val("c-summary"), industry: val("f-industry"), period: val("f-period"), role: val("f-role"),
     problem: val("c-problem"), process: val("c-process"), result: val("c-result"), tags: tagsFromInput() };
   if (!src.title || !(src.problem || src.process || src.result)) { st.textContent = "제목과 01 요청 · 02 과정 · 03 결과 중 하나 이상을 먼저 채워 주세요."; return; }
