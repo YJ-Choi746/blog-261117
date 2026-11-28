@@ -40,8 +40,12 @@
         <h1 style="margin: 0; font-family: var(--font-serif); font-size: 40px">기록 관리</h1>
         <p id="counts" style="margin: 6px 0 0; font-size: 14px; color: var(--gray-600)"></p>
       </div>
-      <a class="btn btn-primary fx-wave" href="write.html">새 글 쓰기</a>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <button type="button" id="fill-en" class="btn btn-outline" title="영어 버전이 없거나 한국어가 바뀐 글 · 작업을 크롬 내장 번역으로 한 번에 채워요">영어 버전 한 번에 채우기</button>
+        <a class="btn btn-primary fx-wave" href="write.html">새 글 쓰기</a>
+      </div>
     </div>
+    <p id="fill-en-status" class="notice notice-info" role="status" aria-live="polite" hidden></p>
 
     <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px">
       <div class="chips" role="group" aria-label="상태" id="tabs">

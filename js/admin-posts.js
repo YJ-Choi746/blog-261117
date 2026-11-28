@@ -4,6 +4,8 @@ import {
 } from "./firebase.js";
 import { getImageData } from "./images.js";
 import { adminButtons } from "./post-actions.js";
+import { htmlToText } from "./sanitize.js";
+import { translatePost, translateWork, postSource, workSource, fingerprint, needsTranslation } from "./auto-translate.js";
 
 const $ = (id) => document.getElementById(id);
 const list = $("manage-list");
@@ -129,3 +131,34 @@ if (!isConfigured) {
   });
   $("logout").addEventListener("click", async () => { await signOut(auth); location.replace("login.html"); });
 }
+
+// ---- 영어 버전 한 번에 채우기 (D41): 이미 쓴 글 · 작업도 저장을 다시 안 눌러도 영어가 생겨요 ----
+$("fill-en").addEventListener("click", async () => {
+  const st = $("fill-en-status"), btn = $("fill-en");
+  const say = (t) => { st.hidden = false; st.textContent = t; };
+  btn.disabled = true;
+  try {
+    const wsnap = await getDocs(collection(db, "works"));
+    const works = wsnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const todoP = posts.filter((p) => needsTranslation(p.en, fingerprint(postSource(p))));
+    const todoW = works.filter((w) => needsTranslation(w.en, fingerprint(workSource(w))));
+    const total = todoP.length + todoW.length;
+    if (!total) { say("모든 글 · 작업에 최신 영어 버전이 있어요."); return; }
+    let done = 0, failed = 0;
+    for (const p of todoP) {
+      say(`번역하는 중… ${done + failed + 1} / ${total} · 글 “${p.title || "(제목 없음)"}”`);
+      const r = await translatePost(p, htmlToText, (pct) => say(`번역 기능 내려받는 중… ${pct}% (처음 한 번만)`), true);
+      if (!r.ok) { say(`${r.reason}.`); return; }
+      try { await updateDoc(doc(db, "posts", p.id), { en: r.en }); p.en = r.en; done++; } catch { failed++; }
+    }
+    for (const w of todoW) {
+      say(`번역하는 중… ${done + failed + 1} / ${total} · 작업 “${w.title || w.name || ""}”`);
+      const r = await translateWork(w, (pct) => say(`번역 기능 내려받는 중… ${pct}% (처음 한 번만)`), true);
+      if (!r.ok) { say(`${r.reason}.`); return; }
+      try { await updateDoc(doc(db, "works", w.id), { en: r.en }); done++; } catch { failed++; }
+    }
+    say(`영어 버전을 채웠어요: ${done}건${failed ? ` · 저장 실패 ${failed}건 (보안 규칙을 새로 게시했는지 확인해 주세요)` : ""}.`);
+  } catch (err) {
+    say(friendlyError(err));
+  } finally { btn.disabled = false; }
+});
